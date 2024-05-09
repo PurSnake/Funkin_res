@@ -19,110 +19,110 @@ import funkin.play.character.CharacterData.CharacterRenderType;
  */
 class MultiSparrowCharacter extends BaseCharacter
 {
-  public function new(id:String)
-  {
-    super(id, CharacterRenderType.MultiSparrow);
-  }
+	public function new(id:String)
+	{
+		super(id, CharacterRenderType.MultiSparrow);
+	}
 
-  override function onCreate(event:ScriptEvent):Void
-  {
-    trace('Creating Multi-Sparrow character: ' + this.characterId);
+	override function onCreate(event:ScriptEvent):Void
+	{
+		trace('Creating Multi-Sparrow character: ' + this.characterId);
 
-    buildSprites();
-    super.onCreate(event);
-  }
+		buildSprites();
+		super.onCreate(event);
+	}
 
-  function buildSprites():Void
-  {
-    buildSpritesheet();
-    buildAnimations();
+	function buildSprites():Void
+	{
+		buildSpritesheet();
+		buildAnimations();
 
-    if (_data.isPixel)
-    {
-      this.isPixel = true;
-      this.antialiasing = false;
-    }
-    else
-    {
-      this.isPixel = false;
-      this.antialiasing = true;
-    }
-  }
+		if (_data.isPixel)
+		{
+			this.isPixel = true;
+			this.antialiasing = false;
+		}
+		else
+		{
+			this.isPixel = false;
+			this.antialiasing = true;
+		}
+	}
 
-  function buildSpritesheet():Void
-  {
-    var assetList = [];
-    for (anim in _data.animations)
-    {
-      if (anim.assetPath != null && !assetList.contains(anim.assetPath))
-      {
-        assetList.push(anim.assetPath);
-      }
-    }
+	function buildSpritesheet():Void
+	{
+		var assetList = [];
+		for (anim in _data.animations)
+		{
+			if (anim.assetPath != null && !assetList.contains(anim.assetPath))
+			{
+				assetList.push(anim.assetPath);
+			}
+		}
 
-    var texture:FlxAtlasFrames = Paths.getSparrowAtlas(_data.assetPath, 'shared');
+		var texture:FlxAtlasFrames = Paths.getSparrowAtlas(_data.assetPath, 'shared');
 
-    if (texture == null)
-    {
-      trace('Multi-Sparrow atlas could not load PRIMARY texture: ${_data.assetPath}');
-    }
-    else
-    {
-      trace('Creating multi-sparrow atlas: ${_data.assetPath}');
-      texture.parent.destroyOnNoUse = false;
-    }
+		if (texture == null)
+		{
+			trace('Multi-Sparrow atlas could not load PRIMARY texture: ${_data.assetPath}');
+		}
+		else
+		{
+			trace('Creating multi-sparrow atlas: ${_data.assetPath}');
+			texture.parent.destroyOnNoUse = false;
+		}
 
-    for (asset in assetList)
-    {
-      var subTexture:FlxAtlasFrames = Paths.getSparrowAtlas(asset, 'shared');
-      // If we don't do this, the unused textures will be removed as soon as they're loaded.
+		for (asset in assetList)
+		{
+			var subTexture:FlxAtlasFrames = Paths.getSparrowAtlas(asset, 'shared');
+			// If we don't do this, the unused textures will be removed as soon as they're loaded.
 
-      if (subTexture == null)
-      {
-        trace('Multi-Sparrow atlas could not load subtexture: ${asset}');
-      }
-      else
-      {
-        trace('Concatenating multi-sparrow atlas: ${asset}');
-        subTexture.parent.destroyOnNoUse = false;
-      }
+			if (subTexture == null)
+			{
+				trace('Multi-Sparrow atlas could not load subtexture: ${asset}');
+			}
+			else
+			{
+				trace('Concatenating multi-sparrow atlas: ${asset}');
+				subTexture.parent.destroyOnNoUse = false;
+			}
 
-      texture.addAtlas(subTexture);
-    }
+			texture.addAtlas(subTexture);
+		}
 
-    this.frames = texture;
-    this.setScale(_data.scale);
-  }
+		this.frames = texture;
+		this.setScale(_data.scale);
+	}
 
-  function buildAnimations()
-  {
-    trace('[MULTISPARROWCHAR] Loading ${_data.animations.length} animations for ${characterId}');
+	function buildAnimations()
+	{
+		trace('[MULTISPARROWCHAR] Loading ${_data.animations.length} animations for ${characterId}');
 
-    // We need to swap to the proper frame collection before adding the animations, I think?
-    for (anim in _data.animations)
-    {
-      FlxAnimationUtil.addAtlasAnimation(this, anim);
+		// We need to swap to the proper frame collection before adding the animations, I think?
+		for (anim in _data.animations)
+		{
+			FlxAnimationUtil.addAtlasAnimation(this, anim);
 
-      if (anim.offsets == null)
-      {
-        setAnimationOffsets(anim.name, 0, 0);
-      }
-      else
-      {
-        setAnimationOffsets(anim.name, anim.offsets[0], anim.offsets[1]);
-      }
-    }
+			if (anim.offsets == null)
+			{
+				setAnimationOffsets(anim.name, 0, 0);
+			}
+			else
+			{
+				setAnimationOffsets(anim.name, anim.offsets[0], anim.offsets[1]);
+			}
+		}
 
-    var animNames = this.animation.getNameList();
-    trace('[MULTISPARROWCHAR] Successfully loaded ${animNames.length} animations for ${characterId}');
-  }
+		var animNames = this.animation.getNameList();
+		trace('[MULTISPARROWCHAR] Successfully loaded ${animNames.length} animations for ${characterId}');
+	}
 
-  public override function playAnimation(name:String, restart:Bool = false, ignoreOther:Bool = false, reverse:Bool = false):Void
-  {
-    // Make sure we ignore other animations if we're currently playing a forced one,
-    // unless we're forcing a new animation.
-    if (!this.canPlayOtherAnims && !ignoreOther) return;
+	public override function playAnimation(name:String, restart:Bool = false, ignoreOther:Bool = false, reverse:Bool = false):Void
+	{
+		// Make sure we ignore other animations if we're currently playing a forced one,
+		// unless we're forcing a new animation.
+		if (!this.canPlayOtherAnims && !ignoreOther) return;
 
-    super.playAnimation(name, restart, ignoreOther, reverse);
-  }
+		super.playAnimation(name, restart, ignoreOther, reverse);
+	}
 }
