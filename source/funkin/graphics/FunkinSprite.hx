@@ -1,8 +1,12 @@
 package funkin.graphics;
 
 import flixel.FlxSprite;
+import flixel.FlxCamera;
+import flixel.math.FlxMath;
+import flixel.math.FlxMatrix;
 import flixel.util.FlxColor;
 import flixel.math.FlxPoint;
+import flixel.math.FlxRect;
 import flixel.graphics.FlxGraphic;
 import flixel.tweens.FlxTween;
 import openfl.display3D.textures.TextureBase;
@@ -47,6 +51,131 @@ class FunkinSprite extends flixel.addons.effects.FlxSkewedSprite //FlxSprite
 	 * Additional offseting variable.
 	 */
 	public var frameOffset:FlxPoint = FlxPoint.get();
+
+	public override function getScreenBounds(?newRect:FlxRect, ?camera:FlxCamera):FlxRect
+	{
+		__doPreZoomScaleProcedure(camera);
+		//var r = super.getScreenBounds(newRect, camera);
+		var r = getScreenBoundsFixed(newRect, camera);
+		__doPostZoomScaleProcedure();
+		return r;
+	}
+
+	public function getScreenBoundsFixed(?newRect:FlxRect, ?camera:FlxCamera):FlxRect
+	{
+		if (newRect == null)
+			newRect = FlxRect.get();
+		
+		if (camera == null)
+			camera = FlxG.camera;
+		
+		newRect.setPosition(x, y);
+		if (pixelPerfectPosition)
+			newRect.floor();
+		_scaledOrigin.set(origin.x * Math.abs(scale.x), origin.y * Math.abs(scale.y));
+		newRect.x += -Std.int(camera.scroll.x * scrollFactor.x) - (offset.x + frameOffset.x) + origin.x - _scaledOrigin.x;
+		newRect.y += -Std.int(camera.scroll.y * scrollFactor.y) - (offset.y + frameOffset.y) + origin.y - _scaledOrigin.y;
+		if (isPixelPerfectRender(camera))
+			newRect.floor();
+		newRect.setSize(frameWidth * Math.abs(scale.x), frameHeight * Math.abs(scale.y));
+		return newRect.getRotatedBounds(angle, _scaledOrigin, newRect);
+	}
+
+	private inline function __shouldDoScaleProcedure()
+		return zoomFactor != 1;
+
+	var __oldScale:FlxPoint;
+	var __skipZoomProcedure:Bool = false;
+
+	private function __doPreZoomScaleProcedure(camera:FlxCamera)
+	{
+		if (__skipZoomProcedure = !__shouldDoScaleProcedure())
+			return;
+		__oldScale = FlxPoint.get(scale.x, scale.y);
+		var requestedZoom = FlxMath.lerp(initialZoom, camera.zoom, zoomFactor);
+		var diff = requestedZoom * camera.zoom;
+
+		scale.scale(diff);
+	}
+
+	private function __doPostZoomScaleProcedure()
+	{
+		if (__skipZoomProcedure)
+			return;
+		scale.set(__oldScale.x, __oldScale.y);
+		__oldScale.put();
+		__oldScale = null;
+	}
+
+	public override function drawComplex(camera:FlxCamera)
+	{
+		_frame.prepareMatrix(_matrix, flixel.graphics.frames.FlxFrame.FlxFrameAngle.ANGLE_0, checkFlipX(), checkFlipY());
+		_matrix.translate(-origin.x, -origin.y);
+		_matrix.scale(scale.x, scale.y);
+
+		if (matrixExposed)
+		{
+			_matrix.concat(transformMatrix);
+		}
+		else
+		{
+			if (bakedRotationAngle <= 0)
+			{
+				updateTrig();
+
+				if (angle != 0)
+					_matrix.rotateWithTrig(_cosAngle, _sinAngle);
+			}
+
+			updateSkewMatrix();
+			_matrix.concat(_skewMatrix);
+		}
+
+		getScreenPosition(_point, camera).subtractPoint(offset + frameOffset);
+		_point.add(origin.x, origin.y);
+		_matrix.translate(_point.x, _point.y);
+
+		if (isPixelPerfectRender(camera))
+		{
+			_matrix.tx = Math.floor(_matrix.tx);
+			_matrix.ty = Math.floor(_matrix.ty);
+		}
+
+		doAdditionalMatrixStuff(_matrix, camera);
+
+		camera.drawPixels(_frame, framePixels, _matrix, colorTransform, blend, antialiasing, shader);
+	}
+
+	public function doAdditionalMatrixStuff(matrix:FlxMatrix, camera:FlxCamera)
+	{
+		matrix.translate(-camera.width / 2, -camera.height / 2);
+
+		var requestedZoom = FlxMath.lerp(1, camera.zoom, zoomFactor);
+		var diff = requestedZoom / camera.zoom;
+		matrix.scale(diff, diff);
+		matrix.translate(camera.width / 2, camera.height / 2);
+	}
+
+	public override function getScreenPosition(?point:FlxPoint, ?Camera:FlxCamera):FlxPoint
+	{
+		if (__shouldDoScaleProcedure())
+		{
+			__oldScale = FlxPoint.get(scrollFactor.x, scrollFactor.y);
+			var requestedZoom = FlxMath.lerp(initialZoom, camera.zoom, zoomFactor);
+			var diff = requestedZoom / camera.zoom;
+
+			scrollFactor.scale(1 / diff);
+
+			var r = super.getScreenPosition(point, Camera);
+
+			scrollFactor.set(__oldScale.x, __oldScale.y);
+			__oldScale.put();
+			__oldScale = null;
+
+			return r;
+		}
+		return super.getScreenPosition(point, Camera);
+	}
 
 	/**
 	 * Create a new FunkinSprite with a static texture.
@@ -283,6 +412,7 @@ class FunkinSprite extends flixel.addons.effects.FlxSkewedSprite //FlxSprite
 
 	public override function destroy():Void
 	{
+		frameOffset = flixel.util.FlxDestroyUtil.put(frameOffset);
 		frames = null;
 		// Cancel all tweens so they don't continue to run on a destroyed sprite.
 		// This prevents crashes.
