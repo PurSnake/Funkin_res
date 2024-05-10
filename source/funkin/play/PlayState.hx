@@ -1478,6 +1478,7 @@ class PlayState extends MusicBeatSubState
 		healthBar.scrollFactor.set();
 		healthBar.createFilledBar(Constants.COLOR_HEALTH_BAR_RED, Constants.COLOR_HEALTH_BAR_GREEN);
 		healthBar.zIndex = 801;
+		healthBar.unbounded = true;
 		add(healthBar);
 
 		// The score text below the health bar.
