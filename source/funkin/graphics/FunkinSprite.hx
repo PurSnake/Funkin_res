@@ -2,6 +2,7 @@ package funkin.graphics;
 
 import flixel.FlxSprite;
 import flixel.util.FlxColor;
+import flixel.math.FlxPoint;
 import flixel.graphics.FlxGraphic;
 import flixel.tweens.FlxTween;
 import openfl.display3D.textures.TextureBase;
@@ -13,7 +14,7 @@ import openfl.display.BitmapData;
  * - A more efficient method for creating solid color sprites.
  * - TODO: Better cache handling for textures.
  */
-class FunkinSprite extends FlxSprite
+class FunkinSprite extends flixel.addons.effects.FlxSkewedSprite //FlxSprite
 {
 	/**
 	 * An internal list of all the textures cached with `cacheTexture`.
@@ -35,6 +36,17 @@ class FunkinSprite extends FlxSprite
 	{
 		super(x, y);
 	}
+
+	/**
+	 * Works similar to scrollFactor, but with sprite's camera zoom.
+	 */
+	public var zoomFactor:Float = 1;
+	public var initialZoom:Float = 1;
+
+	/**
+	 * Additional offseting variable.
+	 */
+	public var frameOffset:FlxPoint = FlxPoint.get();
 
 	/**
 	 * Create a new FunkinSprite with a static texture.
