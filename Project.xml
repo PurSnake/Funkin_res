@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
 	<!-- _________________________ Application Settings _________________________ -->
-	<app title="Friday Night Funkin'" file="Funkin" packageName="com.funkin.fnf" package="com.funkin.fnf" main="Main" version="0.3.2" company="ninjamuffin99" />
+	<app title="Friday Night Funkin': Grafex" file="Funkin" packageName="com.funkin.fnf" package="com.funkin.fnf" main="Main" version="0.3.2" company="ninjamuffin99" />
 	<!--Switch Export with Unique ApplicationID and Icon-->
 	<set name="APP_ID" value="0x0100f6c013bbc000" />
 
@@ -149,25 +149,12 @@
 	<haxedef name="message.reporting" value="pretty" />
 
 	<!-- _________________________________ Custom _______________________________ -->
+
 	<!-- Disable trace() calls in release builds to bump up performance.
 		<haxeflag name="- -no-traces" unless="debug" />-->
 	<!-- HScript relies heavily on Reflection, which means we can't use DCE. -->
 	<haxeflag name="-dce no" />
-	<!-- Ensure all Funkin' classes are available at runtime. -->
-	<haxeflag name="--macro" value="include('funkin')" />
-	<!-- Ensure all UI components are available at runtime. -->
-	<haxeflag name="--macro" value="include('haxe.ui.backend.flixel.components')" />
-	<haxeflag name="--macro" value="include('haxe.ui.containers.dialogs')" />
-	<haxeflag name="--macro" value="include('haxe.ui.containers.menus')" />
-	<haxeflag name="--macro" value="include('haxe.ui.containers.properties')" />
-	<haxeflag name="--macro" value="include('haxe.ui.core')" />
-	<haxeflag name="--macro" value="include('haxe.ui.components')" />
-	<haxeflag name="--macro" value="include('haxe.ui.containers')" />
-	<!--
-		Ensure additional class packages are available at runtime (some only really used by scripts).
-		Ignore packages we can't include.
-	-->
-	<haxeflag name="--macro" value="include('flixel', true, [ 'flixel.addons.editors.spine.*', 'flixel.addons.nape.*', 'flixel.system.macros.*' ])" />
+
 	<!-- Necessary to provide stack traces for HScript. -->
 	<haxedef name="hscriptPos" />
 	<haxedef name="safeMode"/>
@@ -176,11 +163,13 @@
 	<haxedef name="HXCPP_STACK_TRACE" />
 	<!-- This macro allows addition of new functionality to existing Flixel. -->
 	<haxeflag name="--macro" value="addMetadata('@:build(funkin.util.macro.FlxMacro.buildFlxBasic())', 'flixel.FlxBasic')" />
+	<haxeflag name="--macro" value="funkin.util.macro.AdditionalsClassesMacro.addAdditionalClasses()" />
+
 	<!--Place custom nodes like icons here (higher priority to override the HaxeFlixel icon)-->
-	<icon path="art/icon16.png" size="16" />
-	<icon path="art/icon32.png" size="32" />
-	<icon path="art/icon64.png" size="64" />
-	<icon path="art/iconOG.png" />
+	<icon path="extra/icon32.png" size="32" />
+	<icon path="extra/icon64.png" size="64" />
+	<icon path="extra/iconOG.png" />
+
 	<haxedef name="CAN_OPEN_LINKS" unless="switch" />
 	<haxedef name="CAN_CHEAT" if="switch debug" />
 	<!-- I don't remember what this is for. -->
@@ -262,4 +251,7 @@
 		<!-- Determines the file in the mod folder used for the icon. -->
 		<haxedef name="POLYMOD_MOD_ICON_FILE" value="_polymod_icon.png" />
 	</section>
+
+	<!-- Fix compiling issues -->
+	<setenv name="HAXEPATH" value="./"/>
 </project>

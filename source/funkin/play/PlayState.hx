@@ -792,14 +792,7 @@ class PlayState extends MusicBeatSubState
 			lime.app.Application.current.window.alert(message, 'Error loading PlayState');
 
 			// Force the user back to the main menu.
-			if (isSubState)
-			{
-				this.close();
-			}
-			else
-			{
-				FlxG.switchState(() -> new MainMenuState());
-			}
+			isSubState ? this.close() : FlxG.switchState(() -> new MainMenuState());
 			return false;
 		}
 
@@ -898,16 +891,10 @@ class PlayState extends MusicBeatSubState
 		}
 		else
 		{
-			if (Constants.EXT_SOUND == 'mp3')
-			{
-				Conductor.instance.formatOffset = Constants.MP3_DELAY_MS;
-			}
-			else
-			{
-				Conductor.instance.formatOffset = 0.0;
-			}
-
-			Conductor.instance.update(); // Normal conductor update.
+			Conductor.instance.formatOffset = (Constants.EXT_SOUND == 'mp3') ? Constants.MP3_DELAY_MS : 0.0;
+		Conductor.instance.update(Conductor.instance.songPosition
+			- (Conductor.instance.instrumentalOffset + Conductor.instance.formatOffset + Conductor.instance.audioVisualOffset)
+			+ elapsed * 1000 * playbackRate); // Normal conductor update.
 		}
 
 		var androidPause:Bool = false;
@@ -1334,8 +1321,8 @@ class PlayState extends MusicBeatSubState
 
 		if (!startingSong
 			&& FlxG.sound.music != null
-			&& (Math.abs(FlxG.sound.music.time - (Conductor.instance.songPosition + Conductor.instance.instrumentalOffset)) > 100
-				|| Math.abs(vocals.checkSyncError(Conductor.instance.songPosition + Conductor.instance.instrumentalOffset)) > 100))
+			&& (Math.abs(FlxG.sound.music.time - (Conductor.instance.songPosition + Conductor.instance.instrumentalOffset)) > 100 * playbackRate
+				|| Math.abs(vocals.checkSyncError(Conductor.instance.songPosition + Conductor.instance.instrumentalOffset)) > 100 * playbackRate))
 		{
 			trace("VOCALS NEED RESYNC");
 			if (vocals != null) trace(vocals.checkSyncError(Conductor.instance.songPosition + Conductor.instance.instrumentalOffset));
@@ -1947,10 +1934,11 @@ class PlayState extends MusicBeatSubState
 
 		vocals.pause();
 
-		FlxG.sound.music.play(FlxG.sound.music.time);
+		FlxG.sound.music.time = Conductor.instance.songPosition;
+		FlxG.sound.music.play(Conductor.instance.songPosition);
 
-		vocals.time = FlxG.sound.music.time;
-		vocals.play(true, FlxG.sound.music.time);
+		vocals.time = Conductor.instance.songPosition;
+		vocals.play(false, Conductor.instance.songPosition);
 	}
 
 	/**
