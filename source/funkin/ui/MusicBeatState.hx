@@ -21,187 +21,187 @@ import funkin.input.Controls;
  */
 class MusicBeatState extends FlxTransitionableState implements IEventHandler
 {
-  var controls(get, never):Controls;
+	var controls(get, never):Controls;
 
-  inline function get_controls():Controls
-    return PlayerSettings.player1.controls;
+	inline function get_controls():Controls
+		return PlayerSettings.player1.controls;
 
-  public var leftWatermarkText:FlxText = null;
-  public var rightWatermarkText:FlxText = null;
+	public var leftWatermarkText:FlxText = null;
+	public var rightWatermarkText:FlxText = null;
 
-  public var conductorInUse(get, set):Conductor;
+	public var conductorInUse(get, set):Conductor;
 
-  var _conductorInUse:Null<Conductor>;
+	var _conductorInUse:Null<Conductor>;
 
-  function get_conductorInUse():Conductor
-  {
-    if (_conductorInUse == null) return Conductor.instance;
-    return _conductorInUse;
-  }
+	function get_conductorInUse():Conductor
+	{
+		if (_conductorInUse == null) return Conductor.instance;
+		return _conductorInUse;
+	}
 
-  function set_conductorInUse(value:Conductor):Conductor
-  {
-    return _conductorInUse = value;
-  }
+	function set_conductorInUse(value:Conductor):Conductor
+	{
+		return _conductorInUse = value;
+	}
 
-  public function new()
-  {
-    super();
+	public function new()
+	{
+		super();
 
-    initCallbacks();
-  }
+		initCallbacks();
+	}
 
-  function initCallbacks()
-  {
-    subStateOpened.add(onOpenSubStateComplete);
-    subStateClosed.add(onCloseSubStateComplete);
-  }
+	function initCallbacks()
+	{
+		subStateOpened.add(onOpenSubStateComplete);
+		subStateClosed.add(onCloseSubStateComplete);
+	}
 
-  override function create()
-  {
-    super.create();
+	override function create()
+	{
+		super.create();
 
-    createWatermarkText();
+		createWatermarkText();
 
-    Conductor.beatHit.add(this.beatHit);
-    Conductor.stepHit.add(this.stepHit);
-  }
+		Conductor.beatHit.add(this.beatHit);
+		Conductor.stepHit.add(this.stepHit);
+	}
 
-  public override function destroy():Void
-  {
-    super.destroy();
-    Conductor.beatHit.remove(this.beatHit);
-    Conductor.stepHit.remove(this.stepHit);
-  }
+	public override function destroy():Void
+	{
+		super.destroy();
+		Conductor.beatHit.remove(this.beatHit);
+		Conductor.stepHit.remove(this.stepHit);
+	}
 
-  function handleFunctionControls():Void
-  {
-    // Emergency exit button.
-    if (FlxG.keys.justPressed.F4) FlxG.switchState(() -> new MainMenuState());
+	function handleFunctionControls():Void
+	{
+		// Emergency exit button.
+		if (FlxG.keys.justPressed.F4) FlxG.switchState(() -> new MainMenuState());
 
-    // This can now be used in EVERY STATE YAY!
-    if (FlxG.keys.justPressed.F5) debug_refreshModules();
-  }
+		// This can now be used in EVERY STATE YAY!
+		if (FlxG.keys.justPressed.F5) debug_refreshModules();
+	}
 
-  override function update(elapsed:Float)
-  {
-    super.update(elapsed);
+	override function update(elapsed:Float)
+	{
+		super.update(elapsed);
 
-    dispatchEvent(new UpdateScriptEvent(elapsed));
-  }
+		dispatchEvent(new UpdateScriptEvent(elapsed));
+	}
 
-  function createWatermarkText()
-  {
-    // Both have an xPos of 0, but a width equal to the full screen.
-    // The rightWatermarkText is right aligned, which puts the text in the correct spot.
-    leftWatermarkText = new FlxText(0, FlxG.height - 18, FlxG.width, '', 12);
-    rightWatermarkText = new FlxText(0, FlxG.height - 18, FlxG.width, '', 12);
+	function createWatermarkText()
+	{
+		// Both have an xPos of 0, but a width equal to the full screen.
+		// The rightWatermarkText is right aligned, which puts the text in the correct spot.
+		leftWatermarkText = new FlxText(0, FlxG.height - 18, FlxG.width, '', 12);
+		rightWatermarkText = new FlxText(0, FlxG.height - 18, FlxG.width, '', 12);
 
-    // 100,000 should be good enough.
-    leftWatermarkText.zIndex = 100000;
-    rightWatermarkText.zIndex = 100000;
-    leftWatermarkText.scrollFactor.set(0, 0);
-    rightWatermarkText.scrollFactor.set(0, 0);
-    leftWatermarkText.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-    rightWatermarkText.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		// 100,000 should be good enough.
+		leftWatermarkText.zIndex = 100000;
+		rightWatermarkText.zIndex = 100000;
+		leftWatermarkText.scrollFactor.set(0, 0);
+		rightWatermarkText.scrollFactor.set(0, 0);
+		leftWatermarkText.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		rightWatermarkText.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 
-    add(leftWatermarkText);
-    add(rightWatermarkText);
-  }
+		add(leftWatermarkText);
+		add(rightWatermarkText);
+	}
 
-  public function dispatchEvent(event:ScriptEvent)
-  {
-    ModuleHandler.callEvent(event);
-  }
+	public function dispatchEvent(event:ScriptEvent)
+	{
+		ModuleHandler.callEvent(event);
+	}
 
-  function debug_refreshModules()
-  {
-    PolymodHandler.forceReloadAssets();
+	function debug_refreshModules()
+	{
+		PolymodHandler.forceReloadAssets();
 
-    this.destroy();
+		this.destroy();
 
-    // Create a new instance of the current state, so old data is cleared.
-    FlxG.resetState();
-  }
+		// Create a new instance of the current state, so old data is cleared.
+		FlxG.resetState();
+	}
 
-  public function stepHit():Bool
-  {
-    var event = new SongTimeScriptEvent(SONG_STEP_HIT, conductorInUse.currentBeat, conductorInUse.currentStep);
+	public function stepHit():Bool
+	{
+		var event = new SongTimeScriptEvent(SONG_STEP_HIT, conductorInUse.currentBeat, conductorInUse.currentStep);
 
-    dispatchEvent(event);
+		dispatchEvent(event);
 
-    if (event.eventCanceled) return false;
+		if (event.eventCanceled) return false;
 
-    return true;
-  }
+		return true;
+	}
 
-  public function beatHit():Bool
-  {
-    var event = new SongTimeScriptEvent(SONG_BEAT_HIT, conductorInUse.currentBeat, conductorInUse.currentStep);
+	public function beatHit():Bool
+	{
+		var event = new SongTimeScriptEvent(SONG_BEAT_HIT, conductorInUse.currentBeat, conductorInUse.currentStep);
 
-    dispatchEvent(event);
+		dispatchEvent(event);
 
-    if (event.eventCanceled) return false;
+		if (event.eventCanceled) return false;
 
-    return true;
-  }
+		return true;
+	}
 
-  /**
-   * Refreshes the state, by redoing the render order of all sprites.
-   * It does this based on the `zIndex` of each prop.
-   */
-  public function refresh()
-  {
-    sort(SortUtil.byZIndex, FlxSort.ASCENDING);
-  }
+	/**
+	 * Refreshes the state, by redoing the render order of all sprites.
+	 * It does this based on the `zIndex` of each prop.
+	 */
+	public function refresh()
+	{
+		sort(SortUtil.byZIndex, FlxSort.ASCENDING);
+	}
 
-  override function startOutro(onComplete:() -> Void):Void
-  {
-    var event = new StateChangeScriptEvent(STATE_CHANGE_BEGIN, null, true);
+	override function startOutro(onComplete:() -> Void):Void
+	{
+		var event = new StateChangeScriptEvent(STATE_CHANGE_BEGIN, null, true);
 
-    dispatchEvent(event);
+		dispatchEvent(event);
 
-    if (event.eventCanceled)
-    {
-      return;
-    }
-    else
-    {
-      FunkinSound.stopAllAudio();
+		if (event.eventCanceled)
+		{
+			return;
+		}
+		else
+		{
+			FunkinSound.stopAllAudio();
 
-      onComplete();
-    }
-  }
+			onComplete();
+		}
+	}
 
-  public override function openSubState(targetSubState:FlxSubState):Void
-  {
-    var event = new SubStateScriptEvent(SUBSTATE_OPEN_BEGIN, targetSubState, true);
+	public override function openSubState(targetSubState:FlxSubState):Void
+	{
+		var event = new SubStateScriptEvent(SUBSTATE_OPEN_BEGIN, targetSubState, true);
 
-    dispatchEvent(event);
+		dispatchEvent(event);
 
-    if (event.eventCanceled) return;
+		if (event.eventCanceled) return;
 
-    super.openSubState(targetSubState);
-  }
+		super.openSubState(targetSubState);
+	}
 
-  function onOpenSubStateComplete(targetState:FlxSubState):Void
-  {
-    dispatchEvent(new SubStateScriptEvent(SUBSTATE_OPEN_END, targetState, true));
-  }
+	function onOpenSubStateComplete(targetState:FlxSubState):Void
+	{
+		dispatchEvent(new SubStateScriptEvent(SUBSTATE_OPEN_END, targetState, true));
+	}
 
-  public override function closeSubState():Void
-  {
-    var event = new SubStateScriptEvent(SUBSTATE_CLOSE_BEGIN, this.subState, true);
+	public override function closeSubState():Void
+	{
+		var event = new SubStateScriptEvent(SUBSTATE_CLOSE_BEGIN, this.subState, true);
 
-    dispatchEvent(event);
+		dispatchEvent(event);
 
-    if (event.eventCanceled) return;
+		if (event.eventCanceled) return;
 
-    super.closeSubState();
-  }
+		super.closeSubState();
+	}
 
-  function onCloseSubStateComplete(targetState:FlxSubState):Void
-  {
-    dispatchEvent(new SubStateScriptEvent(SUBSTATE_CLOSE_END, targetState, true));
-  }
+	function onCloseSubStateComplete(targetState:FlxSubState):Void
+	{
+		dispatchEvent(new SubStateScriptEvent(SUBSTATE_CLOSE_END, targetState, true));
+	}
 }
