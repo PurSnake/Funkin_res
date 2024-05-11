@@ -231,18 +231,24 @@ class BaseCharacter extends Bopper
 	public function resetCharacter(resetCamera:Bool = true):Void
 	{
 		// Reset the animation offsets. This will modify x and y to be the absolute position of the character.
-		// this.animOffsets = [0, 0];
+		//this.animOffsets = [0, 0];
 
 		// Now we can set the x and y to be their original values without having to account for animOffsets.
 		this.resetPosition();
 
+		////////////////
 		//Then reapply animOffsets...
-		applyAnimationOffsets(getCurrentAnimation());
+		//applyAnimationOffsets(getCurrentAnimation());
+		////////////////
 
 		this.dance(true); // Force to avoid the old animation playing with the wrong offset at the start of the song.
 		// Make sure we are playing the idle animation
 		// ...then update the hitbox so that this.width and this.height are correct.
 		this.updateHitbox();
+
+
+		//Then reapply animOffsets...
+		applyAnimationOffsets(getCurrentAnimation());
 
 		// Reset the camera focus point while we're at it.
 		if (resetCamera) this.resetCameraFocusPoint();
