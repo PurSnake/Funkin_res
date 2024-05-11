@@ -236,8 +236,8 @@ class BaseCharacter extends Bopper
 		// Now we can set the x and y to be their original values without having to account for animOffsets.
 		this.resetPosition();
 
-		// Then reapply animOffsets...
-		// applyAnimationOffsets(getCurrentAnimation());
+		//Then reapply animOffsets...
+		//applyAnimationOffsets(getCurrentAnimation());
 
 		this.dance(true); // Force to avoid the old animation playing with the wrong offset at the start of the song.
 		// Make sure we are playing the idle animation
@@ -477,6 +477,7 @@ class BaseCharacter extends Bopper
 	public override function onNoteHit(event:HitNoteScriptEvent)
 	{
 		super.onNoteHit(event);
+		if (event.note.noteData.kind == "noAnimation" || event.note.noAnimation) return;
 
 		if (event.note.noteData.getMustHitNote() && characterType == BF)
 		{
@@ -499,6 +500,7 @@ class BaseCharacter extends Bopper
 	public override function onNoteMiss(event:NoteScriptEvent)
 	{
 		super.onNoteMiss(event);
+		if (event.note.noteData.kind == "noAnimation" || event.note.noAnimation) return;
 
 		if (event.note.noteData.getMustHitNote() && characterType == BF)
 		{

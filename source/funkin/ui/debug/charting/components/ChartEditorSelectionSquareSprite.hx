@@ -15,19 +15,19 @@ import funkin.ui.debug.charting.handlers.ChartEditorThemeHandler;
 @:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorSelectionSquareSprite extends FlxSliceSprite
 {
-  public var noteData:Null<SongNoteData>;
-  public var eventData:Null<SongEventData>;
+	public var noteData:Null<SongNoteData>;
+	public var eventData:Null<SongEventData>;
 
-  public function new(chartEditorState:ChartEditorState)
-  {
-    super(chartEditorState.selectionSquareBitmap,
-      new FlxRect(ChartEditorThemeHandler.SELECTION_SQUARE_BORDER_WIDTH
-        + 4, ChartEditorThemeHandler.SELECTION_SQUARE_BORDER_WIDTH
-        + 4,
-        ChartEditorState.GRID_SIZE
-        - (2 * ChartEditorThemeHandler.SELECTION_SQUARE_BORDER_WIDTH + 8),
-        ChartEditorState.GRID_SIZE
-        - (2 * ChartEditorThemeHandler.SELECTION_SQUARE_BORDER_WIDTH + 8)),
-      32, 32);
-  }
+	public function new(chartEditorState:ChartEditorState)
+	{
+		super(chartEditorState.selectionSquareBitmap,
+			new FlxRect(ChartEditorThemeHandler.SELECTION_SQUARE_BORDER_WIDTH
+				+ 4, ChartEditorThemeHandler.SELECTION_SQUARE_BORDER_WIDTH
+				+ 4,
+				ChartEditorState.GRID_SIZE
+				- (2 * ChartEditorThemeHandler.SELECTION_SQUARE_BORDER_WIDTH + 8),
+				ChartEditorState.GRID_SIZE
+				- (2 * ChartEditorThemeHandler.SELECTION_SQUARE_BORDER_WIDTH + 8)),
+			32, 32);
+	}
 }
