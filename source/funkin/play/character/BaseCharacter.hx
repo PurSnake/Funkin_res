@@ -237,7 +237,7 @@ class BaseCharacter extends Bopper
 		this.resetPosition();
 
 		//Then reapply animOffsets...
-		//applyAnimationOffsets(getCurrentAnimation());
+		applyAnimationOffsets(getCurrentAnimation());
 
 		this.dance(true); // Force to avoid the old animation playing with the wrong offset at the start of the song.
 		// Make sure we are playing the idle animation
