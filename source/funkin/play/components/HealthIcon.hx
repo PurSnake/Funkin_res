@@ -4,10 +4,13 @@ import funkin.play.character.CharacterData;
 import flixel.FlxSprite;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
+import flixel.util.FlxColor;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import openfl.utils.Assets;
 import funkin.graphics.FunkinSprite;
 import funkin.util.MathUtil;
+import funkin.util.Constants;
+
 
 /**
  * This is a rework of the health icon with the following changes:
@@ -26,7 +29,7 @@ import funkin.util.MathUtil;
  *		 - i.e. `PlayState.instance.iconP1.animation.addByPrefix("jumpscare", "jumpscare", 24, false);`
  * @author MasterEric
  */
-@:nullSafety
+//@:nullSafety
 class HealthIcon extends FunkinSprite
 {
 	/**
@@ -43,7 +46,6 @@ class HealthIcon extends FunkinSprite
 	 * - Repositioning the icon as health changes.
 	 */
 	public var autoUpdate:Bool = true;
-
 
 	/**
 	 * @default 0, 0
@@ -83,6 +85,12 @@ class HealthIcon extends FunkinSprite
 	 * Whether this is icon can bop or not.
 	 */
 	public var isBopable:Bool = true;
+
+
+	/**
+	 * Healthbar character's side color. 
+	 */
+	public var healthColor:FlxColor = Constants.COLOR_HEALTH_BAR_GREEN;
 
 	/**
 	 * Whether this is a legacy icon or not.
@@ -187,6 +195,8 @@ class HealthIcon extends FunkinSprite
 			this.customOffset.set(0.0, 0.0);
 			this.flipX = false;
 			this.isBopable = true;
+			this.healthColor = (playerId == 1) ? Constants.COLOR_HEALTH_BAR_GREEN : Constants.COLOR_HEALTH_BAR_RED;
+			//FlxColor.fromString('#F9CF51');
 		}
 		else
 		{
@@ -199,7 +209,8 @@ class HealthIcon extends FunkinSprite
 
 			data.offsets != null ? this.customOffset.set(-data.offsets[0], -data.offsets[1]) : this.customOffset.set(0.0, 0.0);
 			this.flipX = data.flipX ?? false; // Face the OTHER way by default, since that is more common.
-			this.isBopable = data.isBopable ?? true;
+			this.isBopable = data.isBopable ?? true;			
+			this.healthColor = data.color != null ? FlxColor.fromString(data.color) : (playerId == 0 ? Constants.COLOR_HEALTH_BAR_GREEN : Constants.COLOR_HEALTH_BAR_RED);
 		}
 	}
 

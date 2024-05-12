@@ -322,13 +322,10 @@ class CharacterDataParser
 	static function clearCharacterCache():Void
 	{
 		if (characterCache != null)
-		{
 			characterCache.clear();
-		}
+
 		if (characterScriptedClass != null)
-		{
 			characterScriptedClass.clear();
-		}
 	}
 
 	/**
@@ -352,9 +349,7 @@ class CharacterDataParser
 		var rawJson = Assets.getText(charFilePath).trim();
 
 		while (!StringTools.endsWith(rawJson, '}'))
-		{
 			rawJson = rawJson.substr(0, rawJson.length - 1);
-		}
 
 		return rawJson;
 	}
@@ -433,9 +428,7 @@ class CharacterDataParser
 		}
 
 		if (input.renderType == null)
-		{
 			input.renderType = DEFAULT_RENDERTYPE;
-		}
 
 		if (input.assetPath == null)
 		{
@@ -444,77 +437,54 @@ class CharacterDataParser
 		}
 
 		if (input.offsets == null)
-		{
 			input.offsets = DEFAULT_OFFSETS;
-		}
 
 		if (input.cameraOffsets == null)
-		{
 			input.cameraOffsets = DEFAULT_OFFSETS;
-		}
 
 		if (input.healthIcon == null)
 		{
 			input.healthIcon =
-				{
-					id: null,
-					scale: null,
-					flipX: null,
-					isPixel: null,
-					isBopable: null,
-					offsets: null
-				};
+			{
+				id: null,
+				scale: null,
+				flipX: null,
+				isPixel: null,
+				isBopable: null,
+				offsets: null,
+				color: null
+			};
 		}
 
 		if (input.healthIcon.id == null)
-		{
 			input.healthIcon.id = id;
-		}
 
 		if (input.healthIcon.scale == null)
-		{
 			input.healthIcon.scale = DEFAULT_SCALE;
-		}
 
 		if (input.healthIcon.flipX == null)
-		{
 			input.healthIcon.flipX = DEFAULT_FLIPX;
-		}
 
 		if (input.healthIcon.offsets == null)
-		{
 			input.healthIcon.offsets = DEFAULT_OFFSETS;
-		}
 
 		if (input.startingAnimation == null)
-		{
 			input.startingAnimation = DEFAULT_STARTINGANIM;
-		}
 
 		if (input.scale == null)
-		{
 			input.scale = DEFAULT_SCALE;
-		}
 
 		if (input.isPixel == null)
-		{
 			input.isPixel = DEFAULT_ISPIXEL;
-		}
 
 		if (input.healthIcon.isPixel == null)
-		{
 			input.healthIcon.isPixel = input.isPixel;
-		}
 
 		if (input.danceEvery == null)
-		{
 			input.danceEvery = DEFAULT_DANCEEVERY;
-		}
 
 		if (input.singTime == null)
-		{
 			input.singTime = DEFAULT_SINGTIME;
-		}
 
 		if (input.animations == null || input.animations.length == 0)
 		{
@@ -523,14 +493,10 @@ class CharacterDataParser
 		}
 
 		if (input.flipX == null)
-		{
 			input.flipX = DEFAULT_FLIPX;
-		}
 
 		if (input.animations.length == 0 && input.startingAnimation != null)
-		{
 			return null;
-		}
 
 		for (inputAnimation in input.animations)
 		{
@@ -541,29 +507,19 @@ class CharacterDataParser
 			}
 
 			if (inputAnimation.frameRate == null)
-			{
 				inputAnimation.frameRate = DEFAULT_FRAMERATE;
-			}
 
 			if (inputAnimation.offsets == null)
-			{
 				inputAnimation.offsets = DEFAULT_OFFSETS;
-			}
 
 			if (inputAnimation.looped == null)
-			{
 				inputAnimation.looped = DEFAULT_LOOP;
-			}
 
 			if (inputAnimation.flipX == null)
-			{
 				inputAnimation.flipX = DEFAULT_FLIPX;
-			}
 
 			if (inputAnimation.flipY == null)
-			{
 				inputAnimation.flipY = DEFAULT_FLIPY;
-			}
 		}
 
 		// All good!
@@ -741,6 +697,12 @@ typedef HealthIconData =
 	 * @default [0, 25]
 	 */
 	var offsets:Null<Array<Float>>;
+
+	/**
+	 * Healthbar character's side color.
+	 * @default Switched via playerId (BF/DAD) from Constants.hx
+	 */
+	var color:Null<String>;
 }
 
 typedef DeathData =

@@ -360,13 +360,9 @@ class AnimateAtlasCharacter extends BaseCharacter
 	inline function alphaTransform(sprite:FlxSprite, alpha:Float):Void
 	{
 		if (sprite.alpha != 0 || alpha == 0)
-		{
 			sprite.alpha *= alpha; // multiplication
-		}
 		else
-		{
 			sprite.alpha = 1 / alpha; // direct set to avoid stuck sprites
-		}
 	}
 
 	inline function directAlphaTransform(sprite:FlxSprite, alpha:Float):Void
@@ -431,14 +427,7 @@ class AnimateAtlasCharacter extends BaseCharacter
 
 	inline function clipRectTransform(sprite:FlxSprite, clipRect:FlxRect):Void
 	{
-		if (clipRect == null)
-		{
-			sprite.clipRect = null;
-		}
-		else
-		{
-			sprite.clipRect = FlxRect.get(clipRect.x - sprite.x + x, clipRect.y - sprite.y + y, clipRect.width, clipRect.height);
-		}
+		sprite.clipRect = (clipRect == null) ? null : FlxRect.get(clipRect.x - sprite.x + x, clipRect.y - sprite.y + y, clipRect.width, clipRect.height);
 	}
 
 	inline function offsetCallback(offset:FlxPoint):Void
@@ -514,9 +503,8 @@ class AnimateAtlasCharacter extends BaseCharacter
 		value = FlxMath.bound(value, 0, 1);
 
 		if (exists && alpha != value)
-		{
 			transformChildren(directAlphaTransform, value);
-		}
+
 		return alpha = value;
 	}
 

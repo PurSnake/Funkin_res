@@ -112,6 +112,11 @@ class InitState extends FlxState
 		// Don't play transition in when entering the title state.
 		FlxTransitionableState.skipNextTransIn = true;
 
+		
+		#if windows
+		funkin.util.tools.Windows.setDarkMode(true);
+		#end
+
 		//
 		// NEWGROUNDS API SETUP
 		//
@@ -178,6 +183,36 @@ class InitState extends FlxState
 		ModuleHandler.buildModuleCallbacks();
 		ModuleHandler.loadModuleCache();
 		ModuleHandler.callOnCreate();
+
+		final gc:Void->Void = () -> {
+			#if cpp
+			cpp.vm.Gc.run(true);
+			//cpp.vm.Gc.compact();
+			#else
+			openfl.system.System.gc();
+			#end
+		}
+
+		final clearCache:Void->Void = () -> {
+			FlxG.bitmap.dumpCache();
+
+			final cache = cast(openfl.Assets.cache, openfl.utils.AssetCache);
+			for (key=>_ in cache.font) cache.removeFont(key);
+
+			for (key=>_ in cache.sound) cache.removeSound(key);
+
+			openfl.Assets.cache.clear();
+		}
+		
+		FlxG.signals.preStateSwitch.add(function() {
+			clearCache();
+			gc();
+		});
+
+		FlxG.signals.postStateSwitch.add(function() {
+			clearCache();
+			gc();
+		});
 
 		trace('Parsing game data took: ${TimerUtil.ms(perfStart)}');
 	}

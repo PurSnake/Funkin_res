@@ -37,28 +37,16 @@ class MultiSparrowCharacter extends BaseCharacter
 		buildSpritesheet();
 		buildAnimations();
 
-		if (_data.isPixel)
-		{
-			this.isPixel = true;
-			this.antialiasing = false;
-		}
-		else
-		{
-			this.isPixel = false;
-			this.antialiasing = true;
-		}
+		this.isPixel = _data.isPixel;
+		this.antialiasing = !_data.isPixel;
 	}
 
 	function buildSpritesheet():Void
 	{
 		var assetList = [];
 		for (anim in _data.animations)
-		{
 			if (anim.assetPath != null && !assetList.contains(anim.assetPath))
-			{
 				assetList.push(anim.assetPath);
-			}
-		}
 
 		var texture:FlxAtlasFrames = Paths.getSparrowAtlas(_data.assetPath, 'shared');
 
@@ -102,15 +90,7 @@ class MultiSparrowCharacter extends BaseCharacter
 		for (anim in _data.animations)
 		{
 			FlxAnimationUtil.addAtlasAnimation(this, anim);
-
-			if (anim.offsets == null)
-			{
-				setAnimationOffsets(anim.name, 0, 0);
-			}
-			else
-			{
-				setAnimationOffsets(anim.name, anim.offsets[0], anim.offsets[1]);
-			}
+			anim.offsets == null ? setAnimationOffsets(anim.name, 0, 0) : setAnimationOffsets(anim.name, anim.offsets[0], anim.offsets[1]);
 		}
 
 		var animNames = this.animation.getNameList();

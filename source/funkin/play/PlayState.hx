@@ -2825,33 +2825,17 @@ class PlayState extends MusicBeatSubState
 				{
 					var targetSong:Song = SongRegistry.instance.fetchEntry(targetSongId);
 					LoadingState.loadPlayState(
-						{
-							targetSong: targetSong,
-							targetDifficulty: PlayStatePlaylist.campaignDifficulty,
-							targetVariation: currentVariation,
-							cameraFollowPoint: cameraFollowPoint.getPosition(),
-						});
+					{
+						targetSong: targetSong,
+						targetDifficulty: PlayStatePlaylist.campaignDifficulty,
+						targetVariation: currentVariation,
+						cameraFollowPoint: cameraFollowPoint.getPosition(),
+					});
 				}
 			}
 		}
 		else
-		{
-			if (isSubState)
-			{
-				this.close();
-			}
-			else
-			{
-				if (rightGoddamnNow)
-				{
-					moveToResultsScreen(isNewHighscore);
-				}
-				else
-				{
-					zoomIntoResultsScreen(isNewHighscore);
-				}
-			}
-		}
+			isSubState ? this.close() : (rightGoddamnNow ? moveToResultsScreen(isNewHighscore) : zoomIntoResultsScreen(isNewHighscore));
 	}
 
 	public override function close():Void

@@ -11,67 +11,49 @@ import funkin.util.assets.FlxAnimationUtil;
  */
 class PackerCharacter extends BaseCharacter
 {
-  public function new(id:String)
-  {
-    super(id, CharacterRenderType.Packer);
-  }
+	public function new(id:String)
+	{
+		super(id, CharacterRenderType.Packer);
+	}
 
-  override function onCreate(event:ScriptEvent):Void
-  {
-    trace('Creating Packer character: ' + this.characterId);
+	override function onCreate(event:ScriptEvent):Void
+	{
+		trace('Creating Packer character: ' + this.characterId);
 
-    loadSpritesheet();
-    loadAnimations();
+		loadSpritesheet();
+		loadAnimations();
 
-    super.onCreate(event);
-  }
+		super.onCreate(event);
+	}
 
-  function loadSpritesheet():Void
-  {
-    trace('[PACKERCHAR] Loading spritesheet ${_data.assetPath} for ${characterId}');
+	function loadSpritesheet():Void
+	{
+		trace('[PACKERCHAR] Loading spritesheet ${_data.assetPath} for ${characterId}');
 
-    var tex:FlxFramesCollection = Paths.getPackerAtlas(_data.assetPath, 'shared');
-    if (tex == null)
-    {
-      trace('Could not load Packer sprite: ${_data.assetPath}');
-      return;
-    }
+		var tex:FlxFramesCollection = Paths.getPackerAtlas(_data.assetPath, 'shared');
+		if (tex == null)
+		{
+			trace('Could not load Packer sprite: ${_data.assetPath}');
+			return;
+		}
 
-    this.frames = tex;
+		this.frames = tex;
+		this.isPixel = _data.isPixel;
+		this.antialiasing = !_data.isPixel;
 
-    if (_data.isPixel)
-    {
-      this.isPixel = true;
-      this.antialiasing = false;
-    }
-    else
-    {
-      this.isPixel = false;
-      this.antialiasing = true;
-    }
+		this.setScale(_data.scale);
+	}
 
-    this.setScale(_data.scale);
-  }
+	function loadAnimations():Void
+	{
+		trace('[PACKERCHAR] Loading ${_data.animations.length} animations for ${characterId}');
 
-  function loadAnimations():Void
-  {
-    trace('[PACKERCHAR] Loading ${_data.animations.length} animations for ${characterId}');
+		FlxAnimationUtil.addAtlasAnimations(this, _data.animations);
 
-    FlxAnimationUtil.addAtlasAnimations(this, _data.animations);
+		for (anim in _data.animations)
+			anim.offsets == null ? setAnimationOffsets(anim.name, 0, 0) : setAnimationOffsets(anim.name, anim.offsets[0], anim.offsets[1]);
 
-    for (anim in _data.animations)
-    {
-      if (anim.offsets == null)
-      {
-        setAnimationOffsets(anim.name, 0, 0);
-      }
-      else
-      {
-        setAnimationOffsets(anim.name, anim.offsets[0], anim.offsets[1]);
-      }
-    }
-
-    var animNames = this.animation.getNameList();
-    trace('[PACKERCHAR] Successfully loaded ${animNames.length} animations for ${characterId}');
-  }
+		var animNames = this.animation.getNameList();
+		trace('[PACKERCHAR] Successfully loaded ${animNames.length} animations for ${characterId}');
+	}
 }
