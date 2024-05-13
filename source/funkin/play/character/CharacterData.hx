@@ -60,7 +60,7 @@ class CharacterDataParser
 				var charData:CharacterData = parseCharacterData(charId);
 				if (charData != null)
 				{
-					trace('		Loaded character data: ${charId}');
+					trace('	Loaded character data: ${charId}');
 					characterCache.set(charId, charData);
 				}
 			}
@@ -91,7 +91,7 @@ class CharacterDataParser
 				}
 				catch (e)
 				{
-					trace('		FAILED to instantiate scripted Sparrow character: ${charCls}');
+					trace('	FAILED to instantiate scripted Sparrow character: ${charCls}');
 					trace(e);
 				}
 			}
@@ -110,7 +110,7 @@ class CharacterDataParser
 				}
 				catch (e)
 				{
-					trace('		FAILED to instantiate scripted Packer character: ${charCls}');
+					trace('	FAILED to instantiate scripted Packer character: ${charCls}');
 					trace(e);
 				}
 			}
@@ -129,7 +129,7 @@ class CharacterDataParser
 				}
 				catch (e)
 				{
-					trace('		FAILED to instantiate scripted Multi-Sparrow character: ${charCls}');
+					trace('	FAILED to instantiate scripted Multi-Sparrow character: ${charCls}');
 					trace(e);
 				}
 			}
@@ -148,7 +148,7 @@ class CharacterDataParser
 				}
 				catch (e)
 				{
-					trace('		FAILED to instantiate scripted Animate Atlas character: ${charCls}');
+					trace('	FAILED to instantiate scripted Animate Atlas character: ${charCls}');
 					trace(e);
 				}
 			}
@@ -172,12 +172,12 @@ class CharacterDataParser
 				var character:BaseCharacter = ScriptedBaseCharacter.init(charCls, DEFAULT_CHAR_ID, Custom);
 				if (character == null)
 				{
-					trace('		Failed to instantiate scripted character: ${charCls}');
+					trace('	Failed to instantiate scripted character: ${charCls}');
 					continue;
 				}
 				else
 				{
-					trace('		Successfully instantiated scripted character: ${charCls}');
+					trace('	Successfully instantiated scripted character: ${charCls}');
 					characterScriptedClass.set(character.characterId, charCls);
 				}
 			}
@@ -281,39 +281,62 @@ class CharacterDataParser
 	}
 
 	/**
-	 * TODO: Hardcode this.
-	 */
-	public static function getCharPixelIconAsset(char:String):String
+	* Fetches the character's pixel icon data.
+	* @param charId The character to load.
+	* @return The pixel icon data, or null if validation failed.
+	*/
+	public static function getCharPixelIconData(charId:String):Null<PixelIconData>
 	{
-		var icon:String = char;
-
-		switch (icon)
+		if (charId == null || charId == '' || !characterCache.exists(charId))
 		{
-			case "bf-christmas" | "bf-car" | "bf-pixel" | "bf-holding-gf":
-				icon = "bf";
-			case "monster-christmas":
-				icon = "monster";
-			case "mom" | "mom-car":
-				icon = "mommy";
-			case "pico-blazin" | "pico-playable" | "pico-speaker":
-				icon = "pico";
-			case "gf-christmas" | "gf-car" | "gf-pixel" | "gf-tankmen":
-				icon = "gf";
-			case "dad":
-				icon = "daddy";
-			case "darnell-blazin":
-				icon = "darnell";
-			case "senpai-angry":
-				icon = "senpai";
-			case "tankman" | "tankman-atlas":
-				icon = "tankmen";
+			trace('Failed to fetch pixel icon, character not found in cache: ${charId}');
+			return null;
 		}
 
-		var path = Paths.image("freeplay/icons/" + icon + "pixel");
-		if (Assets.exists(path)) return path;
+		var charData:CharacterData = characterCache.get(charId);
 
-		// TODO: Hardcode some additional behavior or a fallback.
-		return null;
+		if (charData != null && charData.pixelIcon != null)
+		{
+			return charData.pixelIcon;
+		}
+		else
+		{
+			trace('Pixel icon data not found for character: ${charId}');
+			return null;
+		}
+	}
+
+	/**
+	 * Fetches the character's pixel icon path.
+	 * @param charId The character to load.
+	 * @return The pixel icon path, or null if validation failed.
+	 */
+	public static function getCharPixelIconAsset(charId:String):String
+	{
+		if (charId == null || charId == '' || !characterCache.exists(charId))
+		{
+			trace('Failed to fetch pixel icon, character not found in cache: ${charId}');
+			return null;
+		}
+
+		var charData:CharacterData = characterCache.get(charId);
+		var path = Paths.image("freeplay/icons/" + charData.pixelIcon.id + "pixel");
+
+		if (charData != null && charData.pixelIcon != null)
+		{
+			if (Assets.exists(path))
+				return path;
+			else
+			{
+				trace('Pixel icon file does not exist: ${path}');
+				return null;
+			}
+		}
+		else
+		{
+			trace('Pixel icon data not found for character: ${charId}');
+			return null;
+		}
 	}
 
 	/**
@@ -389,6 +412,7 @@ class CharacterDataParser
 	static final DEFAULT_NAME:String = 'Untitled Character';
 	static final DEFAULT_OFFSETS:Array<Float> = [0, 0];
 	static final DEFAULT_HEALTHICON_OFFSETS:Array<Int> = [0, 25];
+	static final DEFAULT_PIXELICON_ORIGIN_OFFSETS:Array<Int> = [0, 0];
 	static final DEFAULT_RENDERTYPE:CharacterRenderType = CharacterRenderType.Sparrow;
 	static final DEFAULT_SCALE:Float = 1;
 	static final DEFAULT_SCROLL:Array<Float> = [0, 0];
@@ -467,6 +491,24 @@ class CharacterDataParser
 
 		if (input.healthIcon.offsets == null)
 			input.healthIcon.offsets = DEFAULT_OFFSETS;
+
+		if (input.pixelIcon == null)
+		{
+			input.pixelIcon =
+			{
+				id: null,
+				flipX: null,
+				originOffsets: null
+			};
+		}
+		if (input.pixelIcon.id == null)
+			input.pixelIcon.id = id;
+
+		if (input.pixelIcon.flipX == null)
+			input.pixelIcon.flipX = DEFAULT_FLIPX;
+
+		if (input.pixelIcon.originOffsets == null)
+			input.pixelIcon.originOffsets = DEFAULT_PIXELICON_ORIGIN_OFFSETS;
 
 		if (input.startingAnimation == null)
 			input.startingAnimation = DEFAULT_STARTINGANIM;
@@ -598,6 +640,12 @@ typedef CharacterData =
 	 */
 	var healthIcon:Null<HealthIconData>;
 
+	/**
+	* Optional data about the pixel icon for the character.
+	*/
+	var pixelIcon:Null<PixelIconData>;
+
+
 	var death:Null<DeathData>;
 
 	/**
@@ -703,6 +751,30 @@ typedef HealthIconData =
 	 * @default Switched via playerId (BF/DAD) from Constants.hx
 	 */
 	var color:Null<String>;
+}
+
+/**
+ * The JSON data schema used to define the pixel icon for a character.
+ */
+typedef PixelIconData =
+{
+  /**
+   * The ID to use for the pixel icon.
+   * @default The character's ID
+   */
+  var id:Null<String>;
+
+  /**
+   * Whether to flip the pixel icon horizontally.
+   * @default false
+   */
+  var flipX:Null<Bool>;
+
+  /**
+   * The origin offsets of the pixel icon, in pixels.
+   * @default [0, 0]
+   */
+  var originOffsets:Null<Array<Int>>;
 }
 
 typedef DeathData =

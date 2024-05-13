@@ -1620,6 +1620,11 @@ class PlayState extends MusicBeatSubState
 		}
 
 		//
+		// SETS COLOR TO HEALTHBAR
+		//
+		updateHealthBarColors();
+
+		//
 		// ADD CHARACTERS TO SCENE
 		//
 
@@ -1956,6 +1961,13 @@ class PlayState extends MusicBeatSubState
 	dynamic function updateHealthBar():Void
 	{
 		healthLerp = isBotPlayMode ? Constants.HEALTH_MAX : FlxMath.lerp(healthLerp, health, 0.15);
+	}
+
+	dynamic function updateHealthBarColors(?dadColor:FlxColor, ?bfColor:FlxColor):Void
+	{
+		final newDadColor = dadColor ?? ((iconP2 != null) ? iconP2.healthColor : Constants.COLOR_HEALTH_BAR_RED);
+		final newBfColor = bfColor ?? ((iconP1 != null) ? iconP1.healthColor : Constants.COLOR_HEALTH_BAR_GREEN);
+		healthBar.createFilledBar(newDadColor, newBfColor);
 	}
 
 	/**

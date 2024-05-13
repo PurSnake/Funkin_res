@@ -339,9 +339,7 @@ class Strumline extends FlxSpriteGroup
 			// If the note is miss
 			var isOffscreen = Preferences.downscroll ? note.y > FlxG.height : note.y < -note.height;
 			if (note.handledMiss && isOffscreen)
-			{
 				killNote(note);
-			}
 		}
 
 		// Update rendering of hold notes.
@@ -372,16 +370,10 @@ class Strumline extends FlxSpriteGroup
 			else if (holdNote.hitNote && holdNote.sustainLength <= 0)
 			{
 				// Hold note is completed, kill it.
-				if (isKeyHeld(holdNote.noteDirection))
-				{
-					playPress(holdNote.noteDirection);
-				}
-				else
-				{
-					playStatic(holdNote.noteDirection);
-				}
+				if (holdNote.stumPlayConfirm)
+					isKeyHeld(holdNote.noteDirection) ? playPress(holdNote.noteDirection) : playStatic(holdNote.noteDirection);
 
-				if (holdNote.cover != null && isPlayer)
+				if (holdNote.cover != null && isPlayer && holdNote.stumPlayConfirm)
 				{
 					holdNote.cover.playEnd();
 				}
@@ -404,14 +396,9 @@ class Strumline extends FlxSpriteGroup
 
 				var vwoosh:Bool = false;
 
-				if (Preferences.downscroll)
-				{
-					holdNote.y = this.y + calculateNoteYPos(holdNote.strumTime, vwoosh) - holdNote.height + STRUMLINE_SIZE / 2;
-				}
-				else
-				{
-					holdNote.y = this.y - INITIAL_OFFSET + calculateNoteYPos(holdNote.strumTime, vwoosh) + yOffset + STRUMLINE_SIZE / 2;
-				}
+				holdNote.y = Preferences.downscroll ? (this.y + calculateNoteYPos(holdNote.strumTime, vwoosh) - holdNote.height + STRUMLINE_SIZE / 2)
+					: (this.y - INITIAL_OFFSET + calculateNoteYPos(holdNote.strumTime, vwoosh) + yOffset + STRUMLINE_SIZE / 2);
+
 
 				// Clean up the cover.
 				if (holdNote.cover != null)
@@ -423,24 +410,17 @@ class Strumline extends FlxSpriteGroup
 			else if (conductorInUse.songPosition > holdNote.strumTime && holdNote.hitNote)
 			{
 				// Hold note is currently being hit, clip it off.
-				holdConfirm(holdNote.noteDirection);
+				if (holdNote.stumPlayConfirm) holdConfirm(holdNote.noteDirection);
+
 				holdNote.visible = true;
 
 				holdNote.sustainLength = (holdNote.strumTime + holdNote.fullSustainLength) - conductorInUse.songPosition;
 
 				if (holdNote.sustainLength <= 10)
-				{
 					holdNote.visible = false;
-				}
 
-				if (Preferences.downscroll)
-				{
-					holdNote.y = this.y - holdNote.height + STRUMLINE_SIZE / 2;
-				}
-				else
-				{
-					holdNote.y = this.y - INITIAL_OFFSET + STRUMLINE_SIZE / 2;
-				}
+				holdNote.y = Preferences.downscroll ? (this.y - holdNote.height + STRUMLINE_SIZE / 2) 
+					: (this.y - INITIAL_OFFSET + STRUMLINE_SIZE / 2);
 			}
 			else
 			{
@@ -448,14 +428,8 @@ class Strumline extends FlxSpriteGroup
 				holdNote.visible = true;
 				var vwoosh:Bool = false;
 
-				if (Preferences.downscroll)
-				{
-					holdNote.y = this.y + calculateNoteYPos(holdNote.strumTime, vwoosh) - holdNote.height + STRUMLINE_SIZE / 2;
-				}
-				else
-				{
-					holdNote.y = this.y - INITIAL_OFFSET + calculateNoteYPos(holdNote.strumTime, vwoosh) + STRUMLINE_SIZE / 2;
-				}
+				holdNote.y = Preferences.downscroll ? (this.y + calculateNoteYPos(holdNote.strumTime, vwoosh) - holdNote.height + STRUMLINE_SIZE / 2)
+					: (this.y - INITIAL_OFFSET + calculateNoteYPos(holdNote.strumTime, vwoosh) + STRUMLINE_SIZE / 2);
 			}
 		}
 
@@ -463,9 +437,7 @@ class Strumline extends FlxSpriteGroup
 		for (dir in DIRECTIONS)
 		{
 			if (isKeyHeld(dir) && getByDirection(dir).getCurrentAnimation() == "static")
-			{
 				playPress(dir);
-			}
 		}
 	}
 
@@ -536,9 +508,7 @@ class Strumline extends FlxSpriteGroup
 		heldKeys = [false, false, false, false];
 
 		for (dir in DIRECTIONS)
-		{
 			playStatic(dir);
-		}
 	}
 
 	public function applyNoteData(data:Array<SongNoteData>):Void
@@ -558,16 +528,15 @@ class Strumline extends FlxSpriteGroup
 	 */
 	public function hitNote(note:NoteSprite, removeNote:Bool = true):Void
 	{
-		playConfirm(note.direction);
+		if (note.stumPlayConfirm) playConfirm(note.direction);
+
 		note.hasBeenHit = true;
 
 		if (removeNote)
-		{
 			killNote(note);
-		}
 		else
 		{
-			note.alpha = 0.5;
+			note.alpha *= 0.5;
 			note.desaturate();
 		}
 
@@ -653,8 +622,9 @@ class Strumline extends FlxSpriteGroup
 	public function playNoteHoldCover(holdNote:SustainTrail):Void
 	{
 		// TODO: Add a setting to disable note splashes.
-		// if (Settings.noSplash) return;
-		if (!noteStyle.isHoldNoteCoverEnabled()) return;
+		// if (Settings.noSplash || !holdNote.stumPlayConfirm) return;
+
+		if (!noteStyle.isHoldNoteCoverEnabled() || !holdNote.stumPlayConfirm) return;
 
 		var cover:NoteHoldCover = this.constructNoteHoldCover();
 
@@ -874,9 +844,7 @@ class Strumline extends FlxSpriteGroup
 	public function fadeInArrows():Void
 	{
 		for (index => arrow in this.strumlineNotes.members.keyValueIterator())
-		{
 			fadeInArrow(index, arrow);
-		}
 	}
 
 	function compareNoteData(order:Int, a:SongNoteData, b:SongNoteData):Int

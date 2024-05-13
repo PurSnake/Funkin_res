@@ -36,6 +36,11 @@ class SustainTrail extends FlxSprite
 	public var cover:NoteHoldCover = null;
 
 	/**
+	 * Set this flag to enable playing strum confirm animation on hit.
+	 */
+	public var stumPlayConfirm:Bool = true;
+
+	/**
 	 * Set to `true` if the user hit the note and is currently holding the sustain.
 	 * Should display associated effects.
 	 */
@@ -310,8 +315,8 @@ class SustainTrail extends FlxSprite
 		fullSustainLength = 0;
 		noteData = null;
 
-		hitNote = false;
-		missedNote = false;
+		stumPlayConfirm = false;
+		missedNote = hitNote = false;
 	}
 
 	public override function revive():Void
@@ -324,9 +329,8 @@ class SustainTrail extends FlxSprite
 		fullSustainLength = 0;
 		noteData = null;
 
-		hitNote = false;
-		missedNote = false;
-		handledMiss = false;
+		stumPlayConfirm = true;
+		handledMiss = missedNote = hitNote = false;
 	}
 
 	override public function destroy():Void
