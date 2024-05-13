@@ -396,7 +396,7 @@ class Strumline extends FlxSpriteGroup
 
 				var vwoosh:Bool = false;
 
-				holdNote.y = Preferences.downscroll ? (this.y + calculateNoteYPos(holdNote.strumTime, vwoosh) - holdNote.height + STRUMLINE_SIZE / 2)
+				holdNote.y = Preferences.downscroll ? (this.y - INITIAL_OFFSET + calculateNoteYPos(holdNote.strumTime, vwoosh) - holdNote.height + STRUMLINE_SIZE / 2)
 					: (this.y - INITIAL_OFFSET + calculateNoteYPos(holdNote.strumTime, vwoosh) + yOffset + STRUMLINE_SIZE / 2);
 
 
@@ -419,7 +419,7 @@ class Strumline extends FlxSpriteGroup
 				if (holdNote.sustainLength <= 10)
 					holdNote.visible = false;
 
-				holdNote.y = Preferences.downscroll ? (this.y - holdNote.height + STRUMLINE_SIZE / 2) 
+				holdNote.y = Preferences.downscroll ? (this.y - holdNote.height - INITIAL_OFFSET + STRUMLINE_SIZE / 2) 
 					: (this.y - INITIAL_OFFSET + STRUMLINE_SIZE / 2);
 			}
 			else
@@ -428,7 +428,7 @@ class Strumline extends FlxSpriteGroup
 				holdNote.visible = true;
 				var vwoosh:Bool = false;
 
-				holdNote.y = Preferences.downscroll ? (this.y + calculateNoteYPos(holdNote.strumTime, vwoosh) - holdNote.height + STRUMLINE_SIZE / 2)
+				holdNote.y = Preferences.downscroll ? (this.y - INITIAL_OFFSET + calculateNoteYPos(holdNote.strumTime, vwoosh) - holdNote.height + STRUMLINE_SIZE / 2)
 					: (this.y - INITIAL_OFFSET + calculateNoteYPos(holdNote.strumTime, vwoosh) + STRUMLINE_SIZE / 2);
 			}
 		}
