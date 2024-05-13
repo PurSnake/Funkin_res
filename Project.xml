@@ -146,7 +146,7 @@
 	-->
 
 	<!-- Haxe 4.3.0+: Enable pretty syntax errors and stuff. -->
-	<haxedef name="message.reporting" value="pretty" />
+	<!--haxedef name="message.reporting" value="pretty" /-->
 
 	<!-- _________________________________ Custom _______________________________ -->
 
@@ -178,7 +178,7 @@
 	<haxedef name="haxeui_focus_out_on_click" />
 	<!-- Required to use haxe.ui.backend.flixel.UIState with build macros. -->
 	<haxedef name="haxeui_dont_impose_base_class" />
-	<haxedef name="HARDCODED_CREDITS" />
+	<!--haxedef name="HARDCODED_CREDITS" /-->
 
 	<!-- Skip the Intro -->
 	<section if="debug">
@@ -188,14 +188,6 @@
 		<!-- <haxedef name="song" value="bopeebo" if="debug"/> -->
 		<!-- Difficulty, only used for week or song, defaults to 1 -->
 		<!-- <haxedef name="dif" value="2" if="debug"/> -->
-	</section>
-	<section if="newgrounds">
-		<!-- Enables Ng.core.verbose -->
-		<!-- <haxedef name="NG_VERBOSE" /> -->
-		<!-- Enables a NG debug session, so medals don't permently unlock -->
-		<!-- <haxedef name="NG_DEBUG" /> -->
-		<!-- pretends that the saved session Id was expired, forcing the reconnect prompt -->
-		<!-- <haxedef name="NG_FORCE_EXPIRED_SESSION" if="debug" /> -->
 	</section>
 
 	<!-- Uncomment this to wipe your input settings. -->
