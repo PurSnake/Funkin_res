@@ -17,148 +17,148 @@ import openfl.net.NetStream;
  */
 class FlxVideo extends FunkinSprite
 {
-  var video:Video;
-  var netStream:NetStream;
-  var videoPath:String;
+	var video:Video;
+	var netStream:NetStream;
+	var videoPath:String;
 
-  /**
-   * A callback to execute when the video finishes.
-   */
-  public var finishCallback:Void->Void;
+	/**
+	 * A callback to execute when the video finishes.
+	 */
+	public var finishCallback:Void->Void;
 
-  public function new(videoPath:String)
-  {
-    super();
+	public function new(videoPath:String)
+	{
+		super();
 
-    this.videoPath = videoPath;
+		this.videoPath = videoPath;
 
-    makeGraphic(2, 2, FlxColor.TRANSPARENT);
+		makeGraphic(2, 2, FlxColor.TRANSPARENT);
 
-    video = new Video();
-    video.x = 0;
-    video.y = 0;
-    video.alpha = 0;
+		video = new Video();
+		video.x = 0;
+		video.y = 0;
+		video.alpha = 0;
 
-    FlxG.game.addChild(video);
+		FlxG.game.addChild(video);
 
-    var netConnection:NetConnection = new NetConnection();
-    netConnection.connect(null);
+		var netConnection:NetConnection = new NetConnection();
+		netConnection.connect(null);
 
-    netStream = new NetStream(netConnection);
-    netStream.client = {onMetaData: onClientMetaData};
-    netConnection.addEventListener(NetStatusEvent.NET_STATUS, onNetConnectionNetStatus);
-    netStream.play(videoPath);
-  }
+		netStream = new NetStream(netConnection);
+		netStream.client = {onMetaData: onClientMetaData};
+		netConnection.addEventListener(NetStatusEvent.NET_STATUS, onNetConnectionNetStatus);
+		netStream.play(videoPath);
+	}
 
-  /**
-   * Tell the FlxVideo to pause playback.
-   */
-  public function pauseVideo():Void
-  {
-    if (netStream != null)
-    {
-      netStream.pause();
-    }
-  }
+	/**
+	 * Tell the FlxVideo to pause playback.
+	 */
+	public function pauseVideo():Void
+	{
+		if (netStream != null)
+		{
+			netStream.pause();
+		}
+	}
 
-  /**
-   * Tell the FlxVideo to resume if it is paused.
-   */
-  public function resumeVideo():Void
-  {
-    // Resume playing the video.
-    if (netStream != null)
-    {
-      netStream.resume();
-    }
-  }
+	/**
+	 * Tell the FlxVideo to resume if it is paused.
+	 */
+	public function resumeVideo():Void
+	{
+		// Resume playing the video.
+		if (netStream != null)
+		{
+			netStream.resume();
+		}
+	}
 
-  var videoAvailable:Bool = false;
-  var frameTimer:Float;
+	var videoAvailable:Bool = false;
+	var frameTimer:Float;
 
-  static final FRAME_RATE:Float = 60;
+	static final FRAME_RATE:Float = 60;
 
-  public override function update(elapsed:Float):Void
-  {
-    super.update(elapsed);
+	public override function update(elapsed:Float):Void
+	{
+		super.update(elapsed);
 
-    if (frameTimer >= (1 / FRAME_RATE))
-    {
-      frameTimer = 0;
-      // TODO: We just draw the video buffer to the sprite 60 times a second.
-      // Can we copy the video buffer instead somehow?
-      pixels.draw(video);
-    }
+		if (frameTimer >= (1 / FRAME_RATE))
+		{
+			frameTimer = 0;
+			// TODO: We just draw the video buffer to the sprite 60 times a second.
+			// Can we copy the video buffer instead somehow?
+			pixels.draw(video);
+		}
 
-    if (videoAvailable) frameTimer += elapsed;
-  }
+		if (videoAvailable) frameTimer += elapsed;
+	}
 
-  /**
-   * Tell the FlxVideo to seek to the beginning.
-   */
-  public function restartVideo():Void
-  {
-    // Seek to the beginning of the video.
-    if (netStream != null)
-    {
-      netStream.seek(0);
-    }
-  }
+	/**
+	 * Tell the FlxVideo to seek to the beginning.
+	 */
+	public function restartVideo():Void
+	{
+		// Seek to the beginning of the video.
+		if (netStream != null)
+		{
+			netStream.seek(0);
+		}
+	}
 
-  /**
-   * Tell the FlxVideo to end.
-   */
-  public function finishVideo():Void
-  {
-    netStream.dispose();
-    FlxG.removeChild(video);
+	/**
+	 * Tell the FlxVideo to end.
+	 */
+	public function finishVideo():Void
+	{
+		netStream.dispose();
+		FlxG.removeChild(video);
 
-    if (finishCallback != null) finishCallback();
-  }
+		if (finishCallback != null) finishCallback();
+	}
 
-  public override function destroy():Void
-  {
-    if (netStream != null)
-    {
-      netStream.dispose();
+	public override function destroy():Void
+	{
+		if (netStream != null)
+		{
+			netStream.dispose();
 
-      if (FlxG.game.contains(video)) FlxG.game.removeChild(video);
-    }
+			if (FlxG.game.contains(video)) FlxG.game.removeChild(video);
+		}
 
-    super.destroy();
-  }
+		super.destroy();
+	}
 
-  /**
-   * Callback executed when the video stream loads.
-   * @param metaData The metadata of the video
-   */
-  public function onClientMetaData(metaData:Dynamic):Void
-  {
-    video.attachNetStream(netStream);
+	/**
+	 * Callback executed when the video stream loads.
+	 * @param metaData The metadata of the video
+	 */
+	public function onClientMetaData(metaData:Dynamic):Void
+	{
+		video.attachNetStream(netStream);
 
-    onVideoReady();
-  }
+		onVideoReady();
+	}
 
-  function onVideoReady():Void
-  {
-    video.width = FlxG.width;
-    video.height = FlxG.height;
+	function onVideoReady():Void
+	{
+		video.width = FlxG.width;
+		video.height = FlxG.height;
 
-    videoAvailable = true;
+		videoAvailable = true;
 
-    FunkinSound.onVolumeChanged.add(onVolumeChanged);
-    onVolumeChanged(FlxG.sound.muted ? 0 : FlxG.sound.volume);
+		FunkinSound.onVolumeChanged.add(onVolumeChanged);
+		onVolumeChanged(FlxG.sound.muted ? 0 : FlxG.sound.volume);
 
-    makeGraphic(Std.int(video.width), Std.int(video.height), FlxColor.TRANSPARENT);
-  }
+		makeGraphic(Std.int(video.width), Std.int(video.height), FlxColor.TRANSPARENT);
+	}
 
-  function onVolumeChanged(volume:Float):Void
-  {
-    netStream.soundTransform = new SoundTransform(volume);
-  }
+	function onVolumeChanged(volume:Float):Void
+	{
+		netStream.soundTransform = new SoundTransform(volume);
+	}
 
-  function onNetConnectionNetStatus(event:NetStatusEvent):Void
-  {
-    if (event.info.code == 'NetStream.Play.Complete') finishVideo();
-  }
+	function onNetConnectionNetStatus(event:NetStatusEvent):Void
+	{
+		if (event.info.code == 'NetStream.Play.Complete') finishVideo();
+	}
 }

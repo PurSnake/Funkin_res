@@ -19,7 +19,9 @@ class AdditionalsClassesMacro {
 			"haxe.ui.components", "haxe.ui.containers",
 
 			"openfl", "sys", //ugh
-			//#if ENABLE_VIDEOS "hxvlc.flixel", "hxvlc.openfl", #end
+
+			"hxvlc.flixel", "hxvlc.openfl", //Videos
+
 			"DateTools", "EReg", "Lambda", "StringBuf", "haxe.crypto", "haxe.display", "haxe.exceptions", "haxe.extern" 
 		])
 		Compiler.include(inc, ["flixel.system.macros", "flixel.addons.nape", "openfl.filters.BlurFilter", "haxe.ui.macros", "flixel.addons.editors.spine"]);
