@@ -132,7 +132,6 @@ class Paths
 	{
 		return getPath('images/$key.png', IMAGE, library);
 	}
-
 	public static function font(key:String):String
 	{
 		return 'assets/fonts/$key';

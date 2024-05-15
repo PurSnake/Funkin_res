@@ -316,6 +316,50 @@ class FunkinSprite extends flixel.addons.effects.FlxSkewedSprite //FlxSprite
 			return;
 		}
 
+		var bitmap = BitmapData.fromFile(key);
+		if (bitmap == null)
+		{
+			trace('oh no its returning null NOOOO ($key)');
+			return;
+		}
+
+		if (bitmap.image != null)
+		@:privateAccess
+		{
+			bitmap.lock();
+			if (bitmap.__texture == null)
+			{
+				bitmap.image.premultiplied = true;
+				bitmap.getTexture(FlxG.stage.context3D);
+			}
+			bitmap.getSurface();
+			bitmap.disposeImage();
+			bitmap.image.data = null;
+			bitmap.image = null;
+			bitmap.readable = true;
+		}
+
+		final graph:FlxGraphic = FlxGraphic.fromBitmapData(bitmap, false, key);
+		graph.persist = true;
+		graph.destroyOnNoUse = false;
+
+		currentCachedTextures.set(key, graph);
+	}
+
+	/*public static function cacheTexture(key:String):Void
+	{
+		// We don't want to cache the same texture twice.
+		if (currentCachedTextures.exists(key)) return;
+
+		if (previousCachedTextures.exists(key))
+		{
+			// Move the graphic from the previous cache to the current cache.
+			var graphic = previousCachedTextures.get(key);
+			previousCachedTextures.remove(key);
+			currentCachedTextures.set(key, graphic);
+			return;
+		}
+
 		// Else, texture is currently uncached.
 		var graphic:FlxGraphic = FlxGraphic.fromAssetKey(key, false, null, true);
 		if (graphic == null)
@@ -328,7 +372,7 @@ class FunkinSprite extends flixel.addons.effects.FlxSkewedSprite //FlxSprite
 			graphic.persist = true;
 			currentCachedTextures.set(key, graphic);
 		}
-	}
+	}*/
 
 	public static function cacheSparrow(key:String):Void
 	{
@@ -356,6 +400,12 @@ class FunkinSprite extends flixel.addons.effects.FlxSkewedSprite //FlxSprite
 		{
 			var graphic = previousCachedTextures.get(graphicKey);
 			if (graphic == null) continue;
+
+			@:privateAccess {
+			if (graphic != null && graphic.bitmap != null && graphic.bitmap.__texture != null)
+				graphic.bitmap.__texture.dispose();
+			}
+
 			FlxG.bitmap.remove(graphic);
 			graphic.destroy();
 			previousCachedTextures.remove(graphicKey);

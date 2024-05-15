@@ -5019,9 +5019,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 			if (currentSongMetadata.playData.characters.player != charPlayer.charId)
 			{
 				if (healthIconBF != null)
-				{
 					healthIconBF.characterId = currentSongMetadata.playData.characters.player;
-				}
 
 				charPlayer.loadCharacter(currentSongMetadata.playData.characters.player);
 				charPlayer.characterType = CharacterType.BF;
