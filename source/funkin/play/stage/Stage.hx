@@ -287,8 +287,8 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
 
 				if (!Std.isOfType(propSprite, BaseCharacter))
 				{
-					cast(propSprite, Bopper).originalPosition.x = dataProp.position[0];
-					cast(propSprite, Bopper).originalPosition.y = dataProp.position[1];
+					cast(propSprite, Bopper).x = dataProp.position[0];
+					cast(propSprite, Bopper).y = dataProp.position[1];
 				}
 			}
 
@@ -435,8 +435,8 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
 			@:privateAccess(funkin.play.stage.Bopper)
 			{
 				// Undo animOffsets before saving original position.
-				character.originalPosition.x = character.x + character.animOffsets[0];
-				character.originalPosition.y = character.y + character.animOffsets[1];
+				character.x = character.x + character.animOffsets[0];
+				character.y = character.y + character.animOffsets[1];
 			}
 
 			var finalScale = character.getBaseScale() * stageCharData.scale;

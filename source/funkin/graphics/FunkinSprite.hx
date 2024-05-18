@@ -47,11 +47,6 @@ class FunkinSprite extends flixel.addons.effects.FlxSkewedSprite //FlxSprite
 	public var zoomFactor:Float = 1;
 	public var initialZoom:Float = 1;
 
-	/**
-	 * Additional offseting variable.
-	 */
-	public var frameOffset:FlxPoint = FlxPoint.get();
-
 	public override function getScreenBounds(?newRect:FlxRect, ?camera:FlxCamera):FlxRect
 	{
 		__doPreZoomScaleProcedure(camera);
@@ -463,7 +458,6 @@ class FunkinSprite extends flixel.addons.effects.FlxSkewedSprite //FlxSprite
 
 	public override function destroy():Void
 	{
-		frameOffset = flixel.util.FlxDestroyUtil.put(frameOffset);
 		frames = null;
 		// Cancel all tweens so they don't continue to run on a destroyed sprite.
 		// This prevents crashes.

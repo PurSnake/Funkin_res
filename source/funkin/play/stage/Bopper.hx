@@ -68,12 +68,6 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
 		return value;
 	}
 
-
-	/**
-	 * Internally used to define the animation offsets to apply.
-	 */
-	var _currentAnimOffset:FlxPoint = FlxPoint.get();
-
 	/**
 	 * The offset of the character relative to the position specified by the stage.
 	 */
@@ -89,16 +83,20 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
 	@:allow(funkin.ui.debug.anim.DebugBoundingState)
 	var animOffsets(default, set):Array<Float> = [0, 0];
 
-	public var originalPosition:FlxPoint = new FlxPoint(0, 0);
-
 	function set_animOffsets(value:Array<Float>):Array<Float>
 	{
 		if (animOffsets == null) animOffsets = [0, 0];
 		if ((animOffsets[0] == value[0]) && (animOffsets[1] == value[1])) return value;
 
-		_currentAnimOffset.set(value[0], value[1]);
+		frameOffset.set(value[0], value[1]);
 
 		return animOffsets = value;
+	}
+
+	public function resetPosition()
+	{
+		this.offset.x = globalOffsets[0];
+		this.offset.y = globalOffsets[1];
 	}
 
 	/**
@@ -127,9 +125,7 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
 	{
 		// TODO: Can we make a system of like, animation priority or something?
 		if (!canPlayOtherAnims)
-		{
 			canPlayOtherAnims = true;
-		}
 	}
 
 	/**
@@ -150,18 +146,6 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
 		// Try not to do anything expensive here, it runs many times a second.
 	}
 
-	/**
-	 * If this Bopper was defined by the stage, return the prop to its original position.
-	 */
-	public function resetPosition()
-	{
-		//var oldAnimOffsets = [animOffsets[0], animOffsets[1]];
-		//animOffsets = [0, 0];
-		this.x = originalPosition.x;
-		this.y = originalPosition.y;
-		//animOffsets = oldAnimOffsets;
-	}
-
 	function update_shouldAlternate():Void
 	{
 		this.shouldAlternate = hasAnimation('danceLeft');
@@ -173,9 +157,7 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
 	public function onBeatHit(event:SongTimeScriptEvent):Void
 	{
 		if (danceEvery > 0 && event.beat % danceEvery == 0)
-		{
 			dance(shouldBop);
-		}
 	}
 
 	/**
@@ -255,9 +237,7 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
 		this.animation.play(correctName, restart, reversed, 0);
 
 		if (ignoreOther)
-		{
 			canPlayOtherAnims = false;
-		}
 
 		applyAnimationOffsets(correctName);
 	}
@@ -316,17 +296,8 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
 		return this.animation.curAnim.name;
 	}
 
-	// override getScreenPosition (used by FlxSprite's draw method) to account for animation offsets.
-	override function getScreenPosition(?result:FlxPoint, ?camera:FlxCamera):FlxPoint
-	{
-		var output:FlxPoint = super.getScreenPosition(result, camera);
-		output -= _currentAnimOffset;
-		return output;
-	}
-
 	override function destroy():Void
 	{
-		_currentAnimOffset = flixel.util.FlxDestroyUtil.put(_currentAnimOffset);
 		super.destroy();
 	}
 
