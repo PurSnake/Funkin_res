@@ -67,7 +67,7 @@ class TitleState extends MusicBeatState
 		// DEBUG BULLSHIT
 
 		// netConnection.addEventListener(MouseEvent.MOUSE_DOWN, overlay_onMouseDown);
-		new FlxTimer().start(1, function(tmr:FlxTimer) {
+		if (!initialized) new FlxTimer().start(1, function(tmr:FlxTimer) {
 			startIntro();
 		});
 	}
@@ -118,7 +118,7 @@ class TitleState extends MusicBeatState
 
 	function startIntro():Void
 	{
-		playMenuMusic();
+		if (!initialized || FlxG.sound.music == null) playMenuMusic();
 
 		persistentUpdate = true;
 

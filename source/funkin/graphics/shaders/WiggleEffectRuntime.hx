@@ -81,6 +81,7 @@ class WiggleEffectRuntime extends FlxRuntimeShader
 		this.waveFrequency = freq;
 		this.waveAmplitude = amplitude;
 		this.effectType = effect;
+		this.pixelPerfect = pixelPerfect;
 	}
 
 	public function update(elapsed:Float)

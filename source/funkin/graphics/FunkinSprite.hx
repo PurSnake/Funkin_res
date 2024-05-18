@@ -72,6 +72,7 @@ class FunkinSprite extends flixel.addons.effects.FlxSkewedSprite //FlxSprite
 		newRect.setPosition(x, y);
 		if (pixelPerfectPosition)
 			newRect.floor();
+
 		_scaledOrigin.set(origin.x * Math.abs(scale.x), origin.y * Math.abs(scale.y));
 		newRect.x += -Std.int(camera.scroll.x * scrollFactor.x) - (offset.x + frameOffset.x) + origin.x - _scaledOrigin.x;
 		newRect.y += -Std.int(camera.scroll.y * scrollFactor.y) - (offset.y + frameOffset.y) + origin.y - _scaledOrigin.y;
@@ -302,7 +303,7 @@ class FunkinSprite extends flixel.addons.effects.FlxSkewedSprite //FlxSprite
 	 * Ensure the texture with the given key is cached.
 	 * @param key The key of the texture to cache.
 	 */
-	public static function cacheTexture(key:String):Void
+	/*public static function cacheTexture(key:String):Void
 	{
 		// We don't want to cache the same texture twice.
 		if (currentCachedTextures.exists(key)) return;
@@ -344,9 +345,9 @@ class FunkinSprite extends flixel.addons.effects.FlxSkewedSprite //FlxSprite
 		graph.destroyOnNoUse = false;
 
 		currentCachedTextures.set(key, graph);
-	}
+	}*/
 
-	/*public static function cacheTexture(key:String):Void
+	public static function cacheTexture(key:String):Void
 	{
 		// We don't want to cache the same texture twice.
 		if (currentCachedTextures.exists(key)) return;
@@ -372,7 +373,7 @@ class FunkinSprite extends flixel.addons.effects.FlxSkewedSprite //FlxSprite
 			graphic.persist = true;
 			currentCachedTextures.set(key, graphic);
 		}
-	}*/
+	}
 
 	public static function cacheSparrow(key:String):Void
 	{
@@ -401,10 +402,10 @@ class FunkinSprite extends flixel.addons.effects.FlxSkewedSprite //FlxSprite
 			var graphic = previousCachedTextures.get(graphicKey);
 			if (graphic == null) continue;
 
-			@:privateAccess {
+			/*@:privateAccess {
 			if (graphic != null && graphic.bitmap != null && graphic.bitmap.__texture != null)
 				graphic.bitmap.__texture.dispose();
-			}
+			}*/
 
 			FlxG.bitmap.remove(graphic);
 			graphic.destroy();
