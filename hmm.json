@@ -46,6 +46,12 @@
       "version": "3.5.0"
     },
     {
+      "name": "hxvlc",
+      "type": "git",
+      "dir": null,
+      "url": "https://github.com/MAJigsaw77/hxvlc"
+    },
+    {
       "name": "funkin.vis",
       "type": "git",
       "dir": null,
@@ -75,13 +81,6 @@
       "name": "hscript",
       "type": "haxelib",
       "version": "2.5.0"
-    },
-    {
-      "name": "hxCodec",
-      "type": "git",
-      "dir": null,
-      "ref": "c0c7f2680cc190c932a549c2e2fdd9b0ba2bd10e",
-      "url": "https://github.com/FunkinCrew/hxCodec"
     },
     {
       "name": "hxcpp",
