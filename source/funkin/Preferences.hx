@@ -142,20 +142,8 @@ class Preferences
 	static function toggleDebugDisplay(show:Bool):Void
 	{
 		if (show)
-		{
-			// Enable the debug display.
-			FlxG.stage.addChild(Main.fpsCounter);
-			#if !html5
-			FlxG.stage.addChild(Main.memoryCounter);
-			#end
-		}
+			FlxG.stage.addChild(Main.statisticMonitor);
 		else
-		{
-			// Disable the debug display.
-			FlxG.stage.removeChild(Main.fpsCounter);
-			#if !html5
-			FlxG.stage.removeChild(Main.memoryCounter);
-			#end
-		}
+			FlxG.stage.removeChild(Main.statisticMonitor);
 	}
 }

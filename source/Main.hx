@@ -3,10 +3,8 @@ package;
 import flixel.FlxGame;
 import flixel.FlxState;
 import funkin.util.logging.CrashHandler;
-import funkin.ui.debug.MemoryCounter;
 import funkin.save.Save;
 import haxe.ui.Toolkit;
-import openfl.display.FPS;
 import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.Lib;
@@ -22,12 +20,7 @@ class Main extends Sprite
 	var gameHeight:Int = 720; // Height of the game in pixels (might be less / more in actual pixels depending on your zoom).
 	var initialState:Class<FlxState> = funkin.InitState; // The FlxState the game starts with.
 	var zoom:Float = -1; // If -1, zoom is automatically calculated to fit the window dimensions.
-	#if web
-	var framerate:Int = 60; // How many frames per second the game should run at.
-	#else
-	// TODO: This should probably be in the options menu?
 	var framerate:Int = 144; // How many frames per second the game should run at.
-	#end
 	var skipSplash:Bool = true; // Whether to skip the flixel splash screen that appears in release mode.
 	var startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets
 
@@ -72,27 +65,16 @@ class Main extends Sprite
 	var overlay:Sprite;
 
 	/**
-	 * A frame counter displayed at the top left.
+	 * Displayed at the top left. Shows FPS and RAM.
 	 */
-	public static var fpsCounter:FPS;
-
-	/**
-	 * A RAM counter displayed at the top left.
-	 */
-	public static var memoryCounter:MemoryCounter;
+	public static var statisticMonitor:funkin.ui.debug.StatisticMonitor;
 
 	function setupGame():Void
 	{
 		initHaxeUI();
 
 		// addChild gets called by the user settings code.
-		fpsCounter = new FPS(10, 3, 0xFFFFFF);
-
-		#if !html5
-		// addChild gets called by the user settings code.
-		// TODO: disabled on HTML5 (todo: find another method that works?)
-		memoryCounter = new MemoryCounter(10, 13, 0xFFFFFF);
-		#end
+		statisticMonitor = new funkin.ui.debug.StatisticMonitor(10, 3, 0xFFFFFF);
 
 		// George recommends binding the save before FlxGame is created.
 		Save.load();
@@ -113,7 +95,7 @@ class Main extends Sprite
 		game.debugger.interaction.addTool(new funkin.util.TrackerToolButtonUtil());
 		#end
 
-		addChild(fpsCounter);
+		addChild(statisticMonitor);
 
 		#if hxcpp_debug_server
 		trace('hxcpp_debug_server is enabled! You can now connect to the game with a debugger.');
