@@ -433,16 +433,12 @@ class StoryMenuState extends MusicBeatState
 	{
 		// "For now, NO erect in story mode" -Dave
 
-		var difficultyList:Array<String> = Constants.DEFAULT_DIFFICULTY_LIST;
+		//var difficultyList:Array<String> = Constants.DEFAULT_DIFFICULTY_LIST;
 		// Use this line to displays all difficulties
-		// var difficultyList:Array<String> = currentLevel.getDifficulties();
+		var difficultyList:Array<String> = currentLevel.getDifficulties();
 		var currentIndex:Int = difficultyList.indexOf(currentDifficultyId);
 
-		currentIndex += change;
-
-		// Wrap around
-		if (currentIndex < 0) currentIndex = difficultyList.length - 1;
-		if (currentIndex >= difficultyList.length) currentIndex = 0;
+		currentIndex = flixel.math.FlxMath.wrap(currentIndex + change, 0, difficultyList.length - 1);
 
 		var hasChanged:Bool = currentDifficultyId != difficultyList[currentIndex];
 		currentDifficultyId = difficultyList[currentIndex];
@@ -466,6 +462,8 @@ class StoryMenuState extends MusicBeatState
 			// Disable the funny music thing for now.
 			// funnyMusicThing();
 		}
+		updateText();
+		refresh();
 	}
 
 	final FADE_OUT_TIME:Float = 1.5;

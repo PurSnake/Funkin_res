@@ -528,7 +528,7 @@ class Strumline extends FlxSpriteGroup
 	 */
 	public function hitNote(note:NoteSprite, removeNote:Bool = true):Void
 	{
-		if (note.stumPlayConfirm) playConfirm(note.direction);
+		if (note.stumPlayConfirm) playConfirm(note.direction, note.length > 0);
 
 		note.hasBeenHit = true;
 
@@ -583,9 +583,9 @@ class Strumline extends FlxSpriteGroup
 		getByDirection(direction).playPress();
 	}
 
-	public function playConfirm(direction:NoteDirection):Void
+	public function playConfirm(direction:NoteDirection, hold:Bool = false):Void
 	{
-		getByDirection(direction).playConfirm();
+		getByDirection(direction).playConfirm(hold);
 	}
 
 	public function holdConfirm(direction:NoteDirection):Void
@@ -682,7 +682,7 @@ class Strumline extends FlxSpriteGroup
 			holdNoteSprite.missedNote = false;
 			holdNoteSprite.hitNote = false;
 			holdNoteSprite.visible = true;
-			holdNoteSprite.alpha = 0.6; //1.0
+			holdNoteSprite.alpha = 0.8; //1.0
 
 			holdNoteSprite.x = this.x;
 			holdNoteSprite.x += getXPos(DIRECTIONS[note.getDirection() % KEY_COUNT]);

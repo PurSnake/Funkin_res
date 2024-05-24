@@ -494,7 +494,7 @@ class PlayState extends MusicBeatSubState
 	/**
 	 * The camera which contains, and controls visibility of, a video cutscene.
 	 */
-	public var camCutscene:FlxCamera;
+	public var camOther:FlxCamera;
 
 	/**
 	 * The combo popups. Includes the real-time combo counter and the rating.
@@ -923,11 +923,11 @@ class PlayState extends MusicBeatSubState
 				if (!isSubState && event.gitaroo)
 				{
 					FlxG.switchState(() -> new GitarooPause(
-						{
-							targetSong: currentSong,
-							targetDifficulty: currentDifficulty,
-							targetVariation: currentVariation,
-						}));
+					{
+						targetSong: currentSong,
+						targetDifficulty: currentDifficulty,
+						targetVariation: currentVariation,
+					}));
 				}
 				else
 				{
@@ -935,15 +935,13 @@ class PlayState extends MusicBeatSubState
 
 					// Prevent the game from crashing if Boyfriend isn't present.
 					if (currentStage != null && currentStage.getBoyfriend() != null)
-					{
 						boyfriendPos = currentStage.getBoyfriend().getScreenPosition();
-					}
 
 					var pauseSubState:FlxSubState = new PauseSubState({mode: isChartingMode ? Charting : Standard});
 
 					FlxTransitionableState.skipNextTransIn = true;
 					FlxTransitionableState.skipNextTransOut = true;
-					pauseSubState.camera = camHUD;
+					pauseSubState.camera = camOther;
 					openSubState(pauseSubState);
 					// boyfriendPos.put(); // TODO: Why is this here?
 				}
@@ -1445,12 +1443,12 @@ class PlayState extends MusicBeatSubState
 		camGame.bgColor = BACKGROUND_COLOR; // Show a pink background behind the stage.
 		camHUD = new FlxCamera();
 		camHUD.bgColor.alpha = 0; // Show the game scene behind the camera.
-		camCutscene = new FlxCamera();
-		camCutscene.bgColor.alpha = 0; // Show the game scene behind the camera.
+		camOther = new FlxCamera();
+		camOther.bgColor.alpha = 0; // Show the game scene behind the camera.
 
 		FlxG.cameras.reset(camGame);
 		FlxG.cameras.add(camHUD, false);
-		FlxG.cameras.add(camCutscene, false);
+		FlxG.cameras.add(camOther, false);
 
 		// Configure camera follow point.
 		if (previousCameraFollowPoint != null)
@@ -1670,11 +1668,8 @@ class PlayState extends MusicBeatSubState
 	 */
 	function initStrumlines():Void
 	{
-		var noteStyleId:String = switch (currentStageId)
-		{
-			case 'school' | 'schoolEvil': 'pixel';
-			default: Constants.DEFAULT_NOTE_STYLE;
-		}
+		var noteStyleId:String = currentChart.noteStyle;
+
 		var noteStyle:NoteStyle = NoteStyleRegistry.instance.fetchEntry(noteStyleId);
 		if (noteStyle == null) noteStyle = NoteStyleRegistry.instance.fetchDefault();
 
@@ -1835,7 +1830,6 @@ class PlayState extends MusicBeatSubState
 		if (!result) return;
 
 		isInCutscene = false;
-		camCutscene.visible = false;
 
 		// TODO: Maybe tween in the camera after any cutscenes.
 		camHUD.visible = true;
@@ -1854,7 +1848,7 @@ class PlayState extends MusicBeatSubState
 		if (!currentConversation.alive) currentConversation.revive();
 
 		currentConversation.completeCallback = onConversationComplete;
-		currentConversation.cameras = [camCutscene];
+		currentConversation.cameras = [camOther];
 		currentConversation.zIndex = 1000;
 		add(currentConversation);
 		refresh();
@@ -2291,7 +2285,7 @@ class PlayState extends MusicBeatSubState
 				notesInDirection.remove(targetNote);
 
 				// Play the strumline animation.
-				playerStrumline.playConfirm(input.noteDirection);
+				playerStrumline.playConfirm(targetNote.direction, targetNote.length > 0);
 			}
 			else
 			{
@@ -2658,7 +2652,7 @@ class PlayState extends MusicBeatSubState
 				persistentUpdate = false;
 				FlxTransitionableState.skipNextTransIn = true;
 				FlxTransitionableState.skipNextTransOut = true;
-				pauseSubState.camera = camCutscene;
+				pauseSubState.camera = camOther;
 				openSubState(pauseSubState);
 			}
 		}
@@ -2674,7 +2668,7 @@ class PlayState extends MusicBeatSubState
 				persistentUpdate = false;
 				FlxTransitionableState.skipNextTransIn = true;
 				FlxTransitionableState.skipNextTransOut = true;
-				pauseSubState.camera = camCutscene;
+				pauseSubState.camera = camOther;
 				openSubState(pauseSubState);
 			}
 		}
