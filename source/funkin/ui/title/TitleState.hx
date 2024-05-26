@@ -67,9 +67,7 @@ class TitleState extends MusicBeatState
 		// DEBUG BULLSHIT
 
 		// netConnection.addEventListener(MouseEvent.MOUSE_DOWN, overlay_onMouseDown);
-		if (!initialized) new FlxTimer().start(1, function(tmr:FlxTimer) {
-			startIntro();
-		});
+		new FlxTimer().start(1, (t:FlxTimer) -> startIntro());
 	}
 
 	function client_onMetaData(metaData:Dynamic)

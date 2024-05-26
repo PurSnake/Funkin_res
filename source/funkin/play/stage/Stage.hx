@@ -102,53 +102,58 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
 
 	public function resetStage():Void
 	{
+		final stageBf:BaseCharacter = getBoyfriend();
 		// Reset positions of characters.
-		if (getBoyfriend() != null)
+		if (stageBf != null)
 		{
-			getBoyfriend().resetCharacter(true);
+			stageBf.resetCharacter(true);
 			// Reapply the camera offsets.
 			var stageCharData:StageDataCharacter = _data.characters.bf;
-			var finalScale:Float = getBoyfriend().getBaseScale() * stageCharData.scale;
-			getBoyfriend().setScale(finalScale);
-			getBoyfriend().cameraFocusPoint.x += stageCharData.cameraOffsets[0];
-			getBoyfriend().cameraFocusPoint.y += stageCharData.cameraOffsets[1];
-			getBoyfriend().zoomFactor = stageCharData.zoomFactor;
-			getBoyfriend().initialZoom = stageCharData.initialZoom;
+			var finalScale:Float = stageBf.getBaseScale() * stageCharData.scale;
+			stageBf.setScale(finalScale);
+			stageBf.cameraFocusPoint.x += stageCharData.cameraOffsets[0];
+			stageBf.cameraFocusPoint.y += stageCharData.cameraOffsets[1];
+			stageBf.zoomFactor = stageCharData.zoomFactor;
+			stageBf.initialZoom = stageCharData.initialZoom;
 		}
 		else
 		{
 			trace('STAGE RESET: No boyfriend found.');
 		}
-		if (getGirlfriend() != null)
+
+		final stageGf:BaseCharacter = getGirlfriend();
+		if (stageGf != null)
 		{
-			getGirlfriend().resetCharacter(true);
+			stageGf.resetCharacter(true);
 			// Reapply the camera offsets.
 			var stageCharData:StageDataCharacter = _data.characters.gf;
-			var finalScale:Float = getGirlfriend().getBaseScale() * stageCharData.scale;
-			getGirlfriend().setScale(finalScale);
-			getGirlfriend().cameraFocusPoint.x += stageCharData.cameraOffsets[0];
-			getGirlfriend().cameraFocusPoint.y += stageCharData.cameraOffsets[1];
-			getGirlfriend().zoomFactor = stageCharData.zoomFactor;
-			getGirlfriend().initialZoom = stageCharData.initialZoom;
+			var finalScale:Float = stageGf.getBaseScale() * stageCharData.scale;
+			stageGf.setScale(finalScale);
+			stageGf.cameraFocusPoint.x += stageCharData.cameraOffsets[0];
+			stageGf.cameraFocusPoint.y += stageCharData.cameraOffsets[1];
+			stageGf.zoomFactor = stageCharData.zoomFactor;
+			stageGf.initialZoom = stageCharData.initialZoom;
 		}
-		if (getDad() != null)
+
+		final stageDad:BaseCharacter = getDad();
+		if (stageDad != null)
 		{
-			getDad().resetCharacter(true);
+			stageDad.resetCharacter(true);
 			// Reapply the camera offsets.
 			var stageCharData:StageDataCharacter = _data.characters.dad;
-			var finalScale:Float = getDad().getBaseScale() * stageCharData.scale;
-			getDad().setScale(finalScale);
-			getDad().cameraFocusPoint.x += stageCharData.cameraOffsets[0];
-			getDad().cameraFocusPoint.y += stageCharData.cameraOffsets[1];
-			getDad().zoomFactor = stageCharData.zoomFactor;
-			getDad().initialZoom = stageCharData.initialZoom;
+			var finalScale:Float = stageDad.getBaseScale() * stageCharData.scale;
+			stageDad.setScale(finalScale);
+			stageDad.cameraFocusPoint.x += stageCharData.cameraOffsets[0];
+			stageDad.cameraFocusPoint.y += stageCharData.cameraOffsets[1];
+			stageDad.zoomFactor = stageCharData.zoomFactor;
+			stageDad.initialZoom = stageCharData.initialZoom;
 		}
 
 		// Reset positions of named props.
 		for (dataProp in _data.props)
 		{
 			// Fetch the prop.
-			var prop:StageProp = getNamedProp(dataProp.name);
+			final prop:StageProp = getNamedProp(dataProp.name);
 
 			if (prop != null)
 			{
@@ -281,21 +286,15 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
 			if (Std.isOfType(propSprite, Bopper))
 			{
 				for (propAnim in dataProp.animations)
-				{
 					cast(propSprite, Bopper).setAnimationOffsets(propAnim.name, propAnim.offsets[0], propAnim.offsets[1]);
-				}
 
 				if (!Std.isOfType(propSprite, BaseCharacter))
-				{
-					cast(propSprite, Bopper).x = dataProp.position[0];
-					cast(propSprite, Bopper).y = dataProp.position[1];
-				}
+					cast(propSprite, Bopper).setPosition(dataProp.position[0], dataProp.position[1]);
+
 			}
 
 			if (dataProp.startingAnimation != null)
-			{
 				propSprite.animation.play(dataProp.startingAnimation);
-			}
 
 			if (Std.isOfType(propSprite, BaseCharacter))
 			{
@@ -345,9 +344,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
 
 	public function setShader(shader:FlxShader)
 	{
-		forEachAlive(function(prop:FlxSprite) {
-			prop.shader = shader;
-		});
+		forEachAlive((prop:FlxSprite) -> prop.shader = shader);
 	}
 
 	/**

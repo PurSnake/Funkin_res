@@ -169,7 +169,8 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 		{
 			FunkinSound.stopAllAudio();
 
-			onComplete();
+			//onComplete();
+			super.startOutro(onComplete);
 		}
 	}
 

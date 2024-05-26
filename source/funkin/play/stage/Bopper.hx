@@ -177,9 +177,7 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
 			hasDanced = !hasDanced;
 		}
 		else
-		{
 			playAnimation('idle$idleSuffix', forceRestart);
-		}
 	}
 
 	public function hasAnimation(id:String):Bool

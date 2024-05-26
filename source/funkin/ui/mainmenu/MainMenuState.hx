@@ -53,6 +53,9 @@ class MainMenuState extends MusicBeatState
 
 		FlxG.cameras.reset(new FunkinCamera('mainMenu'));
 
+		FlxTransitionableState.skipNextTransIn = false;
+		FlxTransitionableState.skipNextTransOut = false;
+
 		transIn = FlxTransitionableState.defaultTransIn;
 		transOut = FlxTransitionableState.defaultTransOut;
 
@@ -106,8 +109,8 @@ class MainMenuState extends MusicBeatState
 			persistentDraw = true;
 			persistentUpdate = false;
 			// Freeplay has its own custom transition
-			FlxTransitionableState.skipNextTransIn = true;
-			FlxTransitionableState.skipNextTransOut = true;
+			//FlxTransitionableState.skipNextTransIn = true;
+			//FlxTransitionableState.skipNextTransOut = true;
 
 			openSubState(new FreeplayState());
 		});
@@ -292,7 +295,7 @@ class MainMenuState extends MusicBeatState
 		rememberedSelectedIndex = menuItems.selectedIndex;
 
 		var duration = 0.4;
-		menuItems.forEach(function(item) {
+		menuItems.forEach((item) -> {
 			if (menuItems.selectedIndex != item.ID)
 			{
 				FlxTween.tween(item, {alpha: 0}, duration, {ease: FlxEase.quadOut});
@@ -320,7 +323,8 @@ class MainMenuState extends MusicBeatState
 				{
 					if (touch.overlaps(item))
 					{
-						if (menuItems.selectedIndex == item.ID && touch.justPressed) menuItems.accept();
+						if (menuItems.selectedIndex == item.ID && touch.justPressed)
+							menuItems.accept();
 						else
 							menuItems.selectItem(item.ID);
 					}

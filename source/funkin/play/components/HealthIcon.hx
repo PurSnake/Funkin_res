@@ -17,16 +17,16 @@ import funkin.util.Constants;
  * - The health icon now owns its own state logic. It queries health and updates the sprite itself,
  *	 rather than relying on PlayState to command it.
  * - The health icon now supports animations.
- * 	 - The health icon will now search for a SparrowV2 (XML) spritesheet, and use that for rendering if it can.
- * 	 - If it can't find a spritesheet, it will the old format; a two-frame 300x150 image.
- *	 - If the spritesheet is found, the health icon will attempt to load and use the following animations as appropriate:
+ * - The health icon will now search for a SparrowV2 (XML) spritesheet, and use that for rendering if it can.
+ * - If it can't find a spritesheet, it will the old format; a two-frame 300x150 image.
+ * - If the spritesheet is found, the health icon will attempt to load and use the following animations as appropriate:
  * 		 - `idle`, `winning`, `losing`, `toWinning`, `fromWinning`, `toLosing`, `fromLosing`
  * - The health icon is now easier to control via scripts.
- * 	 - Set `autoUpdate` to false to prevent the health icon from changing its own animations.
- *	 - Once `autoUpdate` is false, you can manually call `playAnimation()` to play a specific animation.
- *		 - i.e. `PlayState.instance.iconP1.playAnimation("losing")`
- *	 - Scripts can also utilize all functionality that a normal FlxSprite would have access to, such as adding supplimental animations.
- *		 - i.e. `PlayState.instance.iconP1.animation.addByPrefix("jumpscare", "jumpscare", 24, false);`
+ * - Set `autoUpdate` to false to prevent the health icon from changing its own animations.
+ * - Once `autoUpdate` is false, you can manually call `playAnimation()` to play a specific animation.
+ * - i.e. `PlayState.instance.iconP1.playAnimation("losing")`
+ * - Scripts can also utilize all functionality that a normal FlxSprite would have access to, such as adding supplimental animations.
+ * - i.e. `PlayState.instance.iconP1.animation.addByPrefix("jumpscare", "jumpscare", 24, false);`
  * @author MasterEric
  */
 //@:nullSafety
@@ -85,7 +85,6 @@ class HealthIcon extends FunkinSprite
 	 * Whether this is icon can bop or not.
 	 */
 	public var isBopable:Bool = true;
-
 
 	/**
 	 * Healthbar character's side color. 
@@ -388,6 +387,8 @@ class HealthIcon extends FunkinSprite
 		// Don't flip BF's icon here! That's done later.
 		this.animation.add(Idle, [0], 0, false, false);
 		this.animation.add(Losing, [1], 0, false, false);
+		if (animation.numFrames >= 3)
+			this.animation.add(Winning, [2], 0, false, false);
 	}
 
 	function correctCharacterId(charId:Null<String>):String
@@ -406,7 +407,7 @@ class HealthIcon extends FunkinSprite
 		return charId;
 	}
 
-	function isNewSpritesheet(charId:String):Bool
+	inline function isNewSpritesheet(charId:String):Bool
 	{
 		return Assets.exists(Paths.file('images/icons/icon-$characterId.xml'));
 	}

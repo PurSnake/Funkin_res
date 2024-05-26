@@ -3,12 +3,7 @@ package funkin;
 import funkin.ui.debug.charting.ChartEditorState;
 import funkin.ui.transition.LoadingState;
 import flixel.FlxState;
-import flixel.addons.transition.FlxTransitionableState;
-import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
 import flixel.addons.transition.TransitionData;
-import flixel.graphics.FlxGraphic;
-import flixel.math.FlxPoint;
-import flixel.math.FlxRect;
 import flixel.FlxSprite;
 import flixel.system.debug.log.LogStyle;
 import flixel.util.FlxColor;
@@ -87,8 +82,15 @@ class InitState extends FlxState
 		FlxG.sound.volumeDownKeys = [];
 		FlxG.sound.muteKeys = [];
 
+		FlxG.fixedTimestep = false;
+
 		// Set the game to a lower frame rate while it is in the background.
 		FlxG.game.focusLostFramerate = 30;
+
+		hxvlc.util.Handle.initAsync();
+
+		@:privateAccess
+		FlxG.game.getTimer = () -> openfl.Lib.getTimer();
 
 		setupFlixelDebug();
 
@@ -96,23 +98,21 @@ class InitState extends FlxState
 		// FLIXEL TRANSITIONS
 		//
 
-		// Diamond Transition
-		var diamond:FlxGraphic = FlxGraphic.fromClass(GraphicTransTileDiamond);
-		diamond.persist = true;
-		diamond.destroyOnNoUse = false;
 
-		// NOTE: tileData is ignored if TransitionData.type is FADE instead of TILES.
-		var tileData:TransitionTileData = {asset: diamond, width: 32, height: 32};
+		final graphic = flixel.graphics.FlxGraphic.fromClass(flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond);
+		graphic.persist = true;
+		graphic.destroyOnNoUse = false;
 
-		FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 1, new FlxPoint(0, -1), tileData,
-			new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
-		FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.7, new FlxPoint(0, 1), tileData,
-			new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
+		final tileData:TransitionTileData = {asset: graphic, width: 32, height: 32};
+
+		flixel.addons.transition.FlxTransitionableState.defaultTransIn = new flixel.addons.transition.TransitionData(FADE, 0xFF000000, .5, flixel.math.FlxPoint.get(0, -1),
+			tileData, flixel.math.FlxRect.get(0, 0, FlxG.width, FlxG.height), NEW);
+		flixel.addons.transition.FlxTransitionableState.defaultTransOut = new flixel.addons.transition.TransitionData(FADE, 0xFF000000, .4, flixel.math.FlxPoint.get(0, 1),
+			tileData, flixel.math.FlxRect.get(0, 0, FlxG.width, FlxG.height), NEW);
 
 		// Don't play transition in when entering the title state.
-		FlxTransitionableState.skipNextTransIn = true;
+		flixel.addons.transition.FlxTransitionableState.skipNextTransIn = true;
 
-		
 		#if windows
 		funkin.util.tools.Windows.setDarkMode(true);
 		#end
@@ -134,6 +134,10 @@ class InitState extends FlxState
 			DiscordClient.shutdown();
 		});
 		#end
+
+		lime.app.Application.current.window.onFocusOut.add(onWindowFocusOut);
+		lime.app.Application.current.window.onFocusIn.add(onWindowFocusIn);
+		lime.app.Application.current.window.onClose.add(onWindowClose);
 
 		//
 		// ANDROID SETUP
@@ -436,6 +440,25 @@ class InitState extends FlxState
 			FlxG.sound.music.time += FlxG.elapsed * 1000;
 		});
 		#end
+	}
+
+	public static var lostFocusVolume:Float = 1;
+	private static final _lfvAff:Float = 0.25; //lmao
+	public static dynamic function onWindowFocusOut() { 
+		if (FlxG.autoPause) return;
+		lostFocusVolume = FlxG.sound.volume;
+		FlxG.sound.volume *= _lfvAff;
+	}
+
+	public static dynamic function onWindowFocusIn() {
+		if (FlxG.autoPause) return;
+		FlxG.sound.volume = lostFocusVolume;
+	}
+
+	public static dynamic function onWindowClose() {
+		FlxG.save.data.volume = FlxG.sound.volume;
+		FlxG.save.data.mute = FlxG.sound.muted;
+		trace('Application closed');
 	}
 
 	function defineSong():String

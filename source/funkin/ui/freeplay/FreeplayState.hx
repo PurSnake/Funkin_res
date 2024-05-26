@@ -140,10 +140,10 @@ class FreeplayState extends MusicBeatSubState
 	{
 		currentCharacter = params?.character ?? Constants.DEFAULT_CHARACTER;
 
+		FlxTransitionableState.skipNextTransOut = false;
+		FlxTransitionableState.skipNextTransIn = stickers != null;
 		if (stickers != null)
-		{
 			stickerSubState = stickers;
-		}
 
 		super(FlxColor.TRANSPARENT);
 	}
@@ -153,8 +153,6 @@ class FreeplayState extends MusicBeatSubState
 		super.create();
 
 		FlxG.state.persistentUpdate = false;
-
-		FlxTransitionableState.skipNextTransIn = true;
 
 		if (stickerSubState != null)
 		{

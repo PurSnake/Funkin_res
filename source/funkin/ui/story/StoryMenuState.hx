@@ -113,10 +113,11 @@ class StoryMenuState extends MusicBeatState
 	{
 		super();
 
+		FlxTransitionableState.skipNextTransOut = false;
+		FlxTransitionableState.skipNextTransIn = stickers != null;
+
 		if (stickers != null)
-		{
 			stickerSubState = stickers;
-		}
 	}
 
 	override function create():Void
@@ -512,9 +513,7 @@ class StoryMenuState extends MusicBeatState
 		currentLevelTitle.isFlashing = true;
 
 		for (prop in levelProps.members)
-		{
 			prop.playConfirm();
-		}
 
 		Paths.setCurrentLevel(currentLevel.id);
 
