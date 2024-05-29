@@ -115,6 +115,8 @@ class InitState extends FlxState
 
 		#if windows
 		funkin.util.tools.Windows.setDarkMode(true);
+
+		if (Main.config?.enableOuputConsole) funkin.util.tools.Windows.allocConsole();
 		#end
 
 		//
@@ -188,16 +190,23 @@ class InitState extends FlxState
 		ModuleHandler.loadModuleCache();
 		ModuleHandler.callOnCreate();
 
-		final gc:Void->Void = () -> {
+		function gc(idk:Bool)
+		{
 			#if cpp
-			cpp.vm.Gc.run(true);
-			//cpp.vm.Gc.compact();
-			#else
-			openfl.system.System.gc();
+			cpp.vm.Gc.run(idk);
+			if (!idk)
+				cpp.vm.Gc.compact();
+			#elseif hl
+			hl.Gc.major();
+			#elseif neko
+			neko.vm.Gc.run(idk);
+			#elseif java
+			java.vm.Gc.run(idk);
 			#end
 		}
 
-		final clearCache:Void->Void = () -> {
+		function clearCache()
+		{
 			FlxG.bitmap.dumpCache();
 
 			final cache = cast(openfl.Assets.cache, openfl.utils.AssetCache);
@@ -208,14 +217,9 @@ class InitState extends FlxState
 			openfl.Assets.cache.clear();
 		}
 		
-		FlxG.signals.preStateSwitch.add(function() {
-			clearCache();
-			gc();
-		});
-
 		FlxG.signals.postStateSwitch.add(function() {
 			clearCache();
-			gc();
+			gc(true);
 		});
 
 		trace('Parsing game data took: ${TimerUtil.ms(perfStart)}');

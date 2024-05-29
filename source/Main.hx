@@ -6,96 +6,127 @@ import funkin.util.logging.CrashHandler;
 import funkin.save.Save;
 import haxe.ui.Toolkit;
 import openfl.display.Sprite;
+import openfl.display.MovieClip;
 import openfl.events.Event;
 import openfl.Lib;
-import openfl.media.Video;
-import openfl.net.NetStream;
 
-/**
- * The main class which initializes HaxeFlixel and starts the game in its initial state.
- */
-class Main extends Sprite
+typedef MainConfig = {
+	/**
+	 * Will play HAXEFLIXEL and FUNKIN intro on start.
+	 * @default `true`
+	 */
+	var ?allowIntro:Bool;
+
+	/**
+	 * Will game load images to your GPU?
+	 * Disable if you have no videocard.
+	 * @default `true`
+	 */
+	var ?allowGPULoad:Bool;
+
+	/**
+	 * Open CMD with game logging on startup.
+	 * Usefull for modmakers.
+	 * @default `false`
+	 */
+	var ?enableOuputConsole:Bool;
+};
+
+class Main extends flixel.FlxGame
 {
-	var gameWidth:Int = 1280; // Width of the game in pixels (might be less / more in actual pixels depending on your zoom).
-	var gameHeight:Int = 720; // Height of the game in pixels (might be less / more in actual pixels depending on your zoom).
-	var initialState:Class<FlxState> = funkin.InitState; // The FlxState the game starts with.
-	var zoom:Float = -1; // If -1, zoom is automatically calculated to fit the window dimensions.
-	var framerate:Int = 144; // How many frames per second the game should run at.
-	var skipSplash:Bool = true; // Whether to skip the flixel splash screen that appears in release mode.
-	var startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets
+	public static var mainInstance(default, null):Sprite;
+	public static var applicationScreen(get, never):MovieClip;
 
-	// You can pretty much ignore everything from here on - your code should go in your states.
+	public static var config:MainConfig; 
+	@:noCompletion public static var GPULoadAllowed:Bool = true; 
+
+	@:noCompletion inline static function get_applicationScreen()
+		return Lib.current;
+
+	public static var statisticMonitor:funkin.ui.debug.StatisticMonitor;
 
 	public static function main():Void
 	{
-		// We need to make the crash handler LITERALLY FIRST so nothing EVER gets past it.
+		mainInstance = new Main();
 		CrashHandler.initialize();
 		CrashHandler.queryStatus();
-
-		Lib.current.addChild(new Main());
 	}
 
 	public function new()
 	{
-		super();
+		#if windows
+		@:functionCode("
+			#include <windows.h>
+			setProcessDPIAware() // allows for more crisp visuals
+		")
+		#end
 
-		// Initialize custom logging.
-		haxe.Log.trace = funkin.util.logging.AnsiTrace.trace;
-		funkin.util.logging.AnsiTrace.traceBF();
-
-		// Load mods to override assets.
-		// TODO: Replace with loadEnabledMods() once the user can configure the mod list.
-		funkin.modding.PolymodHandler.loadAllMods();
-
-		stage != null ? init() : addEventListener(Event.ADDED_TO_STAGE, init);
-	}
-
-	function init(?event:Event):Void
-	{
-		if (hasEventListener(Event.ADDED_TO_STAGE))
-		{
-			removeEventListener(Event.ADDED_TO_STAGE, init);
-		}
-
-		setupGame();
-	}
-
-	var video:Video;
-	var netStream:NetStream;
-	var overlay:Sprite;
-
-	/**
-	 * Displayed at the top left. Shows FPS and RAM.
-	 */
-	public static var statisticMonitor:funkin.ui.debug.StatisticMonitor;
-
-	function setupGame():Void
-	{
+		Save.load();
+		initMainConfig();
 		initHaxeUI();
 
-		// addChild gets called by the user settings code.
+		flixel.system.FlxAssets.FONT_DEFAULT = "VCR OSD Mono";
+
+		haxe.Log.trace = funkin.util.logging.AnsiTrace.trace;
+		funkin.util.logging.AnsiTrace.traceBF();
+		funkin.modding.PolymodHandler.loadAllMods();
+
 		statisticMonitor = new funkin.ui.debug.StatisticMonitor(10, 3, 0xFFFFFF);
+		
+		super(
+			1280, 720,
+			funkin.InitState, 144, 144, 
+			true, false
+		);
+		applicationScreen.addChild(this);
 
-		// George recommends binding the save before FlxGame is created.
-		Save.load();
-		var game:FlxGame = new FlxGame(gameWidth, gameHeight, initialState, framerate, framerate, skipSplash, startFullscreen);
-
-		openfl.Lib.current.stage.align = "tl";
-		openfl.Lib.current.stage.scaleMode = openfl.display.StageScaleMode.NO_SCALE;
-
-		addChild(game);
+		#if !mobile
+		applicationScreen.addChild(statisticMonitor);
+		applicationScreen.stage.scaleMode = openfl.display.StageScaleMode.NO_SCALE;
+		#end
 
 		#if debug
 		game.debugger.interaction.addTool(new funkin.util.TrackerToolButtonUtil());
 		#end
-
-		addChild(statisticMonitor);
 
 		#if hxcpp_debug_server
 		trace('hxcpp_debug_server is enabled! You can now connect to the game with a debugger.');
 		#else
 		trace('hxcpp_debug_server is disabled! This build does not support debugging.');
 		#end
+
+		funkin.util.tools.ShaderResizeFix.init();
+	}
+
+	var skipNextTickUpdate:Bool = false;
+	public override function switchState()
+	{
+		super.switchState();
+		draw();
+		_total = ticks = getTicks();
+		skipNextTickUpdate = true;
+	}
+
+	public override function onEnterFrame(t)
+	{
+		if (skipNextTickUpdate != (skipNextTickUpdate = false))
+			_total = ticks = getTicks();
+		super.onEnterFrame(t);
+	}
+
+	function initMainConfig():Void
+	{
+		if (sys.FileSystem.exists("config.json"))
+			config = cast haxe.Json.parse(sys.io.File.getContent("config.json"));
+
+		if (config == null)
+			config = {
+				allowIntro: true,
+				allowGPULoad: true,
+				enableOuputConsole: false
+			};
+		trace(config);
+		openfl.utils.Assets.allowGPU = GPULoadAllowed = config.allowGPULoad;
 	}
 
 	function initHaxeUI():Void
@@ -112,3 +143,4 @@ class Main extends Sprite
 		haxe.ui.tooltips.ToolTipManager.defaultDelay = 200;
 	}
 }
+

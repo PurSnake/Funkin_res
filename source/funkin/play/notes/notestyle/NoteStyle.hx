@@ -18,300 +18,297 @@ using funkin.data.animation.AnimationData.AnimationDataUtil;
  */
 class NoteStyle implements IRegistryEntry<NoteStyleData>
 {
-  /**
-   * The ID of the note style.
-   */
-  public final id:String;
+	/**
+	 * The ID of the note style.
+	 */
+	public final id:String;
 
-  /**
-   * Note style data as parsed from the JSON file.
-   */
-  public final _data:NoteStyleData;
+	/**
+	 * Note style data as parsed from the JSON file.
+	 */
+	public final _data:NoteStyleData;
 
-  /**
-   * The note style to use if this one doesn't have a certain asset.
-   * This can be recursive, ehe.
-   */
-  final fallback:Null<NoteStyle>;
+	/**
+	 * The note style to use if this one doesn't have a certain asset.
+	 * This can be recursive, ehe.
+	 */
+	final fallback:Null<NoteStyle>;
 
-  /**
-   * @param id The ID of the JSON file to parse.
-   */
-  public function new(id:String)
-  {
-    this.id = id;
-    _data = _fetchData(id);
+	/**
+	 * @param id The ID of the JSON file to parse.
+	 */
+	public function new(id:String)
+	{
+		this.id = id;
+		_data = _fetchData(id);
 
-    if (_data == null)
-    {
-      throw 'Could not parse note style data for id: $id';
-    }
+		if (_data == null)
+			throw 'Could not parse note style data for id: $id';
 
-    this.fallback = NoteStyleRegistry.instance.fetchEntry(getFallbackID());
-  }
+		this.fallback = NoteStyleRegistry.instance.fetchEntry(getFallbackID());
+	}
 
-  /**
-   * Get the readable name of the note style.
-   * @return String
-   */
-  public function getName():String
-  {
-    return _data.name;
-  }
+	/**
+	 * Get the readable name of the note style.
+	 * @return String
+	 */
+	public function getName():String
+	{
+		return _data.name;
+	}
 
-  /**
-   * Get the author of the note style.
-   * @return String
-   */
-  public function getAuthor():String
-  {
-    return _data.author;
-  }
+	/**
+	 * Get the author of the note style.
+	 * @return String
+	 */
+	public function getAuthor():String
+	{
+		return _data.author;
+	}
 
-  /**
-   * Get the note style ID of the parent note style.
-   * @return The string ID, or `null` if there is no parent.
-   */
-  function getFallbackID():Null<String>
-  {
-    return _data.fallback;
-  }
+	/**
+	 * Get the note style ID of the parent note style.
+	 * @return The string ID, or `null` if there is no parent.
+	 */
+	function getFallbackID():Null<String>
+	{
+		return _data.fallback;
+	}
 
-  public function buildNoteSprite(target:NoteSprite):Void
-  {
-    // Apply the note sprite frames.
-    var atlas:FlxAtlasFrames = buildNoteFrames(false);
+	public function buildNoteSprite(target:NoteSprite):Void
+	{
+		// Apply the note sprite frames.
+		var atlas:FlxAtlasFrames = buildNoteFrames(false);
 
-    if (atlas == null)
-    {
-      throw 'Could not load spritesheet for note style: $id';
-    }
+		if (atlas == null)
+		{
+			throw 'Could not load spritesheet for note style: $id';
+		}
 
-    target.frames = atlas;
+		target.frames = atlas;
 
-    target.scale.x = _data.assets.note.scale;
-    target.scale.y = _data.assets.note.scale;
-    target.antialiasing = !_data.assets.note.isPixel;
+		target.scale.x = _data.assets.note.scale;
+		target.scale.y = _data.assets.note.scale;
+		target.antialiasing = !_data.assets.note.isPixel;
 
-    // Apply the animations.
-    buildNoteAnimations(target);
-  }
+		// Apply the animations.
+		buildNoteAnimations(target);
+	}
 
-  var noteFrames:FlxAtlasFrames = null;
+	var noteFrames:FlxAtlasFrames = null;
 
-  function buildNoteFrames(force:Bool = false):FlxAtlasFrames
-  {
-    if (!FunkinSprite.isTextureCached(Paths.image(getNoteAssetPath())))
-    {
-      FlxG.log.warn('Note texture is not cached: ${getNoteAssetPath()}');
-    }
+	function buildNoteFrames(force:Bool = false):FlxAtlasFrames
+	{
+		if (!FunkinSprite.isGraphicCached(Paths.image(getNoteAssetPath())))
+			FlxG.log.warn('Note texture is not cached: ${getNoteAssetPath()}');
 
-    // Purge the note frames if the cached atlas is invalid.
-    if (noteFrames?.parent?.isDestroyed ?? false) noteFrames = null;
+		// Purge the note frames if the cached atlas is invalid.
+		if (noteFrames?.parent?.isDestroyed ?? false) noteFrames = null;
 
-    if (noteFrames != null && !force) return noteFrames;
+		if (noteFrames != null && !force) return noteFrames;
 
-    noteFrames = Paths.getSparrowAtlas(getNoteAssetPath(), getNoteAssetLibrary());
+		noteFrames = Paths.getSparrowAtlas(getNoteAssetPath(), getNoteAssetLibrary());
 
-    if (noteFrames == null)
-    {
-      throw 'Could not load note frames for note style: $id';
-    }
+		if (noteFrames == null)
+		{
+			throw 'Could not load note frames for note style: $id';
+		}
 
-    return noteFrames;
-  }
+		return noteFrames;
+	}
 
-  function getNoteAssetPath(raw:Bool = false):String
-  {
-    if (raw)
-    {
-      var rawPath:Null<String> = _data?.assets?.note?.assetPath;
-      if (rawPath == null) return fallback.getNoteAssetPath(true);
-      return rawPath;
-    }
+	function getNoteAssetPath(raw:Bool = false):String
+	{
+		if (raw)
+		{
+			var rawPath:Null<String> = _data?.assets?.note?.assetPath;
+			if (rawPath == null) return fallback.getNoteAssetPath(true);
+			return rawPath;
+		}
 
-    // library:path
-    var parts = getNoteAssetPath(true).split(Constants.LIBRARY_SEPARATOR);
-    if (parts.length == 1) return getNoteAssetPath(true);
-    return parts[1];
-  }
+		// library:path
+		var parts = getNoteAssetPath(true).split(Constants.LIBRARY_SEPARATOR);
+		if (parts.length == 1) return getNoteAssetPath(true);
+		return parts[1];
+	}
 
-  function getNoteAssetLibrary():Null<String>
-  {
-    // library:path
-    var parts = getNoteAssetPath(true).split(Constants.LIBRARY_SEPARATOR);
-    if (parts.length == 1) return null;
-    return parts[0];
-  }
+	function getNoteAssetLibrary():Null<String>
+	{
+		// library:path
+		var parts = getNoteAssetPath(true).split(Constants.LIBRARY_SEPARATOR);
+		if (parts.length == 1) return null;
+		return parts[0];
+	}
 
-  function buildNoteAnimations(target:NoteSprite):Void
-  {
-    var leftData:AnimationData = fetchNoteAnimationData(LEFT);
-    target.animation.addByPrefix('purpleScroll', leftData.prefix, leftData.frameRate, leftData.looped, leftData.flipX, leftData.flipY);
-    var downData:AnimationData = fetchNoteAnimationData(DOWN);
-    target.animation.addByPrefix('blueScroll', downData.prefix, downData.frameRate, downData.looped, downData.flipX, downData.flipY);
-    var upData:AnimationData = fetchNoteAnimationData(UP);
-    target.animation.addByPrefix('greenScroll', upData.prefix, upData.frameRate, upData.looped, upData.flipX, upData.flipY);
-    var rightData:AnimationData = fetchNoteAnimationData(RIGHT);
-    target.animation.addByPrefix('redScroll', rightData.prefix, rightData.frameRate, rightData.looped, rightData.flipX, rightData.flipY);
-  }
+	function buildNoteAnimations(target:NoteSprite):Void
+	{
+		var leftData:AnimationData = fetchNoteAnimationData(LEFT);
+		target.animation.addByPrefix('purpleScroll', leftData.prefix, leftData.frameRate, leftData.looped, leftData.flipX, leftData.flipY);
+		var downData:AnimationData = fetchNoteAnimationData(DOWN);
+		target.animation.addByPrefix('blueScroll', downData.prefix, downData.frameRate, downData.looped, downData.flipX, downData.flipY);
+		var upData:AnimationData = fetchNoteAnimationData(UP);
+		target.animation.addByPrefix('greenScroll', upData.prefix, upData.frameRate, upData.looped, upData.flipX, upData.flipY);
+		var rightData:AnimationData = fetchNoteAnimationData(RIGHT);
+		target.animation.addByPrefix('redScroll', rightData.prefix, rightData.frameRate, rightData.looped, rightData.flipX, rightData.flipY);
+	}
 
-  function fetchNoteAnimationData(dir:NoteDirection):AnimationData
-  {
-    var result:Null<AnimationData> = switch (dir)
-    {
-      case LEFT: _data.assets.note.data.left.toNamed();
-      case DOWN: _data.assets.note.data.down.toNamed();
-      case UP: _data.assets.note.data.up.toNamed();
-      case RIGHT: _data.assets.note.data.right.toNamed();
-    };
+	function fetchNoteAnimationData(dir:NoteDirection):AnimationData
+	{
+		var result:Null<AnimationData> = switch (dir)
+		{
+			case LEFT: _data.assets.note.data.left.toNamed();
+			case DOWN: _data.assets.note.data.down.toNamed();
+			case UP: _data.assets.note.data.up.toNamed();
+			case RIGHT: _data.assets.note.data.right.toNamed();
+		};
 
-    return (result == null) ? fallback.fetchNoteAnimationData(dir) : result;
-  }
+		return (result == null) ? fallback.fetchNoteAnimationData(dir) : result;
+	}
 
-  public function getHoldNoteAssetPath(raw:Bool = false):String
-  {
-    if (raw)
-    {
-      // TODO: figure out why ?. didn't work here
-      var rawPath:Null<String> = (_data?.assets?.holdNote == null) ? null : _data?.assets?.holdNote?.assetPath;
-      return (rawPath == null) ? fallback.getHoldNoteAssetPath(true) : rawPath;
-    }
+	public function getHoldNoteAssetPath(raw:Bool = false):flixel.system.FlxAssets.FlxGraphicAsset
+	{
+		var parts = getHoldsRawPath();
 
-    // library:path
-    var parts = getHoldNoteAssetPath(true).split(Constants.LIBRARY_SEPARATOR);
-    if (parts.length == 1) return Paths.image(parts[0]);
-    return Paths.image(parts[1], parts[0]);
-  }
+		if (parts.length == 1) return Paths.image(parts[0], null, false);
+		return Paths.image(parts[1], parts[0], false);
+	}
 
-  public function isHoldNotePixel():Bool
-  {
-    var data = _data?.assets?.holdNote;
-    if (data == null) return fallback.isHoldNotePixel();
-    return data.isPixel;
-  }
+	private function getHoldsRawPath()
+	{
+		var rawPath:Null<String> = (_data?.assets?.holdNote == null) ? null : _data?.assets?.holdNote?.assetPath;
+		var parts:Null<Array<String>> = (rawPath != null) ? rawPath.split(Constants.LIBRARY_SEPARATOR) : [rawPath];
 
-  public function fetchHoldNoteScale():Float
-  {
-    var data = _data?.assets?.holdNote;
-    if (data == null) return fallback.fetchHoldNoteScale();
-    return data.scale;
-  }
+		return (parts != null) ? parts : [rawPath];
+	}
 
-  public function applyStrumlineFrames(target:StrumlineNote):Void
-  {
-    // TODO: Add support for multi-Sparrow.
-    // Will be less annoying after this is merged: https://github.com/HaxeFlixel/flixel/pull/2772
+	public function isHoldNotePixel():Bool
+	{
+		var data = _data?.assets?.holdNote;
+		if (data == null) return fallback.isHoldNotePixel();
+		return data.isPixel;
+	}
 
-    var atlas:FlxAtlasFrames = Paths.getSparrowAtlas(getStrumlineAssetPath(), getStrumlineAssetLibrary());
+	public function fetchHoldNoteScale():Float
+	{
+		var data = _data?.assets?.holdNote;
+		if (data == null) return fallback.fetchHoldNoteScale();
+		return data.scale;
+	}
 
-    if (atlas == null)
-    {
-      throw 'Could not load spritesheet for note style: $id';
-    }
+	public function applyStrumlineFrames(target:StrumlineNote):Void
+	{
+		// TODO: Add support for multi-Sparrow.
+		// Will be less annoying after this is merged: https://github.com/HaxeFlixel/flixel/pull/2772
 
-    target.frames = atlas;
+		var atlas:FlxAtlasFrames = Paths.getSparrowAtlas(getStrumlineAssetPath(), getStrumlineAssetLibrary());
 
-    target.scale.x = _data.assets.noteStrumline.scale;
-    target.scale.y = _data.assets.noteStrumline.scale;
-    target.antialiasing = !_data.assets.noteStrumline.isPixel;
-  }
+		if (atlas == null)
+		{
+			throw 'Could not load spritesheet for note style: $id';
+		}
 
-  function getStrumlineAssetPath(raw:Bool = false):String
-  {
-    if (raw)
-    {
-      var rawPath:Null<String> = _data?.assets?.noteStrumline?.assetPath;
-      if (rawPath == null) return fallback.getStrumlineAssetPath(true);
-      return rawPath;
-    }
+		target.frames = atlas;
 
-    // library:path
-    var parts = getStrumlineAssetPath(true).split(Constants.LIBRARY_SEPARATOR);
-    if (parts.length == 1) return getStrumlineAssetPath(true);
-    return parts[1];
-  }
+		target.scale.x = _data.assets.noteStrumline.scale;
+		target.scale.y = _data.assets.noteStrumline.scale;
+		target.antialiasing = !_data.assets.noteStrumline.isPixel;
+	}
 
-  function getStrumlineAssetLibrary():Null<String>
-  {
-    // library:path
-    var parts = getStrumlineAssetPath(true).split(Constants.LIBRARY_SEPARATOR);
-    if (parts.length == 1) return null;
-    return parts[0];
-  }
+	function getStrumlineAssetPath(raw:Bool = false):String
+	{
+		if (raw)
+		{
+			var rawPath:Null<String> = _data?.assets?.noteStrumline?.assetPath;
+			if (rawPath == null) return fallback.getStrumlineAssetPath(true);
+			return rawPath;
+		}
 
-  public function applyStrumlineAnimations(target:StrumlineNote, dir:NoteDirection):Void
-  {
-    FlxAnimationUtil.addAtlasAnimations(target, getStrumlineAnimationData(dir));
-  }
+		// library:path
+		var parts = getStrumlineAssetPath(true).split(Constants.LIBRARY_SEPARATOR);
+		if (parts.length == 1) return getStrumlineAssetPath(true);
+		return parts[1];
+	}
 
-  function getStrumlineAnimationData(dir:NoteDirection):Array<AnimationData>
-  {
-    var result:Array<AnimationData> = switch (dir)
-    {
-      case NoteDirection.LEFT: [
-          _data.assets.noteStrumline.data.leftStatic.toNamed('static'),
-          _data.assets.noteStrumline.data.leftPress.toNamed('press'),
-          _data.assets.noteStrumline.data.leftConfirm.toNamed('confirm'),
-          _data.assets.noteStrumline.data.leftConfirmHold.toNamed('confirm-hold'),
-        ];
-      case NoteDirection.DOWN: [
-          _data.assets.noteStrumline.data.downStatic.toNamed('static'),
-          _data.assets.noteStrumline.data.downPress.toNamed('press'),
-          _data.assets.noteStrumline.data.downConfirm.toNamed('confirm'),
-          _data.assets.noteStrumline.data.downConfirmHold.toNamed('confirm-hold'),
-        ];
-      case NoteDirection.UP: [
-          _data.assets.noteStrumline.data.upStatic.toNamed('static'),
-          _data.assets.noteStrumline.data.upPress.toNamed('press'),
-          _data.assets.noteStrumline.data.upConfirm.toNamed('confirm'),
-          _data.assets.noteStrumline.data.upConfirmHold.toNamed('confirm-hold'),
-        ];
-      case NoteDirection.RIGHT: [
-          _data.assets.noteStrumline.data.rightStatic.toNamed('static'),
-          _data.assets.noteStrumline.data.rightPress.toNamed('press'),
-          _data.assets.noteStrumline.data.rightConfirm.toNamed('confirm'),
-          _data.assets.noteStrumline.data.rightConfirmHold.toNamed('confirm-hold'),
-        ];
-    };
+	function getStrumlineAssetLibrary():Null<String>
+	{
+		// library:path
+		var parts = getStrumlineAssetPath(true).split(Constants.LIBRARY_SEPARATOR);
+		if (parts.length == 1) return null;
+		return parts[0];
+	}
 
-    return result;
-  }
+	public function applyStrumlineAnimations(target:StrumlineNote, dir:NoteDirection):Void
+	{
+		FlxAnimationUtil.addAtlasAnimations(target, getStrumlineAnimationData(dir));
+	}
 
-  public function applyStrumlineOffsets(target:StrumlineNote)
-  {
-    target.x += _data.assets.noteStrumline.offsets[0];
-    target.y += _data.assets.noteStrumline.offsets[1];
-  }
+	function getStrumlineAnimationData(dir:NoteDirection):Array<AnimationData>
+	{
+		var result:Array<AnimationData> = switch (dir)
+		{
+			case NoteDirection.LEFT: [
+					_data.assets.noteStrumline.data.leftStatic.toNamed('static'),
+					_data.assets.noteStrumline.data.leftPress.toNamed('press'),
+					_data.assets.noteStrumline.data.leftConfirm.toNamed('confirm'),
+					_data.assets.noteStrumline.data.leftConfirmHold.toNamed('confirm-hold'),
+				];
+			case NoteDirection.DOWN: [
+					_data.assets.noteStrumline.data.downStatic.toNamed('static'),
+					_data.assets.noteStrumline.data.downPress.toNamed('press'),
+					_data.assets.noteStrumline.data.downConfirm.toNamed('confirm'),
+					_data.assets.noteStrumline.data.downConfirmHold.toNamed('confirm-hold'),
+				];
+			case NoteDirection.UP: [
+					_data.assets.noteStrumline.data.upStatic.toNamed('static'),
+					_data.assets.noteStrumline.data.upPress.toNamed('press'),
+					_data.assets.noteStrumline.data.upConfirm.toNamed('confirm'),
+					_data.assets.noteStrumline.data.upConfirmHold.toNamed('confirm-hold'),
+				];
+			case NoteDirection.RIGHT: [
+					_data.assets.noteStrumline.data.rightStatic.toNamed('static'),
+					_data.assets.noteStrumline.data.rightPress.toNamed('press'),
+					_data.assets.noteStrumline.data.rightConfirm.toNamed('confirm'),
+					_data.assets.noteStrumline.data.rightConfirmHold.toNamed('confirm-hold'),
+				];
+		};
 
-  public function getStrumlineScale():Float
-  {
-    return _data.assets.noteStrumline.scale;
-  }
+		return result;
+	}
 
-  public function isNoteSplashEnabled():Bool
-  {
-    var data = _data?.assets?.noteSplash?.data;
-    if (data == null) return fallback.isNoteSplashEnabled();
-    return data.enabled;
-  }
+	public function applyStrumlineOffsets(target:StrumlineNote)
+	{
+		target.x += _data.assets.noteStrumline.offsets[0];
+		target.y += _data.assets.noteStrumline.offsets[1];
+	}
 
-  public function isHoldNoteCoverEnabled():Bool
-  {
-    var data = _data?.assets?.holdNoteCover?.data;
-    if (data == null) return fallback.isHoldNoteCoverEnabled();
-    return data.enabled;
-  }
+	public function getStrumlineScale():Float
+	{
+		return _data.assets.noteStrumline.scale;
+	}
 
-  public function destroy():Void {}
+	public function isNoteSplashEnabled():Bool
+	{
+		var data = _data?.assets?.noteSplash?.data;
+		if (data == null) return fallback.isNoteSplashEnabled();
+		return data.enabled;
+	}
 
-  public function toString():String
-  {
-    return 'NoteStyle($id)';
-  }
+	public function isHoldNoteCoverEnabled():Bool
+	{
+		var data = _data?.assets?.holdNoteCover?.data;
+		if (data == null) return fallback.isHoldNoteCoverEnabled();
+		return data.enabled;
+	}
 
-  static function _fetchData(id:String):Null<NoteStyleData>
-  {
-    return NoteStyleRegistry.instance.parseEntryDataWithMigration(id, NoteStyleRegistry.instance.fetchEntryVersion(id));
-  }
+	public function destroy():Void {}
+
+	public function toString():String
+	{
+		return 'NoteStyle($id)';
+	}
+
+	static function _fetchData(id:String):Null<NoteStyleData>
+	{
+		return NoteStyleRegistry.instance.parseEntryDataWithMigration(id, NoteStyleRegistry.instance.fetchEntryVersion(id));
+	}
 }

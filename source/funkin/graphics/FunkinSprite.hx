@@ -20,17 +20,9 @@ import openfl.display.BitmapData;
  */
 class FunkinSprite extends flixel.addons.effects.FlxSkewedSprite //FlxSprite
 {
-	/**
-	 * An internal list of all the textures cached with `cacheTexture`.
-	 * This excludes any temporary textures like those from `FlxText` or `makeSolidColor`.
-	 */
-	static var currentCachedTextures:Map<String, FlxGraphic> = [];
+	@:noCompletion static var flxGraphicCashe(get, never):Map<String, FlxGraphic>;
 
-	/**
-	 * An internal list of textures that were cached in the previous state.
-	 * We don't know whether we want to keep them cached or not.
-	 */
-	static var previousCachedTextures:Map<String, FlxGraphic> = [];
+	@:noCompletion inline static function get_flxGraphicCashe() @:privateAccess return FlxG.bitmap._cache;
 
 	/**
 	 * @param x Starting X position
@@ -222,10 +214,7 @@ class FunkinSprite extends flixel.addons.effects.FlxSkewedSprite //FlxSprite
 	 */
 	public function loadTexture(key:String):FunkinSprite
 	{
-		var graphicKey:String = Paths.image(key);
-		if (!isTextureCached(graphicKey)) FlxG.log.warn('Texture not cached, may experience stuttering! $graphicKey');
-
-		loadGraphic(graphicKey);
+		loadGraphic(Paths.image(key));
 
 		return this;
 	}
@@ -261,11 +250,7 @@ class FunkinSprite extends flixel.addons.effects.FlxSkewedSprite //FlxSprite
 	 */
 	public function loadSparrow(key:String):FunkinSprite
 	{
-		var graphicKey:String = Paths.image(key);
-		if (!isTextureCached(graphicKey)) FlxG.log.warn('Texture not cached, may experience stuttering! $graphicKey');
-
 		this.frames = Paths.getSparrowAtlas(key);
-
 		return this;
 	}
 
@@ -276,11 +261,7 @@ class FunkinSprite extends flixel.addons.effects.FlxSkewedSprite //FlxSprite
 	 */
 	public function loadPacker(key:String):FunkinSprite
 	{
-		var graphicKey:String = Paths.image(key);
-		if (!isTextureCached(graphicKey)) FlxG.log.warn('Texture not cached, may experience stuttering! $graphicKey');
-
 		this.frames = Paths.getPackerAtlas(key);
-
 		return this;
 	}
 
@@ -291,124 +272,41 @@ class FunkinSprite extends flixel.addons.effects.FlxSkewedSprite //FlxSprite
 	 */
 	public static function isTextureCached(key:String):Bool
 	{
-		return FlxG.bitmap.get(key) != null;
+		return isGraphicCached(Paths.image(key));
 	}
-
-	/**
-	 * Ensure the texture with the given key is cached.
-	 * @param key The key of the texture to cache.
-	 */
-	/*public static function cacheTexture(key:String):Void
-	{
-		// We don't want to cache the same texture twice.
-		if (currentCachedTextures.exists(key)) return;
-
-		if (previousCachedTextures.exists(key))
-		{
-			// Move the graphic from the previous cache to the current cache.
-			var graphic = previousCachedTextures.get(key);
-			previousCachedTextures.remove(key);
-			currentCachedTextures.set(key, graphic);
-			return;
-		}
-
-		var bitmap = BitmapData.fromFile(key);
-		if (bitmap == null)
-		{
-			trace('oh no its returning null NOOOO ($key)');
-			return;
-		}
-
-		if (bitmap.image != null)
-		@:privateAccess
-		{
-			bitmap.lock();
-			if (bitmap.__texture == null)
-			{
-				bitmap.image.premultiplied = true;
-				bitmap.getTexture(FlxG.stage.context3D);
-			}
-			bitmap.getSurface();
-			bitmap.disposeImage();
-			bitmap.image.data = null;
-			bitmap.image = null;
-			bitmap.readable = true;
-		}
-
-		final graph:FlxGraphic = FlxGraphic.fromBitmapData(bitmap, false, key);
-		graph.persist = true;
-		graph.destroyOnNoUse = false;
-
-		currentCachedTextures.set(key, graph);
-	}*/
 
 	public static function cacheTexture(key:String):Void
 	{
-		// We don't want to cache the same texture twice.
-		if (currentCachedTextures.exists(key)) return;
-
-		if (previousCachedTextures.exists(key))
-		{
-			// Move the graphic from the previous cache to the current cache.
-			var graphic = previousCachedTextures.get(key);
-			previousCachedTextures.remove(key);
-			currentCachedTextures.set(key, graphic);
-			return;
-		}
-
-		// Else, texture is currently uncached.
-		var graphic:FlxGraphic = FlxGraphic.fromAssetKey(key, false, null, true);
-		if (graphic == null)
-		{
-			FlxG.log.warn('Failed to cache graphic: $key');
-		}
-		else
-		{
-			trace('Successfully cached graphic: $key');
-			graphic.persist = true;
-			currentCachedTextures.set(key, graphic);
-		}
+		Paths.image(key);
 	}
 
 	public static function cacheSparrow(key:String):Void
 	{
-		cacheTexture(Paths.image(key));
+		Paths.image(key);
 	}
 
 	public static function cachePacker(key:String):Void
 	{
-		cacheTexture(Paths.image(key));
-	}
-
-	/**
-	 * Call this, then `cacheTexture` to keep the textures we still need, then `purgeCache` to remove the textures that we won't be using anymore.
-	 */
-	public static function preparePurgeCache():Void
-	{
-		previousCachedTextures = currentCachedTextures;
-		currentCachedTextures = [];
+		Paths.image(key);
 	}
 
 	public static function purgeCache():Void
 	{
-		// Everything that is in previousCachedTextures but not in currentCachedTextures should be destroyed.
-		for (graphicKey in previousCachedTextures.keys())
-		{
-			var graphic = previousCachedTextures.get(graphicKey);
-			if (graphic == null) continue;
+		@:privateAccess
+		for (key => obj in flxGraphicCashe)
+			if (obj != null && obj.useCount <= 0 && !obj.persist && obj.destroyOnNoUse){
+				FlxG.bitmap.removeKey(key);
 
-			/*@:privateAccess {
-			if (graphic != null && graphic.bitmap != null && graphic.bitmap.__texture != null)
-				graphic.bitmap.__texture.dispose();
-			}*/
+				@:privateAcces
+				if (obj.bitmap != null && obj.bitmap.__texture != null)
+					obj.bitmap.__texture.dispose();
 
-			FlxG.bitmap.remove(graphic);
-			graphic.destroy();
-			previousCachedTextures.remove(graphicKey);
-		}
+				obj.destroy();
+			}
+
 	}
 
-	static function isGraphicCached(graphic:FlxGraphic):Bool
+	public static function isGraphicCached(graphic:FlxGraphic):Bool
 	{
 		if (graphic == null) return false;
 		var result = FlxG.bitmap.get(graphic.key);

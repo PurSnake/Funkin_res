@@ -7,6 +7,23 @@ import funkin.save.Save;
  */
 class Preferences
 {
+	public static var cacheOnGPU(get, set):Bool;
+
+	static function get_cacheOnGPU():Bool
+	{
+		return Save?.instance?.options?.cacheOnGPU ?? true;
+	}
+
+	static function set_cacheOnGPU(value:Bool):Bool
+	{
+		var save:Save = Save.instance;
+		save.options.cacheOnGPU = value;
+		save.flush();
+		return value;
+	}
+
+
+
 	/**
 	 * Whether some particularly fowl language is displayed.
 	 * @default `true`
@@ -15,7 +32,7 @@ class Preferences
 
 	static function get_naughtyness():Bool
 	{
-		return Save?.instance?.options?.naughtyness;
+		return Save?.instance?.options?.naughtyness ?? true;
 	}
 
 	static function set_naughtyness(value:Bool):Bool
@@ -97,9 +114,7 @@ class Preferences
 	static function set_debugDisplay(value:Bool):Bool
 	{
 		if (value != Save.instance.options.debugDisplay)
-		{
 			toggleDebugDisplay(value);
-		}
 
 		var save = Save.instance;
 		save.options.debugDisplay = value;
@@ -141,9 +156,6 @@ class Preferences
 
 	static function toggleDebugDisplay(show:Bool):Void
 	{
-		if (show)
-			FlxG.stage.addChild(Main.statisticMonitor);
-		else
-			FlxG.stage.removeChild(Main.statisticMonitor);
+		Main.statisticMonitor.visible = show;
 	}
 }

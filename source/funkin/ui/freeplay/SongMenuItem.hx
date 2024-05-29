@@ -192,7 +192,7 @@ class SongMenuItem extends FlxSpriteGroup
 		}
 		charPath += '${charPixelIconData.id}pixel';
 
-		if (!openfl.utils.Assets.exists(Paths.image(charPath)))
+		if (!openfl.utils.Assets.exists(Paths.file("images/" + charPath + ".png")))
 		{
 			trace('[WARN] Character ${char} has no freeplay icon.');
 			return;

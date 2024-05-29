@@ -623,14 +623,14 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
 	 *
 	 * @return An array of file names.
 	 */
-	public function fetchAssetPaths():Array<String>
+	/*public function fetchAssetPaths():Array<String>
 	{
 		var result:Array<String> = [];
 		for (dataProp in _data.props)
 			result.push(Paths.image(dataProp.assetPath));
 
 		return result;
-	}
+	}*/
 
 	/**
 	 * Dispatch an event to all the characters in the stage.

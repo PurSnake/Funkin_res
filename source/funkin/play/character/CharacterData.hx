@@ -320,7 +320,7 @@ class CharacterDataParser
 		}
 
 		var charData:CharacterData = characterCache.get(charId);
-		var path = Paths.image("freeplay/icons/" + charData.pixelIcon.id + "pixel");
+		var path = Paths.file("images/freeplay/icons/" + charData.pixelIcon.id + "pixel.png");
 
 		if (charData != null && charData.pixelIcon != null)
 		{

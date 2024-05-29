@@ -4,6 +4,12 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.utils.AssetType;
 import openfl.utils.Assets as OpenFlAssets;
 
+import flixel.system.FlxAssets.FlxGraphicAsset;
+import flixel.graphics.FlxGraphic;
+
+import haxe.PosInfos;
+import haxe.io.Path;
+
 /**
  * A core class which handles determining asset paths.
  */
@@ -128,10 +134,23 @@ class Paths
 		return 'songs:assets/songs/${song.toLowerCase()}/Inst$suffix.${Constants.EXT_SOUND}';
 	}
 
-	public static function image(key:String, ?library:String):String
+	public static function image(key:String, ?library:String, ?allowGPU:Bool = true):FlxGraphic
 	{
-		return getPath('images/$key.png', IMAGE, library);
+		return imageGraphic(key, allowGPU, library);
 	}
+
+	static public function imageGraphic(key:String, ?allowGPU:Bool = true, ?library:String, ?unique:Bool = false, ?filePos:PosInfos):FlxGraphic
+	{
+		OpenFlAssets.allowGPU = (Main.GPULoadAllowed && allowGPU); // Main config AND choise
+		final graphic:FlxGraphic = FlxG.bitmap.add(getPath('images/$key.png', IMAGE, library));
+		if (graphic == null)
+			trace('oh no $key returning null NOOOO');
+		else
+			graphic.destroyOnNoUse = false;
+		OpenFlAssets.allowGPU = Main.GPULoadAllowed;
+		return graphic;
+	}
+
 	public static function font(key:String):String
 	{
 		return 'assets/fonts/$key';

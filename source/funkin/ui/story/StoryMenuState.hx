@@ -111,11 +111,10 @@ class StoryMenuState extends MusicBeatState
 
 	public function new(?stickers:StickerSubState = null)
 	{
-		super();
-
 		FlxTransitionableState.skipNextTransOut = false;
 		FlxTransitionableState.skipNextTransIn = stickers != null;
 
+		super();
 		if (stickers != null)
 			stickerSubState = stickers;
 	}
@@ -226,13 +225,10 @@ class StoryMenuState extends MusicBeatState
 	function rememberSelection():Void
 	{
 		if (rememberedLevelId != null)
-		{
 			currentLevelId = rememberedLevelId;
-		}
+
 		if (rememberedDifficulty != null)
-		{
 			currentDifficultyId = rememberedDifficulty;
-		}
 	}
 
 	function playMenuMusic():Void

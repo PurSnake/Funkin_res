@@ -157,7 +157,9 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
 	override function startOutro(onComplete:() -> Void):Void
 	{
+		trace(onComplete);
 		var event = new StateChangeScriptEvent(STATE_CHANGE_BEGIN, null, true);
+		//FlxG.state
 
 		dispatchEvent(event);
 

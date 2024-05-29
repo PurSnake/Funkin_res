@@ -243,9 +243,7 @@ class PauseSubState extends MusicBeatSubState
 		pauseMusic = FunkinSound.load(pauseMusicPath, true, true);
 
 		if (pauseMusic == null)
-		{
 			FlxG.log.warn('Could not play pause music: ${pauseMusicPath} does not exist!');
-		}
 
 		// Start playing at a random point in the song.
 		pauseMusic.play(false, FlxG.random.int(0, Std.int(pauseMusic.length / 2)));
@@ -258,10 +256,10 @@ class PauseSubState extends MusicBeatSubState
 	function buildBackground():Void
 	{
 		// Using state.bgColor causes bugs!
-		background = new FunkinSprite(0, 0);
+		background = new FunkinSprite();
 		background.makeSolidColor(FlxG.width, FlxG.height, FlxColor.BLACK);
 		background.alpha = 0.0;
-		background.scrollFactor.set(0, 0);
+		background.scrollFactor.set();
 		background.updateHitbox();
 		add(background);
 	}
@@ -278,18 +276,16 @@ class PauseSubState extends MusicBeatSubState
 		var metadataSong:FlxText = new FlxText(20, 15, FlxG.width - 40, 'Song Name - Artist');
 		metadataSong.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
 		if (PlayState.instance?.currentChart != null)
-		{
 			metadataSong.text = '${PlayState.instance.currentChart.songName} - ${PlayState.instance.currentChart.songArtist}';
-		}
+
 		metadataSong.scrollFactor.set(0, 0);
 		metadata.add(metadataSong);
 
 		var metadataDifficulty:FlxText = new FlxText(20, 15 + 32, FlxG.width - 40, 'Difficulty: ');
 		metadataDifficulty.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
 		if (PlayState.instance?.currentDifficulty != null)
-		{
 			metadataDifficulty.text += PlayState.instance.currentDifficulty.toTitleCase();
-		}
+
 		metadataDifficulty.scrollFactor.set(0, 0);
 		metadata.add(metadataDifficulty);
 
@@ -318,13 +314,12 @@ class PauseSubState extends MusicBeatSubState
 		var delay:Float = 0.1;
 		for (child in metadata.members)
 		{
+			child.alpha = 0;
 			FlxTween.tween(child, {alpha: 1, y: child.y + 5}, 1.8, {ease: FlxEase.quartOut, startDelay: delay});
 			delay += 0.1;
 		}
 
-		new FlxTimer().start(0.2, (_) -> {
-			allowInput = true;
-		});
+		new FlxTimer().start(0.2, (_) -> allowInput = true);
 	}
 
 	// ===============

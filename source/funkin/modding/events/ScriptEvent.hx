@@ -54,9 +54,7 @@ class ScriptEvent
 	public function cancelEvent():Void
 	{
 		if (cancelable)
-		{
 			eventCanceled = true;
-		}
 	}
 
 	/**

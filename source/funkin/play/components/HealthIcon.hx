@@ -394,11 +394,9 @@ class HealthIcon extends FunkinSprite
 	function correctCharacterId(charId:Null<String>):String
 	{
 		if (charId == null)
-		{
 			return Constants.DEFAULT_HEALTH_ICON;
-		}
 
-		if (!Assets.exists(Paths.image('icons/icon-$charId')))
+		if (!Assets.exists(Paths.file('images/icons/icon-$charId.png', IMAGE)))
 		{
 			FlxG.log.warn('No icon for character: $charId : using default placeholder face instead!');
 			return Constants.DEFAULT_HEALTH_ICON;

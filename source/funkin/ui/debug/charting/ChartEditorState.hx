@@ -2783,7 +2783,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
 		buttonSelectEvent = new Button();
 		buttonSelectEvent.allowFocus = false;
-		buttonSelectEvent.icon = Paths.image('ui/chart-editor/events/Default');
+		buttonSelectEvent.icon = Paths.image('ui/chart-editor/events/Default').assetsKey;
 		buttonSelectEvent.iconPosition = "top";
 		buttonSelectEvent.x = buttonSelectPlayer.x + buttonSelectPlayer.width;
 		buttonSelectEvent.y = buttonSelectPlayer.y;

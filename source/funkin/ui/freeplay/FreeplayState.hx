@@ -959,8 +959,8 @@ class FreeplayState extends MusicBeatSubState
 			}
 
 			new FlxTimer().start(longestTimer, (_) -> {
-				FlxTransitionableState.skipNextTransIn = true;
-				FlxTransitionableState.skipNextTransOut = true;
+				//FlxTransitionableState.skipNextTransIn = true;
+				//FlxTransitionableState.skipNextTransOut = true;
 				if (Type.getClass(_parentState) == MainMenuState)
 				{
 					FunkinSound.playMusic('freakyMenu',

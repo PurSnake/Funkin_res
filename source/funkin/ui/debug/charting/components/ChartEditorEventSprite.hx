@@ -93,7 +93,7 @@ class ChartEditorEventSprite extends FlxSprite
     // Push all the other events as frames.
     for (eventName in SongEventRegistry.listEventIds())
     {
-      var exists:Bool = Assets.exists(Paths.image('ui/chart-editor/events/$eventName'));
+      var exists:Bool = Assets.exists(Paths.file('images/ui/chart-editor/events/$eventName.png'));
       if (!exists) continue; // No graphic for this event.
 
       var frames:FlxAtlasFrames = Paths.getSparrowAtlas('ui/chart-editor/events/$eventName');

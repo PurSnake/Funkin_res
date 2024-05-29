@@ -76,13 +76,13 @@ class MainMenuState extends MusicBeatState
 		camFollow = new FlxObject(0, 0, 1, 1);
 		add(camFollow);
 
-		magenta = new FlxSprite(Paths.image('menuBGMagenta'));
+		magenta = new FlxSprite(Paths.image('menuDesat'));
+		magenta.color = 0xFFFD719B;
 		magenta.scrollFactor.x = bg.scrollFactor.x;
 		magenta.scrollFactor.y = bg.scrollFactor.y;
 		magenta.setGraphicSize(Std.int(bg.width));
 		magenta.updateHitbox();
-		magenta.x = bg.x;
-		magenta.y = bg.y;
+		magenta.setPosition(bg.x, bg.y);
 		magenta.visible = false;
 
 		// TODO: Why doesn't this line compile I'm going fucking feral
@@ -94,13 +94,9 @@ class MainMenuState extends MusicBeatState
 		menuItems.onChange.add(onMenuItemChange);
 		menuItems.onAcceptPress.add(function(_) {
 			if (_.name == 'freeplay')
-			{
 				magenta.visible = true;
-			}
 			else
-			{
 				FlxFlicker.flicker(magenta, 1.1, 0.15, false, true);
-			}
 		});
 
 		menuItems.enabled = true; // can move on intro
