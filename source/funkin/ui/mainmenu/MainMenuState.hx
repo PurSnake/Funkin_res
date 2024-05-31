@@ -302,7 +302,7 @@ class MainMenuState extends MusicBeatState
 			}
 		});
 
-		new FlxTimer().start(duration, function(_) FlxG.switchState(state));
+		new FlxTimer().start(duration, (_) -> FlxG.switchState(state));
 	}
 
 	override function update(elapsed:Float):Void
@@ -346,22 +346,22 @@ class MainMenuState extends MusicBeatState
 			// Give the user a score of 1 point on Weekend 1 story mode.
 			// This makes the level count as cleared and displays the songs in Freeplay.
 			funkin.save.Save.instance.setLevelScore('weekend1', 'easy',
-				{
-					score: 1,
-					tallies:
-						{
-							sick: 0,
-							good: 0,
-							bad: 0,
-							shit: 0,
-							missed: 0,
-							combo: 0,
-							maxCombo: 0,
-							totalNotesHit: 0,
-							totalNotes: 0,
-						},
-					accuracy: 0,
-				});
+			{
+				score: 1,
+				tallies:
+					{
+					sick: 0,
+					good: 0,
+					bad: 0,
+					shit: 0,
+					missed: 0,
+					combo: 0,
+					maxCombo: 0,
+					totalNotesHit: 0,
+					totalNotes: 0,
+				},
+				accuracy: 0,
+			});
 		}
 		#end
 

@@ -653,9 +653,7 @@ class SongDifficulty
 	public inline function cacheVocals():Void
 	{
 		for (voice in buildVoiceList())
-		{
 			FlxG.sound.cache(voice);
-		}
 	}
 
 	/**

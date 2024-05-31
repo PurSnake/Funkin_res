@@ -8,11 +8,13 @@ import openfl.text._internal.TextFormatRange;
 import openfl.display.Sprite;
 import flixel.math.FlxMath;
 
+using flixel.util.FlxStringUtil;
+
 /**
 	The FPS class provides an easy-to-use monitor to display
 	the current frame rate of an OpenFL project
 **/
-/*
+/* --Base One
 class StatisticMonitor extends TextField
 {
 	public var currentFPS(default, null):Int;
@@ -64,9 +66,7 @@ class StatisticMonitor extends TextField
 }
 */
 
-
-using flixel.util.FlxStringUtil;
-
+/* --Base Two
 @:access(openfl.text.TextField)
 class StatisticMonitor extends Sprite
 {
@@ -172,7 +172,6 @@ class StatisticMonitor extends Sprite
 	inline function addLine(str:String = '', altStr:String = '')
 	{
 		_text += str;
-		// _text += altStr;
 		if (altStr != null)
 			_text += '<font color = "#ffffff" faces = "' + fpsText.defaultTextFormat.font + '" size = "13">$altStr</font>';
 		_text += '\n';
@@ -204,5 +203,118 @@ class StatisticMonitor extends Sprite
 		bgSprite.x = 0;
 		fpsText.x = bgSprite.x + offsetX;
 	}
+}
+*/
+
+class StatisticMonitor extends Sprite
+{
+	//Stuff you see
+	@:noCompletion var text:TextField;
+	@:noCompletion var bg:Sprite;
+
+	//Text screen offset
+	@:noCompletion var textX:Float;
+	@:noCompletion var textY:Float;
+
+	@:noCompletion var currentFPS(default, null):Float;
+	@:noCompletion var currentMemory(default, null):UInt;
+	@:noCompletion var maxMemory(default, null):UInt;
+
+	public function new(ox:Float = 10, oy:Float = 10, color:Int = 0x000000)
+	{
+		super();
+		textX = ox; textY = oy;
+
+		bg = new Sprite();
+		bg.graphics.beginFill(0xFF000000);
+		bg.graphics.drawRect(0, 0, 1, 1);
+		bg.graphics.endFill();
+		bg.alpha = 1 / 3;
+		addChild(bg);
+
+		text = new TextField();
+		text.x = textX; text.y = textY;
+		text.defaultTextFormat = new TextFormat("VCR OSD Mono", 14, 0xEEEEEE);
+		text.autoSize = LEFT;
+		@:privateAccess
+		text.__textFormat.align = LEFT;
+		text.multiline = true;
+		text.removeEventListeners();
+		text.textColor = color;
+		addChild(text);
+
+		text.selectable = text.mouseEnabled = bg.mouseEnabled = mouseEnabled = false;
+
+		visible = Preferences.debugDisplay; //Inital visibility
+
+		FlxG.signals.preUpdate.add(customUpdate);
+		FlxG.signals.gameResized.add((w, h) -> setPos());
+		setPos();
+	}
+
+	@:noCompletion override function set_scaleX(value:Float):Float
+	{
+		value = super.set_scaleX(value); setPos();
+		return value;
+	}
+
+	@:noCompletion override function set_scaleY(value:Float):Float
+	{
+		value = super.set_scaleY(value); setPos();
+		return value;
+	}
+
+	public function setPos()
+	{
+		updateText();
+		bg.scaleX = text.width + textX * 2;
+		bg.scaleY = text.height + textY * 2 + 3;
+	}
+
+	@:noCompletion //No update
+	override function __enterFrame(deltaTime:Int) {};
+
+	extern inline function __calc__fps(__cur__fps:Float, __e:Float):Float
+		return FlxMath.lerp(__e == 0.0 ? 0.0 : 1.0 / __e, __cur__fps, Math.exp(-__e * 15.0));
+
+	@:noCompletion var deltaTimeout:Float = 0.0;
+
+	@:access(flixel.FlxGame._elapsedMS)
+	function customUpdate()
+	{
+		currentFPS = __calc__fps(currentFPS, FlxG.game._elapsedMS / 1000);
+		deltaTimeout += FlxG.game._elapsedMS;
+		if (deltaTimeout < 75)
+			return;
+
+		deltaTimeout = 0;
+		updateText();
+	}
+
+	@:noCompletion var __text:String;
+	inline function updateText()
+	{
+		if (!visible) return;
+
+		__text = "FPS: " + _rec_text(Std.string(Math.floor(FlxG.updateFramerate > currentFPS ? currentFPS : FlxG.updateFramerate)));
+
+		currentMemory = cast System.totalMemory;
+		if (currentMemory <= FlxMath.MAX_VALUE_INT)
+		{
+			if (maxMemory < currentMemory)
+				maxMemory = currentMemory;
+
+			__text += "Memory: " + _rec_text(currentMemory.formatBytes());
+			__text += "Memory MAX: " + _rec_text(maxMemory.formatBytes());
+		}
+		else //OH NO!! MEMORY LEAK
+			__text += "Memory Leaking: -${cast(currentMem - FlxMath.MAX_VALUE_INT, UInt).formatBytes()}\n";
+
+		text.text = __text;
+		__text = null;
+	}	
+
+	inline function _rec_text(s:String):String
+		return s + "\n";
 }
 

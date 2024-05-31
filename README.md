@@ -1,5 +1,13 @@
 # Friday Night Funkin' 
 
+# Grafex
+
+PurSnake
+Some code and help from Redar13 (aka Twist Engine developer)
+
+
+etc...
+
 Friday Night Funkin' is a rhythm game. Built using HaxeFlixel for Ludem Dare 47.
 
 This game was made with love to Newgrounds and it's community. Extra love to Tom Fulp.

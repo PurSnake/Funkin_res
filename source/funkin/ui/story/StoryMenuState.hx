@@ -111,9 +111,6 @@ class StoryMenuState extends MusicBeatState
 
 	public function new(?stickers:StickerSubState = null)
 	{
-		FlxTransitionableState.skipNextTransOut = false;
-		FlxTransitionableState.skipNextTransIn = stickers != null;
-
 		super();
 		if (stickers != null)
 			stickerSubState = stickers;
@@ -121,6 +118,8 @@ class StoryMenuState extends MusicBeatState
 
 	override function create():Void
 	{
+		FlxTransitionableState.skipNextTransOut = false;
+		FlxTransitionableState.skipNextTransIn = (stickerSubState != null);
 		super.create();
 
 		levelList = LevelRegistry.instance.listSortedLevelIds();

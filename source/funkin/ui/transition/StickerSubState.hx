@@ -191,33 +191,6 @@ class StickerSubState extends MusicBeatSubState
 
 		FlxG.random.shuffle(grpStickers.members);
 
-		// var stickerCount:Int = 0;
-
-		// for (w in 0...6)
-		// {
-		//	 var xPos:Float = FlxG.width * (w / 6);
-		//	 for (h in 0...6)
-		//	 {
-		//		 var yPos:Float = FlxG.height * (h / 6);
-		//		 var sticker = grpStickers.members[stickerCount];
-		//		 xPos -= sticker.width / 2;
-		//		 yPos -= sticker.height * 0.9;
-		//		 sticker.x = xPos;
-		//		 sticker.y = yPos;
-
-		//		 stickerCount++;
-		//	 }
-		// }
-
-		// for (ind => sticker in grpStickers.members)
-		// {
-		//	 sticker.x = (ind % 8) * sticker.width;
-		//	 var yShit:Int = Math.floor(ind / 8);
-		//	 sticker.y += yShit * sticker.height;
-		//	 // scales it juuuust a smidge
-		//	 sticker.y += 20 * yShit;
-		// }
-
 		// another damn for loop... apologies!!!
 		for (ind => sticker in grpStickers.members)
 		{

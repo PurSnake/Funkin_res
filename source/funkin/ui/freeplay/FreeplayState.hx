@@ -140,8 +140,9 @@ class FreeplayState extends MusicBeatSubState
 	{
 		currentCharacter = params?.character ?? Constants.DEFAULT_CHARACTER;
 
-		FlxTransitionableState.skipNextTransOut = false;
-		FlxTransitionableState.skipNextTransIn = stickers != null;
+		//FlxTransitionableState.skipNextTransOut = false;
+		//FlxTransitionableState.skipNextTransIn = stickers != null;
+
 		if (stickers != null)
 			stickerSubState = stickers;
 
@@ -738,18 +739,14 @@ class FreeplayState extends MusicBeatSubState
 			}
 		}
 
-		lerpScore = MathUtil.coolLerp(lerpScore, intendedScore, 0.2);
-		lerpCompletion = MathUtil.coolLerp(lerpCompletion, intendedCompletion, 0.9);
+		lerpScore = MathUtil.smoothLerp(lerpScore, intendedScore, elapsed, 0.5);
+		lerpCompletion = MathUtil.smoothLerp(lerpCompletion, intendedCompletion, elapsed, 0.5);
 
 		if (Math.isNaN(lerpScore))
-		{
 			lerpScore = intendedScore;
-		}
 
 		if (Math.isNaN(lerpCompletion))
-		{
 			lerpCompletion = intendedCompletion;
-		}
 
 		fp.updateScore(Std.int(lerpScore));
 
@@ -894,11 +891,24 @@ class FreeplayState extends MusicBeatSubState
 			spamTimer = 0;
 		}
 
+		#if !html5
 		if (FlxG.mouse.wheel != 0)
 		{
 			dj.resetAFKTimer();
-			changeSelection(-Math.round(FlxG.mouse.wheel / 4));
+			changeSelection(-Math.round(FlxG.mouse.wheel));
 		}
+		#else
+		if (FlxG.mouse.wheel < 0)
+		{
+			dj.resetAFKTimer();
+			changeSelection(-Math.round(FlxG.mouse.wheel / 8));
+		}
+		else if (FlxG.mouse.wheel > 0)
+		{
+			dj.resetAFKTimer();
+			changeSelection(-Math.round(FlxG.mouse.wheel / 8));
+		}
+		#end
 
 		if (controls.UI_LEFT_P && !FlxG.keys.pressed.CONTROL)
 		{
@@ -1240,30 +1250,30 @@ class FreeplayState extends MusicBeatSubState
 			if (curSelected == 0)
 			{
 				FunkinSound.playMusic('freeplayRandom',
-					{
-						startingVolume: 0.0,
-						overrideExisting: true,
-						restartTrack: true
-					});
+				{
+					startingVolume: 0.0,
+					overrideExisting: true,
+					restartTrack: true
+				});
 				FlxG.sound.music.fadeIn(2, 0, 0.8);
 			}
 			else
 			{
 				// TODO: Stream the instrumental of the selected song?
 				var didReplace:Bool = FunkinSound.playMusic('freakyMenu',
+				{
+					startingVolume: 0.0,
+					overrideExisting: true,
+					restartTrack: false
+				});
+				if (didReplace)
+				{
+					FunkinSound.playMusic('freakyMenu',
 					{
 						startingVolume: 0.0,
 						overrideExisting: true,
 						restartTrack: false
 					});
-				if (didReplace)
-				{
-					FunkinSound.playMusic('freakyMenu',
-						{
-							startingVolume: 0.0,
-							overrideExisting: true,
-							restartTrack: false
-						});
 					FlxG.sound.music.fadeIn(2, 0, 0.8);
 				}
 			}
@@ -1277,8 +1287,10 @@ class FreeplayState extends MusicBeatSubState
 	 */
 	public static function build(?params:FreeplayStateParams, ?stickers:StickerSubState):MusicBeatState
 	{
-		var result = new MainMenuState();
+		FlxTransitionableState.skipNextTransOut = false;
+		FlxTransitionableState.skipNextTransIn = stickers != null;
 
+		var result = new MainMenuState();
 		result.openSubState(new FreeplayState(params, stickers));
 		result.persistentUpdate = false;
 		result.persistentDraw = true;

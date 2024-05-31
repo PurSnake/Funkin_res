@@ -334,7 +334,7 @@ class LoadingState extends MusicBeatSubState
 			}, true);
 
 			trace("Queued ${path} for precaching");
-			// FunkinSprite.cacheTexture(path);
+			FunkinSprite.cacheTexture(path);
 		}
 
 		// FunkinSprite.cacheAllNoteStyleTextures(noteStyle) // This will replace the stuff above!
