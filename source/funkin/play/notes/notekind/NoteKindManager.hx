@@ -3,6 +3,8 @@ package funkin.play.notes.notekind;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.modding.events.ScriptEvent;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
+import funkin.data.notestyle.NoteStyleRegistry;
+import funkin.play.notes.notestyle.NoteStyle;
 
 class NoteKindManager
 {
@@ -32,13 +34,53 @@ class NoteKindManager
 		}
 	}
 
-	public static function callEvent(noteKind:String, event:ScriptEvent):Void
+	/**
+	 * Calls the given event for note kind scripts
+	 * @param event The event
+	 */
+	public static function callEvent(event:ScriptEvent):Void
 	{
-		var noteKind:NoteKind = noteKinds.get(noteKind);
+		// if it is a note script event,
+		// then only call the event for the specific note kind script
+		if (Std.isOfType(event, NoteScriptEvent))
+		{
+			var noteEvent:NoteScriptEvent = cast(event, NoteScriptEvent);
 
-		if (noteKind == null)
-			return;
+			var noteKind:NoteKind = noteKinds.get(noteEvent.note.kind);
 
-		ScriptEventDispatcher.callEvent(noteKind, event);
+			if (noteKind != null)
+			{
+				ScriptEventDispatcher.callEvent(noteKind, event);
+			}
+		}
+		else // call the event for all note kind scripts
+		{
+			for (noteKind in noteKinds.iterator())
+			{
+				ScriptEventDispatcher.callEvent(noteKind, event);
+			}
+		}
+	}
+
+	/**
+	 * Retrieve the note style from the given note kind
+	 * @param noteKind note kind name
+	 * @return NoteStyle
+	 */
+	public static function getNoteStyle(noteKind:String):Null<NoteStyle>
+	{
+		var noteStyleId:String = noteKinds.get(noteKind)?.noteStyleId ?? "";
+
+		return NoteStyleRegistry.instance.fetchEntry(noteStyleId);
+	}
+
+	/**
+	 * Retrieve the note style id from the given note kind
+	 * @param noteKind note kind name
+	 * @return Null<String>
+	 */
+	public static function getNoteStyleId(noteKind:String):Null<String>
+	{
+		return noteKinds.get(noteKind)?.noteStyleId;
 	}
 }

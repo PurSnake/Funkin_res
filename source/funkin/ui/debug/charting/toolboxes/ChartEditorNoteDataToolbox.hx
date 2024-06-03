@@ -4,6 +4,10 @@ import haxe.ui.components.DropDown;
 import haxe.ui.components.TextField;
 import haxe.ui.events.UIEvent;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
+import funkin.ui.debug.charting.components.ChartEditorNoteSprite;
+import funkin.ui.debug.charting.components.ChartEditorHoldNoteSprite;
+import funkin.play.notes.notestyle.NoteStyle;
+import funkin.play.notes.notekind.NoteKindManager;
 
 /**
  * The toolbox which allows modifying information like Note Kind.
@@ -56,10 +60,30 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
 
 			if (!_initializing && chartEditorState.currentNoteSelection.length > 0)
 			{
-				// Edit the note data of any selected notes.
 				for (note in chartEditorState.currentNoteSelection)
 				{
+					// Edit the note data of any selected notes.
 					note.kind = chartEditorState.noteKindToPlace;
+
+					// update note sprites
+					for (noteSprite in chartEditorState.renderedNotes.members)
+					{
+						if (noteSprite.noteData == note)
+						{
+							noteSprite.noteStyle = NoteKindManager.getNoteStyleId(note.kind) ?? chartEditorState.currentSongNoteStyle;
+							break;
+						}
+					}
+
+					// update hold note sprites
+					for (holdNoteSprite in chartEditorState.renderedHoldNotes.members)
+					{
+						if (holdNoteSprite.noteData == note)
+						{
+							holdNoteSprite.noteStyle = NoteKindManager.getNoteStyleId(note.kind) ?? chartEditorState.currentSongNoteStyle;
+							break;
+						}
+					}
 				}
 				chartEditorState.saveDataDirty = true;
 				chartEditorState.noteDisplayDirty = true;

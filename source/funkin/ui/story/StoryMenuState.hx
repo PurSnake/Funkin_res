@@ -120,10 +120,11 @@ class StoryMenuState extends MusicBeatState
 	{
 		FlxTransitionableState.skipNextTransOut = false;
 		FlxTransitionableState.skipNextTransIn = (stickerSubState != null);
+
 		super.create();
 
 		levelList = LevelRegistry.instance.listSortedLevelIds();
-		levelList = levelList.filter(function(id) {
+		levelList = levelList.filter((id) -> {
 			var levelData = LevelRegistry.instance.fetchEntry(id);
 			if (levelData == null) return false;
 
@@ -133,21 +134,20 @@ class StoryMenuState extends MusicBeatState
 
 		difficultySprites = new Map<String, FlxSprite>();
 
+		persistentUpdate = persistentDraw = true;
 		transIn = FlxTransitionableState.defaultTransIn;
 		transOut = FlxTransitionableState.defaultTransOut;
+		persistentUpdate = persistentDraw = true;
 
 		playMenuMusic();
 
 		if (stickerSubState != null)
 		{
-			this.persistentUpdate = true;
-			this.persistentDraw = true;
-
+			persistentUpdate = true;
+			persistentDraw = true;
 			openSubState(stickerSubState);
 			stickerSubState.degenStickers();
 		}
-
-		persistentUpdate = persistentDraw = true;
 
 		rememberSelection();
 

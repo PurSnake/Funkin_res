@@ -9,24 +9,42 @@ import funkin.modding.events.ScriptEvent;
 class NoteKind implements INoteScriptedClass
 {
 	/**
-	 * the name of the note kind
+	 * The name of the note kind
 	 */
 	public var noteKind:String;
 
 	/**
-	 * description used in chart editor
+	 * Description used in chart editor
 	 */
-	public var description:String = "";
+	public var description:String;
 
-	public function new(noteKind:String, description:String = "")
+	/**
+	 * Custom note style
+	 */
+	public var noteStyleId:String;
+
+	public function new(noteKind:String, description:String = "", noteStyleId:String = "")
 	{
 		this.noteKind = noteKind;
 		this.description = description;
+		this.noteStyleId = noteStyleId;
 	}
 
 	public function toString():String
 	{
 		return noteKind;
+	}
+
+	/**
+	 * Retrieve all notes of this kind
+	 * @return Array<NoteSprite>
+	 */
+	function getNotes():Array<NoteSprite>
+	{
+		var allNotes:Array<NoteSprite> = PlayState.instance.playerStrumline.notes.members.concat(PlayState.instance.opponentStrumline.notes.members);
+		return allNotes.filter(function(note:NoteSprite) {
+			return note != null && note.noteData.kind == this.noteKind;
+		});
 	}
 
 	public function onScriptEvent(event:ScriptEvent):Void {}

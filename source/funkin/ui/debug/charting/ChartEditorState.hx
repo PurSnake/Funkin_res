@@ -45,6 +45,7 @@ import funkin.input.TurboActionHandler;
 import funkin.input.TurboButtonHandler;
 import funkin.input.TurboKeyHandler;
 import funkin.modding.events.ScriptEvent;
+import funkin.play.notes.notekind.NoteKindManager;
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.play.character.CharacterData;
 import funkin.play.character.CharacterData.CharacterDataParser;
@@ -3584,6 +3585,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
 				// The note sprite handles animation playback and positioning.
 				noteSprite.noteData = noteData;
+				noteSprite.noteStyle = NoteKindManager.getNoteStyleId(noteData.kind) ?? currentSongNoteStyle;
 				noteSprite.overrideStepTime = null;
 				noteSprite.overrideData = null;
 
@@ -3606,6 +3608,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 					holdNoteSprite.noteDirection = noteSprite.noteData.getDirection();
 
 					holdNoteSprite.setHeightDirectly(noteLengthPixels);
+
+					holdNoteSprite.noteStyle = NoteKindManager.getNoteStyleId(noteSprite.noteData.kind) ?? currentSongNoteStyle;
 
 					holdNoteSprite.updateHoldNotePosition(renderedHoldNotes);
 
@@ -3671,6 +3675,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 				holdNoteSprite.noteDirection = noteData.getDirection();
 
 				holdNoteSprite.setHeightDirectly(noteLengthPixels);
+
+				holdNoteSprite.noteStyle = NoteKindManager.getNoteStyleId(noteData.kind) ?? currentSongNoteStyle;
 
 				holdNoteSprite.updateHoldNotePosition(renderedHoldNotes);
 
@@ -4569,6 +4575,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 						gridGhostHoldNote.noteData = currentPlaceNoteData;
           					gridGhostHoldNote.noteDirection = currentPlaceNoteData.getDirection();
 						gridGhostHoldNote.setHeightDirectly(dragLengthPixels, true);
+						gridGhostHoldNote.noteStyle = NoteKindManager.getNoteStyleId(currentPlaceNoteData.kind) ?? currentSongNoteStyle;
 
 						gridGhostHoldNote.updateHoldNotePosition(renderedHoldNotes);
 					}
@@ -4891,6 +4898,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 						{
 							noteData.kind = noteKindToPlace;
 							noteData.data = cursorColumn;
+							gridGhostNote.noteStyle = NoteKindManager.getNoteStyleId(noteData.kind) ?? currentSongNoteStyle;
 							gridGhostNote.playNoteAnimation();
 						}
 						noteData.time = cursorSnappedMs;
@@ -5280,6 +5288,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 				ghostHold.visible = true;
 				ghostHold.alpha = 0.6;
 				ghostHold.setHeightDirectly(0);
+				ghostHold.noteStyle = NoteKindManager.getNoteStyleId(ghostHold.noteData.kind) ?? currentSongNoteStyle;
 				ghostHold.updateHoldNotePosition(renderedHoldNotes);
 			}
 
@@ -6302,7 +6311,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 			var tempNote:NoteSprite = new NoteSprite(NoteStyleRegistry.instance.fetchDefault());
 			tempNote.noteData = noteData;
 			tempNote.scrollFactor.set(0, 0);
-			var event:NoteScriptEvent = new HitNoteScriptEvent(tempNote, 0.0, 0, 'perfect', 0);
+			var event:NoteScriptEvent = new HitNoteScriptEvent(tempNote, 0.0, 0, 'perfect', false, 0);
 			dispatchEvent(event);
 
 			// Calling event.cancelEvent() skips all the other logic! Neat!

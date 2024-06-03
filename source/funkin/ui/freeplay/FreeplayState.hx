@@ -29,6 +29,7 @@ import funkin.graphics.shaders.StrokeShader;
 import funkin.input.Controls;
 import funkin.play.PlayStatePlaylist;
 import funkin.play.song.Song;
+import funkin.ui.story.Level;
 import funkin.save.Save;
 import funkin.save.Save.SaveScoreData;
 import funkin.ui.AtlasText;
@@ -191,9 +192,23 @@ class FreeplayState extends MusicBeatSubState
 		// programmatically adds the songs via LevelRegistry and SongRegistry
 		for (levelId in LevelRegistry.instance.listSortedLevelIds())
 		{
-			for (songId in LevelRegistry.instance.parseEntryData(levelId).songs)
+			var level:Level = LevelRegistry.instance.fetchEntry(levelId);
+
+			if (level == null)
+			{
+				trace('[WARN] Could not find level with id (${levelId})');
+				continue;
+			}
+
+			for (songId in level.getSongs())
 			{
 				var song:Song = SongRegistry.instance.fetchEntry(songId);
+
+				if (song == null)
+				{
+					trace('[WARN] Could not find song with id (${songId})');
+					continue;
+				}
 
 				// Only display songs which actually have available charts for the current character.
 				trace(song.variations);
@@ -204,9 +219,7 @@ class FreeplayState extends MusicBeatSubState
 				//songs.push(new FreeplaySongData(levelId, songId, song, song.variations));
 				songs.push(new FreeplaySongData(levelId, songId, song, displayedVariations));
 				for (difficulty in availableDifficultiesForSong)
-				{
 					diffIdsTotal.pushUnique(difficulty);
-				}
 			}
 		}
 
@@ -781,9 +794,8 @@ class FreeplayState extends MusicBeatSubState
 			for (touch in FlxG.touches.list)
 			{
 				if (touch.justPressed)
-				{
 					initTouchPos.set(touch.screenX, touch.screenY);
-				}
+
 				if (touch.pressed)
 				{
 					var dx:Float = initTouchPos.x - touch.screenX;
