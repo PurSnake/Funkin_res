@@ -35,6 +35,7 @@ interface IStateChangingScriptedClass extends IScriptedClass
 
   public function onSubStateOpenBegin(event:SubStateScriptEvent):Void;
   public function onSubStateOpenEnd(event:SubStateScriptEvent):Void;
+
   public function onSubStateCloseBegin(event:SubStateScriptEvent):Void;
   public function onSubStateCloseEnd(event:SubStateScriptEvent):Void;
 }
