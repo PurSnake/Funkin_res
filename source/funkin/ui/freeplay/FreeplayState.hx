@@ -1299,11 +1299,12 @@ class FreeplayState extends MusicBeatSubState
 	 */
 	public static function build(?params:FreeplayStateParams, ?stickers:StickerSubState):MusicBeatState
 	{
+		var result = new MainMenuState();
 		FlxTransitionableState.skipNextTransOut = false;
 		FlxTransitionableState.skipNextTransIn = stickers != null;
-
-		var result = new MainMenuState();
 		result.openSubState(new FreeplayState(params, stickers));
+		FlxTransitionableState.skipNextTransOut = false;
+		FlxTransitionableState.skipNextTransIn = stickers != null;
 		result.persistentUpdate = false;
 		result.persistentDraw = true;
 		return result;

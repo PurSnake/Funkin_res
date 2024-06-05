@@ -44,6 +44,14 @@ class MainMenuState extends MusicBeatState
 
 	static var rememberedSelectedIndex:Int = 0;
 
+	public function new()
+	{
+		super();
+
+		FlxTransitionableState.skipNextTransIn = false;
+		FlxTransitionableState.skipNextTransOut = false;
+	}
+
 	override function create():Void
 	{
 		#if discord_rpc
@@ -52,9 +60,6 @@ class MainMenuState extends MusicBeatState
 		#end
 
 		FlxG.cameras.reset(new FunkinCamera('mainMenu'));
-
-		FlxTransitionableState.skipNextTransIn = false;
-		FlxTransitionableState.skipNextTransOut = false;
 
 		transIn = FlxTransitionableState.defaultTransIn;
 		transOut = FlxTransitionableState.defaultTransOut;

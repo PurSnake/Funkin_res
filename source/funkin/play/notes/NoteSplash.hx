@@ -12,6 +12,8 @@ class NoteSplash extends FlxSprite
 	static final FRAMERATE_DEFAULT:Int = 24;
 	static final FRAMERATE_VARIANCE:Int = 2;
 
+	static final ANGLE_VARIANCE:Int = 15;
+
 	static var frameCollection:FlxFramesCollection;
 
 	public static function preloadFrames():Void
@@ -81,8 +83,24 @@ class NoteSplash extends FlxSprite
 		// Vary the speed of the animation a bit.
 		animation.curAnim.frameRate = FRAMERATE_DEFAULT + FlxG.random.int(-FRAMERATE_VARIANCE, FRAMERATE_VARIANCE);
 
-		// Center the animation on the note splash.
-		offset.set(width * 0.3, height * 0.3);
+		// Center the animation on the note splash
+		//offset.set(width * 0.3, height * 0.3);
+		//angle = FlxG.random.int(-ANGLE_VARIANCE, ANGLE_VARIANCE);
+		//centerOffsets();
+		//setPosition(x - width * 0.5, y - height * 0.5);
+
+		//setPosition(x - width * .5, y - height * .5);
+
+
+		//offset.set(width * 0.25 / scale.x, height * 0.3 / scale.y);
+
+		centerOffsets();
+		angle = FlxG.random.int(-ANGLE_VARIANCE, ANGLE_VARIANCE);
+		//setPosition(x - (width * 0.25 / scale.x), y - (height * 0.3 / scale.y));
+		setPosition(x - width * 0.25 / scale.x, y - height * 0.3 / scale.y);
+
+		//this.x -= width * 0.25 / scale.x;
+		//this.offset.y = height * 0.3 / scale.y;
 	}
 
 	public function onAnimationFinished(animationName:String):Void

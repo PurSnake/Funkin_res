@@ -29,7 +29,7 @@ class Countdown
 	 * This will automatically stop and restart the countdown if it is already running.
 	 * @returns `false` if the countdown was cancelled by a script.
 	 */
-	public static function performCountdown(isPixelStyle:Bool):Bool
+	public dynamic static function performCountdown(isPixelStyle:Bool):Bool
 	{
 		countdownStep = BEFORE;
 		var cancelled:Bool = propagateCountdownEvent(countdownStep);
@@ -89,7 +89,7 @@ class Countdown
 	/**
 	 * @return TRUE if the event was cancelled.
 	 */
-	static function propagateCountdownEvent(index:CountdownStep):Bool
+	dynamic static function propagateCountdownEvent(index:CountdownStep):Bool
 	{
 		var event:ScriptEvent;
 
@@ -117,7 +117,7 @@ class Countdown
 	 *
 	 * If you want to call this from a module, it's better to use the event system and cancel the onCountdownStep event.
 	 */
-	public static function pauseCountdown()
+	public dynamic static function pauseCountdown()
 	{
 		if (countdownTimer != null && !countdownTimer.finished)
 		{
@@ -130,7 +130,7 @@ class Countdown
 	 *
 	 * If you want to call this from a module, it's better to use the event system and cancel the onCountdownStep event.
 	 */
-	public static function resumeCountdown()
+	public dynamic static function resumeCountdown()
 	{
 		if (countdownTimer != null && !countdownTimer.finished)
 		{
@@ -143,7 +143,7 @@ class Countdown
 	 *
 	 * If you want to call this from a module, it's better to use the event system and cancel the onCountdownStart event.
 	 */
-	public static function stopCountdown()
+	public dynamic static function stopCountdown()
 	{
 		if (countdownTimer != null)
 		{
@@ -156,7 +156,7 @@ class Countdown
 	/**
 	 * Stops the current countdown, then starts the song for you.
 	 */
-	public static function skipCountdown()
+	public dynamic static function skipCountdown()
 	{
 		stopCountdown();
 		// This will trigger PlayState.startSong()
@@ -167,7 +167,7 @@ class Countdown
 	/**
 	 * Resets the countdown. Only works if it's already running.
 	 */
-	public static function resetCountdown()
+	public dynamic static function resetCountdown()
 	{
 		if (countdownTimer != null)
 		{
@@ -181,7 +181,7 @@ class Countdown
 	 *
 	 * This is public so modules can do lol funny shit.
 	 */
-	public static function showCountdownGraphic(index:CountdownStep, isPixelStyle:Bool):Void
+	public dynamic static function showCountdownGraphic(index:CountdownStep, isPixelStyle:Bool):Void
 	{
 		var spritePath:String = null;
 
@@ -217,7 +217,7 @@ class Countdown
 		if (spritePath == null) return;
 
 		var countdownSprite:FunkinSprite = FunkinSprite.create(spritePath);
-		countdownSprite.scrollFactor.set(0, 0);
+		countdownSprite.scrollFactor.set();
 
 		if (isPixelStyle) countdownSprite.setGraphicSize(Std.int(countdownSprite.width * Constants.PIXEL_ART_SCALE));
 
@@ -225,15 +225,16 @@ class Countdown
 
 		countdownSprite.updateHitbox();
 		countdownSprite.screenCenter();
+		countdownSprite.zoomFactor = 0.25;
 
 		// Fade sprite in, then out, then destroy it.
-		FlxTween.tween(countdownSprite, {y: countdownSprite.y += 100, alpha: 0}, Conductor.instance.beatLengthMs / 1000,
-			{
-				ease: FlxEase.cubeInOut,
-				onComplete: function(twn:FlxTween) {
-					countdownSprite.destroy();
-				}
-			});
+		FlxTween.tween(countdownSprite, {y: (countdownSprite.y -= 15) + 30, alpha: 0}, Conductor.instance.beatLengthMs / 1000,
+		{
+			ease: FlxEase.cubeInOut,
+			onComplete: function(twn:FlxTween) {
+				countdownSprite.destroy();
+			}
+		});
 
 		PlayState.instance.add(countdownSprite);
 	}
@@ -244,7 +245,7 @@ class Countdown
 	 *
 	 * This is public so modules can do lol funny shit.
 	 */
-	public static function playCountdownSound(index:CountdownStep, isPixelStyle:Bool):Void
+	public dynamic static function playCountdownSound(index:CountdownStep, isPixelStyle:Bool):Void
 	{
 		var soundPath:String = null;
 

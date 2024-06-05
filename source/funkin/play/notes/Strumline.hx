@@ -619,14 +619,13 @@ class Strumline extends FlxSpriteGroup
 
 		if (splash != null)
 		{
-			splash.play(direction);
-
 			splash.x = this.x;
 			splash.x += getXPos(direction);
 			splash.x += INITIAL_OFFSET;
 			splash.y = this.y;
 			splash.y -= INITIAL_OFFSET;
-			splash.y += 0;
+			//splash.y += 0;
+			splash.play(direction);
 		}
 	}
 

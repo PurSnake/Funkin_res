@@ -912,6 +912,8 @@ class PlayState extends MusicBeatSubState
 		{
 			Conductor.instance.update(Conductor.instance.songPosition - (Conductor.instance.instrumentalOffset + Conductor.instance.formatOffset + Conductor.instance.audioVisualOffset)
 			+ elapsed * 1000 * playbackRate); // Normal conductor update.
+
+			//Conductor.instance.update(Conductor.instance.songPosition);
 		}
 
 		var androidPause:Bool = false;
@@ -2618,7 +2620,7 @@ class PlayState extends MusicBeatSubState
 	/**
 	 * Handles rating popups when a note is hit.
 	 */
-	function popUpScore(daRating:String, ?combo:Int):Void
+	dynamic function popUpScore(daRating:String, ?combo:Int):Void
 	{
 		if (daRating == 'miss')
 		{
@@ -2956,7 +2958,7 @@ class PlayState extends MusicBeatSubState
 	/**
 	 * Play the camera zoom animation and then move to the results screen once it's done.
 	 */
-	function zoomIntoResultsScreen(isNewHighscore:Bool):Void
+	dynamic function zoomIntoResultsScreen(isNewHighscore:Bool):Void
 	{
 		trace('WENT TO RESULTS SCREEN!');
 
@@ -3034,12 +3036,12 @@ class PlayState extends MusicBeatSubState
 					maxCombo: talliesToUse.maxCombo,
 					totalNotesHit: talliesToUse.totalNotesHit,
 					totalNotes: talliesToUse.totalNotes,
-					},
-					accuracy: Highscore.tallies.totalNotesHit / Highscore.tallies.totalNotes,
 				},
+				accuracy: Highscore.tallies.totalNotesHit / Highscore.tallies.totalNotes,
+			},
 			isNewHighscore: isNewHighscore
 		});
-		res.camera = camHUD;
+		res.camera = camOther;
 		openSubState(res);
 	}
 
