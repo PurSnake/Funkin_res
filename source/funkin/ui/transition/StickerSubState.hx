@@ -235,6 +235,7 @@ class StickerSubState extends MusicBeatSubState
 						 */
 
 						FlxG.switchState(() -> {
+							FunkinSprite.preparePurgeCache();
 							FunkinSprite.purgeCache();
 
 							return targetState(this);

@@ -57,8 +57,7 @@ class LoadingState extends MusicBeatSubState
 		funkay.scrollFactor.set();
 		funkay.screenCenter();
 
-		loadBar = new FunkinSprite(0, FlxG.height - 20).makeSolidColor(FlxG.width, 10, 0xFFff16d2);
-		loadBar.screenCenter(X);
+		loadBar = new FunkinSprite(0, FlxG.height - 20).makeSolidColor(0, 10, 0xFFff16d2);
 		add(loadBar);
 
 		initSongsManifest().onComplete(function(lib) {
@@ -279,31 +278,34 @@ class LoadingState extends MusicBeatSubState
 	#else
 	static function preloadLevelAssets():Void
 	{
-		Paths.image('healthBar');
-		Paths.image('menuDesat');
-		Paths.image('combo');
-		Paths.image('num0');
-		Paths.image('num1');
-		Paths.image('num2');
-		Paths.image('num3');
-		Paths.image('num4');
-		Paths.image('num5');
-		Paths.image('num6');
-		Paths.image('num7');
-		Paths.image('num8');
-		Paths.image('num9');
-		Paths.image('notes', 'shared');
-		Paths.image('noteSplashes', 'shared');
-		Paths.image('noteStrumline', 'shared');
-		Paths.image('NOTE_hold_assets');
-		Paths.image('ready', 'shared');
-		Paths.image('set', 'shared');
-		Paths.image('go', 'shared');
-		Paths.image('sick', 'shared');
-		Paths.image('good', 'shared');
-		Paths.image('bad', 'shared');
-		Paths.image('shit', 'shared');
-		Paths.image('miss', 'shared'); // TODO: remove this
+		FunkinSprite.preparePurgeCache();
+
+		FunkinSprite.cacheTexture("healthBar");
+		FunkinSprite.cacheTexture("menuDesat");
+		FunkinSprite.cacheTexture("combo");
+		FunkinSprite.cacheTexture("num0");
+		FunkinSprite.cacheTexture("num1");
+		FunkinSprite.cacheTexture("num2");
+		FunkinSprite.cacheTexture("num3");
+		FunkinSprite.cacheTexture("num4");
+		FunkinSprite.cacheTexture("num5");
+		FunkinSprite.cacheTexture("num6");
+		FunkinSprite.cacheTexture("num7");
+		FunkinSprite.cacheTexture("num8");
+		FunkinSprite.cacheTexture("num9");
+		FunkinSprite.cacheTexture("notes", "shared");
+		FunkinSprite.cacheTexture("noteSplashes", "shared");
+		FunkinSprite.cacheTexture("noteStrumline", "shared");
+		FunkinSprite.cacheTexture("NOTE_hold_assets", null, false);
+		FunkinSprite.cacheTexture("ready", "shared");
+		FunkinSprite.cacheTexture("set", "shared");
+		FunkinSprite.cacheTexture("go", "shared");
+		FunkinSprite.cacheTexture("sick", "shared");
+		FunkinSprite.cacheTexture("good", "shared");
+		FunkinSprite.cacheTexture("bad", "shared");
+		FunkinSprite.cacheTexture("shit", "shared");
+		//FunkinSprite.cacheTexture("miss", "shared"); // TODO: remove this
+
 
 		// List all image assets in the level's library.
 		// This is crude and I want to remove it when we have a proper asset caching system.
@@ -325,6 +327,7 @@ class LoadingState extends MusicBeatSubState
 			if (!path.endsWith('.png')) continue;
 
 			new Future<String>(function() {
+				FunkinSprite.cacheTexture(path);
 				if (path.endsWith('spritemap1.png'))
 				{
 					trace('Preloading FlxAnimate asset: ${path}');
@@ -334,7 +337,7 @@ class LoadingState extends MusicBeatSubState
 			}, true);
 
 			trace("Queued ${path} for precaching");
-			FunkinSprite.cacheTexture(path);
+			//FunkinSprite.cacheTexture(path);
 		}
 
 		// FunkinSprite.cacheAllNoteStyleTextures(noteStyle) // This will replace the stuff above!

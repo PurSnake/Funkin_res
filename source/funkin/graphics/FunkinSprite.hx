@@ -284,7 +284,7 @@ class FunkinSprite extends flixel.addons.effects.FlxSkewedSprite //FlxSprite
 		return isGraphicCached(Paths.image(key));
 	}
 
-	public static function cacheTexture(key:String):Void
+	public static function cacheTexture(key:String, ?library:String, ?allowGPU:Bool = true):Void
 	{
 		//Paths.image(key);
 
@@ -301,7 +301,7 @@ class FunkinSprite extends flixel.addons.effects.FlxSkewedSprite //FlxSprite
 		}
 
 		// Else, texture is currently uncached.
-		var graphic:FlxGraphic = Paths.image(key);
+		var graphic:FlxGraphic = Paths.image(key, library, allowGPU);
 		if (graphic == null)
 		{
 			FlxG.log.warn('Failed to cache graphic: $key');
