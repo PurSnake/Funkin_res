@@ -156,9 +156,7 @@ class Strumline extends FlxSpriteGroup
 		}
 
 		for (i in 0...KEY_COUNT)
-		{
 			heldKeys.push(false);
-		}
 
 		// This MUST be true for children to update!
 		this.active = true;
@@ -327,9 +325,7 @@ class Strumline extends FlxSpriteGroup
 			var noteSprite = buildNoteSprite(note);
 
 			if (note.length > 0)
-			{
 				noteSprite.holdNoteSprite = buildHoldNoteSprite(note);
-			}
 
 			nextNoteIndex = noteIndex + 1; // Increment the nextNoteIndex rather than splicing the array, because splicing is slow.
 
@@ -722,7 +718,7 @@ class Strumline extends FlxSpriteGroup
 		if (noteSplashes.length < noteSplashes.maxSize)
 		{
 			// Create a new note splash.
-			result = new NoteSplash();
+			result = new NoteSplash(noteStyle);
 			this.noteSplashes.add(result);
 		}
 		else
@@ -756,7 +752,7 @@ class Strumline extends FlxSpriteGroup
 		if (noteHoldCovers.length < noteHoldCovers.maxSize)
 		{
 			// Create a new note hold cover.
-			result = new NoteHoldCover();
+			result = new NoteHoldCover(noteStyle);
 			this.noteHoldCovers.add(result);
 		}
 		else
