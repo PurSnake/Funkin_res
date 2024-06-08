@@ -6,91 +6,93 @@ import funkin.data.story.level.LevelData;
 
 class LevelProp extends Bopper
 {
-	public var propData(default, set):Null<LevelPropData> = null;
+  public var propData(default, set):Null<LevelPropData> = null;
 
-	function set_propData(value:LevelPropData):LevelPropData
-	{
-		// Only reset the prop if the asset path has changed.
-		if (propData == null || value?.assetPath != propData?.assetPath)
-		{
-			this.visible = (value != null);
-			this.propData = value;
-			danceEvery = this.propData?.danceEvery ?? 0;
-			applyData();
-		}
+  function set_propData(value:LevelPropData):LevelPropData
+  {
+    // Only reset the prop if the asset path has changed.
+    if (propData == null || !(thx.Dynamics.equals(value, propData)))
+    {
+      this.propData = value;
 
-		return this.propData;
-	}
+      this.visible = this.propData != null;
+      danceEvery = this.propData?.danceEvery ?? 0;
 
-	public function new(propData:LevelPropData)
-	{
-		super(propData.danceEvery);
-		this.propData = propData;
-	}
+      applyData();
+    }
 
-	public function playConfirm():Void
-	{
-		playAnimation('confirm', true, true);
-	}
+    return this.propData;
+  }
 
-	function applyData():Void
-	{
-		if (propData == null)
-		{
-			this.visible = false;
-			return;
-		}
-		else
-		{
-			this.visible = true;
-		}
+  public function new(propData:LevelPropData)
+  {
+    super(propData.danceEvery);
+    this.propData = propData;
+  }
 
-		// Reset animation state.
-		this.shouldAlternate = null;
+  public function playConfirm():Void
+  {
+    playAnimation('confirm', true, true);
+  }
 
-		var isAnimated:Bool = propData.animations.length > 0;
-		if (isAnimated)
-		{
-			// Initalize sprite frames.
-			// Sparrow atlas only LEL.
-			this.frames = Paths.getSparrowAtlas(propData.assetPath);
-		}
-		else
-		{
-			// Initalize static sprite.
-			this.loadGraphic(Paths.image(propData.assetPath));
+  function applyData():Void
+  {
+    if (propData == null)
+    {
+      this.visible = false;
+      return;
+    }
+    else
+    {
+      this.visible = true;
+    }
 
-			// Disables calls to update() for a performance boost.
-			this.active = false;
-		}
+    // Reset animation state.
+    this.shouldAlternate = null;
 
-		if (this.frames == null || this.frames.numFrames == 0)
-		{
-			trace('ERROR: Could not build texture for level prop (${propData.assetPath}).');
-			return;
-		}
+    var isAnimated:Bool = propData.animations.length > 0;
+    if (isAnimated)
+    {
+      // Initalize sprite frames.
+      // Sparrow atlas only LEL.
+      this.frames = Paths.getSparrowAtlas(propData.assetPath);
+    }
+    else
+    {
+      // Initalize static sprite.
+      this.loadGraphic(Paths.image(propData.assetPath));
 
-		var scale:Float = propData.scale * (propData.isPixel ? 6 : 1);
-		this.scale.set(scale, scale);
-		this.antialiasing = !propData.isPixel;
-		this.alpha = propData.alpha;
-		this.x = propData.offsets[0];
-		this.y = propData.offsets[1];
+      // Disables calls to update() for a performance boost.
+      this.active = false;
+    }
 
-		FlxAnimationUtil.addAtlasAnimations(this, propData.animations);
-		for (propAnim in propData.animations)
-		{
-			this.setAnimationOffsets(propAnim.name, propAnim.offsets[0], propAnim.offsets[1]);
-		}
+    if (this.frames == null || this.frames.numFrames == 0)
+    {
+      trace('ERROR: Could not build texture for level prop (${propData.assetPath}).');
+      return;
+    }
 
-		this.dance();
-		this.animation.paused = true;
-	}
+    var scale:Float = propData.scale * (propData.isPixel ? 6 : 1);
+    this.scale.set(scale, scale);
+    this.antialiasing = !propData.isPixel;
+    this.alpha = propData.alpha;
+    this.x = propData.offsets[0];
+    this.y = propData.offsets[1];
 
-	public static function build(propData:Null<LevelPropData>):Null<LevelProp>
-	{
-		if (propData == null) return null;
+    FlxAnimationUtil.addAtlasAnimations(this, propData.animations);
+    for (propAnim in propData.animations)
+    {
+      this.setAnimationOffsets(propAnim.name, propAnim.offsets[0], propAnim.offsets[1]);
+    }
 
-		return new LevelProp(propData);
-	}
+    this.dance();
+    this.animation.paused = true;
+  }
+
+  public static function build(propData:Null<LevelPropData>):Null<LevelProp>
+  {
+    if (propData == null) return null;
+
+    return new LevelProp(propData);
+  }
 }

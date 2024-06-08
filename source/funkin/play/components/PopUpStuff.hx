@@ -23,7 +23,7 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 
 		var ratingPath:String = daRating;
 
-		if (PlayState.instance.currentStageId.startsWith('school')) ratingPath = "weeb/pixelUI/" + ratingPath + "-pixel";
+		if (PlayState.instance.currentChart.noteStyle.startsWith('pixel')) ratingPath = "weeb/pixelUI/" + ratingPath + "-pixel";
 
 		var rating:FunkinSprite = FunkinSprite.create(0, 0, ratingPath);
 		rating.scrollFactor.set(.75, .75);
@@ -38,7 +38,7 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 		rating.angularVelocity = FlxG.random.int(-5, 5);
 		add(rating);
 
-		if (PlayState.instance.currentStageId.startsWith('school'))
+		if (PlayState.instance.currentChart.noteStyle.startsWith('pixel'))
 		{
 			rating.setGraphicSize(Std.int(rating.width * Constants.PIXEL_ART_SCALE * 0.7));
 			rating.antialiasing = false;
@@ -73,7 +73,7 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 		var pixelShitPart1:String = "";
 		var pixelShitPart2:String = '';
 
-		if (PlayState.instance.currentStageId.startsWith('school'))
+		if (PlayState.instance.currentChart.noteStyle.startsWith('pixel'))
 		{
 			pixelShitPart1 = 'weeb/pixelUI/';
 			pixelShitPart2 = '-pixel';
@@ -92,7 +92,7 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 		comboSpr.y -= comboSpr.height * 0.25;
 		if (combo > 24) add(comboSpr);
 
-		if (PlayState.instance.currentStageId.startsWith('school'))
+		if (PlayState.instance.currentChart.noteStyle.startsWith('pixel'))
 		{
 			comboSpr.setGraphicSize(Std.int(comboSpr.width * Constants.PIXEL_ART_SCALE * 0.7));
 			comboSpr.antialiasing = false;
@@ -132,7 +132,7 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 		{
 			var numScore:FunkinSprite = FunkinSprite.create(0, comboSpr.y + 25, pixelShitPart1 + 'num' + Std.int(i) + pixelShitPart2);
 
-			if (PlayState.instance.currentStageId.startsWith('school'))
+			if (PlayState.instance.currentChart.noteStyle.startsWith('pixel'))
 			{
 				numScore.setGraphicSize(Std.int(numScore.width * Constants.PIXEL_ART_SCALE * 0.7));
 				numScore.antialiasing = false;

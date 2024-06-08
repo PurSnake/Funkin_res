@@ -199,7 +199,7 @@ class CreditsState extends MusicBeatState
 
 	function exit():Void
 	{
-		FlxG.switchState(funkin.ui.mainmenu.MainMenuState.new);
+		FlxG.switchState(new funkin.ui.mainmenu.MainMenuState());
 	}
 
 	public override function destroy():Void

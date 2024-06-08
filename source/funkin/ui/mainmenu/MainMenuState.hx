@@ -42,14 +42,18 @@ class MainMenuState extends MusicBeatState
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
 
+	var overrideMusic:Bool = false;
+
 	static var rememberedSelectedIndex:Int = 0;
 
-	public function new()
+	public function new(?_overrideMusic:Bool = false)
 	{
 		super();
 
-		FlxTransitionableState.skipNextTransIn = false;
-		FlxTransitionableState.skipNextTransOut = false;
+		overrideMusic = _overrideMusic;
+
+		//FlxTransitionableState.skipNextTransIn = false;
+		//FlxTransitionableState.skipNextTransOut = false;
 	}
 
 	override function create():Void
@@ -64,7 +68,7 @@ class MainMenuState extends MusicBeatState
 		transIn = FlxTransitionableState.defaultTransIn;
 		transOut = FlxTransitionableState.defaultTransOut;
 
-		playMenuMusic();
+		if(overrideMusic == false) playMenuMusic();
 
 		// We want the state to always be able to begin with being able to accept inputs and show the anims of the menu items.
 		persistentUpdate = true;
@@ -110,8 +114,8 @@ class MainMenuState extends MusicBeatState
 			persistentDraw = true;
 			persistentUpdate = false;
 			// Freeplay has its own custom transition
-			//FlxTransitionableState.skipNextTransIn = true;
-			//FlxTransitionableState.skipNextTransOut = true;
+			FlxTransitionableState.skipNextTransIn = true;
+			FlxTransitionableState.skipNextTransOut = true;
 
 			openSubState(new FreeplayState());
 		});
@@ -364,8 +368,7 @@ class MainMenuState extends MusicBeatState
 					maxCombo: 0,
 					totalNotesHit: 0,
 					totalNotes: 0,
-				},
-				accuracy: 0,
+				}
 			});
 		}
 		#end

@@ -985,7 +985,7 @@ class Controls extends FlxActionSet
 		for (control in Control.createAll())
 		{
 			var inputs:Array<Int> = Reflect.field(data, control.getName());
-			inputs = inputs.unique();
+			inputs = inputs.distinct();
 			if (inputs != null)
 			{
 				if (inputs.length == 0) {
@@ -1034,7 +1034,7 @@ class Controls extends FlxActionSet
 		{
 			var inputs = getInputsFor(control, device);
 			isEmpty = isEmpty && inputs.length == 0;
-			inputs = inputs.length == 0 ? [FlxKey.NONE] : inputs.unique();
+			inputs = inputs.length == 0 ? [FlxKey.NONE] : inputs.distinct();
 
 			if (inputs.length == 0) inputs = [FlxKey.NONE];
 
