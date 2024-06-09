@@ -14,67 +14,67 @@ import openfl.net.FileReference;
  */
 class SongSerializer
 {
-	/**
-	 * Access a SongChartData JSON file from a specific path, then load it.
-	 * @param	path The file path to read from.
-	 */
-	public static function importSongChartDataSync(path:String):SongChartData
-	{
-		var fileData = FileUtil.readStringFromPath(path);
+  /**
+   * Access a SongChartData JSON file from a specific path, then load it.
+   * @param	path The file path to read from.
+   */
+  public static function importSongChartDataSync(path:String):SongChartData
+  {
+    var fileData = FileUtil.readStringFromPath(path);
 
-		if (fileData == null) return null;
+    if (fileData == null) return null;
 
-		var songChartData:SongChartData = fileData.parseJSON();
+    var songChartData:SongChartData = fileData.parseJSON();
 
-		return songChartData;
-	}
+    return songChartData;
+  }
 
-	/**
-	 * Access a SongMetadata JSON file from a specific path, then load it.
-	 * @param	path The file path to read from.
-	 */
-	public static function importSongMetadataSync(path:String):SongMetadata
-	{
-		var fileData = FileUtil.readStringFromPath(path);
+  /**
+   * Access a SongMetadata JSON file from a specific path, then load it.
+   * @param	path The file path to read from.
+   */
+  public static function importSongMetadataSync(path:String):SongMetadata
+  {
+    var fileData = FileUtil.readStringFromPath(path);
 
-		if (fileData == null) return null;
+    if (fileData == null) return null;
 
-		var songMetadata:SongMetadata = fileData.parseJSON();
+    var songMetadata:SongMetadata = fileData.parseJSON();
 
-		return songMetadata;
-	}
+    return songMetadata;
+  }
 
-	/**
-	 * Prompt the user to browse for a SongChartData JSON file path, then load it.
-	 * @param	callback The function to call when the file is loaded.
-	 */
-	public static function importSongChartDataAsync(callback:SongChartData->Void):Void
-	{
-		FileUtil.browseFileReference(function(fileReference:FileReference) {
-			var data = fileReference.data.toString();
+  /**
+   * Prompt the user to browse for a SongChartData JSON file path, then load it.
+   * @param	callback The function to call when the file is loaded.
+   */
+  public static function importSongChartDataAsync(callback:SongChartData->Void):Void
+  {
+    FileUtil.browseFileReference(function(fileReference:FileReference) {
+      var data = fileReference.data.toString();
 
-			if (data == null) return;
+      if (data == null) return;
 
-			var songChartData:SongChartData = data.parseJSON();
+      var songChartData:SongChartData = data.parseJSON();
 
-			if (songChartData != null) callback(songChartData);
-		});
-	}
+      if (songChartData != null) callback(songChartData);
+    });
+  }
 
-	/**
-	 * Prompt the user to browse for a SongMetadata JSON file path, then load it.
-	 * @param	callback The function to call when the file is loaded.
-	 */
-	public static function importSongMetadataAsync(callback:SongMetadata->Void):Void
-	{
-		FileUtil.browseFileReference(function(fileReference:FileReference) {
-			var data = fileReference.data.toString();
+  /**
+   * Prompt the user to browse for a SongMetadata JSON file path, then load it.
+   * @param	callback The function to call when the file is loaded.
+   */
+  public static function importSongMetadataAsync(callback:SongMetadata->Void):Void
+  {
+    FileUtil.browseFileReference(function(fileReference:FileReference) {
+      var data = fileReference.data.toString();
 
-			if (data == null) return;
+      if (data == null) return;
 
-			var songMetadata:SongMetadata = data.parseJSON();
+      var songMetadata:SongMetadata = data.parseJSON();
 
-			if (songMetadata != null) callback(songMetadata);
-		});
-	}
+      if (songMetadata != null) callback(songMetadata);
+    });
+  }
 }

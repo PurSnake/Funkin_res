@@ -288,7 +288,7 @@ class StatisticMonitor extends Sprite
 			return;
 
 		deltaTimeout = 0;
-		updateText();
+		setPos();
 	}
 
 	@:noCompletion var __text:String;

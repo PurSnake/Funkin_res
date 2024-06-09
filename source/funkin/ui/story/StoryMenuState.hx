@@ -112,19 +112,19 @@ class StoryMenuState extends MusicBeatState
 	public function new(?stickers:StickerSubState = null)
 	{
 		super();
+		FlxTransitionableState.skipNextTransOut = false;
+		FlxTransitionableState.skipNextTransIn = stickers != null;
+
 		if (stickers != null)
 			stickerSubState = stickers;
 	}
 
 	override function create():Void
 	{
-		FlxTransitionableState.skipNextTransOut = false;
-		FlxTransitionableState.skipNextTransIn = (stickerSubState != null);
-
 		super.create();
 
 		levelList = LevelRegistry.instance.listSortedLevelIds();
-		levelList = levelList.filter((id) -> {
+		levelList = levelList.filter(function(id) {
 			var levelData = LevelRegistry.instance.fetchEntry(id);
 			if (levelData == null) return false;
 
@@ -134,20 +134,21 @@ class StoryMenuState extends MusicBeatState
 
 		difficultySprites = new Map<String, FlxSprite>();
 
-		persistentUpdate = persistentDraw = true;
 		transIn = FlxTransitionableState.defaultTransIn;
 		transOut = FlxTransitionableState.defaultTransOut;
-		persistentUpdate = persistentDraw = true;
 
 		playMenuMusic();
 
 		if (stickerSubState != null)
 		{
-			persistentUpdate = true;
-			persistentDraw = true;
+			this.persistentUpdate = true;
+			this.persistentDraw = true;
+
 			openSubState(stickerSubState);
 			stickerSubState.degenStickers();
 		}
+
+		persistentUpdate = persistentDraw = true;
 
 		rememberSelection();
 
@@ -224,10 +225,13 @@ class StoryMenuState extends MusicBeatState
 	function rememberSelection():Void
 	{
 		if (rememberedLevelId != null)
+		{
 			currentLevelId = rememberedLevelId;
-
+		}
 		if (rememberedDifficulty != null)
+		{
 			currentDifficultyId = rememberedDifficulty;
+		}
 	}
 
 	function playMenuMusic():Void
@@ -431,10 +435,14 @@ class StoryMenuState extends MusicBeatState
 
 		//var difficultyList:Array<String> = Constants.DEFAULT_DIFFICULTY_LIST;
 		// Use this line to displays all difficulties
-		var difficultyList:Array<String> = currentLevel.getDifficulties();
+		 var difficultyList:Array<String> = currentLevel.getDifficulties();
 		var currentIndex:Int = difficultyList.indexOf(currentDifficultyId);
 
-		currentIndex = flixel.math.FlxMath.wrap(currentIndex + change, 0, difficultyList.length - 1);
+		currentIndex += change;
+
+		// Wrap around
+		if (currentIndex < 0) currentIndex = difficultyList.length - 1;
+		if (currentIndex >= difficultyList.length) currentIndex = 0;
 
 		var hasChanged:Bool = currentDifficultyId != difficultyList[currentIndex];
 		currentDifficultyId = difficultyList[currentIndex];
@@ -456,8 +464,9 @@ class StoryMenuState extends MusicBeatState
 			buildDifficultySprite();
 			FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
 			// Disable the funny music thing for now.
-			// funnyMusicThing();
+			funnyMusicThing();
 		}
+
 		updateText();
 		refresh();
 	}
@@ -467,13 +476,9 @@ class StoryMenuState extends MusicBeatState
 	function funnyMusicThing():Void
 	{
 		if (currentDifficultyId == "nightmare")
-		{
 			FlxG.sound.music.fadeOut(FADE_OUT_TIME, 0.0);
-		}
 		else
-		{
 			FlxG.sound.music.fadeOut(FADE_OUT_TIME, 1.0);
-		}
 	}
 
 	public override function dispatchEvent(event:ScriptEvent):Void
@@ -508,7 +513,9 @@ class StoryMenuState extends MusicBeatState
 		currentLevelTitle.isFlashing = true;
 
 		for (prop in levelProps.members)
+		{
 			prop.playConfirm();
+		}
 
 		Paths.setCurrentLevel(currentLevel.id);
 

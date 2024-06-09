@@ -652,13 +652,14 @@ class FreeplayState extends MusicBeatSubState
 			alsoOrangeLOL.visible = true;
 			grpTxtScrolls.visible = true;
 
+			// render optimisation
+			_parentState.persistentDraw = false;
+
 			cardGlow.visible = true;
 			FlxTween.tween(cardGlow, {alpha: 0, "scale.x": 1.2, "scale.y": 1.2}, 0.45, {ease: FlxEase.sineOut});
 
 			if (prepForNewRank)
-			{
 				rankAnimStart(fromResultsParams);
-			}
 		});
 
 		generateSongList(null, false);
@@ -1570,9 +1571,10 @@ class FreeplayState extends MusicBeatSubState
 		super.destroy();
 		var daSong:Null<FreeplaySongData> = currentFilteredSongs[curSelected];
 		if (daSong != null)
-		{
 			clearDaCache(daSong.songName);
-		}
+
+		FlxG.cameras.remove(funnyCam);
+		FlxG.cameras.remove(rankCamera);
 	}
 
 	function changeDiff(change:Int = 0, force:Bool = false):Void
@@ -1881,6 +1883,7 @@ class FreeplayState extends MusicBeatSubState
 		}
 		else
 		{
+			trace("Trying to load preview for " + daSongCapsule.songData.songId);
 			var potentiallyErect:String = (currentDifficulty == "erect") || (currentDifficulty == "nightmare") ? "-erect" : "";
 			FunkinSound.playMusic(daSongCapsule.songData.songId,
 				{
