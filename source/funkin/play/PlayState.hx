@@ -3189,8 +3189,8 @@ class PlayState extends MusicBeatSubState
     if (resetZoom)
       resetCameraZoom();
 
-		// Snap the camera to the follow point immediately.
-		if (snapCamera)
+    // Snap the camera to the follow point immediately.
+    if (snapCamera)
       FlxG.camera.focusOn(cameraFollowPoint.getPosition());
   }
 
