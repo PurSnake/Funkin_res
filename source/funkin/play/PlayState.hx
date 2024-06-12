@@ -3070,7 +3070,7 @@ class PlayState extends MusicBeatSubState
 	/**
 	 * Resets the camera's zoom level and focus point.
 	 */
-	public function resetCamera(?resetZoom:Bool = true, ?cancelTweens:Bool = true):Void
+	public function resetCamera(?resetZoom:Bool = true, ?cancelTweens:Bool = true, ?snapCamera:Bool = true):Void
 	{
 		// Cancel camera tweens if any are active.
 		if (cancelTweens)
@@ -3083,7 +3083,8 @@ class PlayState extends MusicBeatSubState
 			resetCameraZoom();
 
 		// Snap the camera to the follow point immediately.
-		FlxG.camera.focusOn(cameraFollowPoint.getPosition());
+		if (snapCamera)
+			FlxG.camera.focusOn(cameraFollowPoint.getPosition());
 	}
 
 	/**

@@ -120,19 +120,19 @@ class CapsuleText extends FlxSpriteGroup
 	{
 		var distToMove:Float = whiteText.width - clipWidth;
 		moveTween = FlxTween.tween(whiteText.offset, {x: distToMove}, 2,
-			{
-				onUpdate: function(_) {
-					whiteText.clipRect = new FlxRect(whiteText.offset.x, 0, clipWidth, whiteText.height);
-					blurredText.offset = whiteText.offset;
-					blurredText.clipRect = new FlxRect(whiteText.offset.x, 0, clipWidth, blurredText.height);
-				},
-				onComplete: function(_) {
-					moveTimer.start(0.3, (timer) -> {
-						moveTextLeft();
-					});
-				},
-				ease: FlxEase.sineInOut
-			});
+		{
+			onUpdate: function(_) {
+				whiteText.clipRect = new FlxRect(whiteText.offset.x, 0, clipWidth, whiteText.height);
+				blurredText.offset = whiteText.offset;
+				blurredText.clipRect = new FlxRect(whiteText.offset.x, 0, clipWidth, blurredText.height);
+			},
+			onComplete: function(_) {
+				moveTimer.start(0.3, (timer) -> {
+					moveTextLeft();
+				});
+			},
+			ease: FlxEase.sineInOut
+		});
 	}
 
 	function moveTextLeft():Void

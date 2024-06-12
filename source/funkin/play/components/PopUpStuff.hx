@@ -17,7 +17,7 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 		super();
 	}
 
-	public function displayRating(daRating:String)
+	public dynamic function displayRating(daRating:String)
 	{
 		if (daRating == null) daRating = "good";
 
@@ -66,7 +66,7 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 		});
 	}
 
-	public function displayCombo(?combo:Int = 0):Int
+	public dynamic function displayCombo(?combo:Int = 0):Int
 	{
 		if (combo == null) combo = 0;
 

@@ -3339,7 +3339,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 		// dispatchEvent gets called here.
 		if (!super.stepHit()) return false;
 
-		if (audioInstTrack != null && audioInstTrack.isPlaying)
+		if (audioInstTrack != null && audioInstTrack.isPlaying && this.subState == null)
 		{
 			if (healthIconDad != null) healthIconDad.onStepHit(Conductor.instance.currentStep);
 			if (healthIconBF != null) healthIconBF.onStepHit(Conductor.instance.currentStep);

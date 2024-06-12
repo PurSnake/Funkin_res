@@ -127,7 +127,8 @@ class FocusCameraSongEvent extends SongEvent
 		switch (ease)
 		{
 			case 'CLASSIC': // Old-school. No ease. Just set follow point.
-				PlayState.instance.resetCamera(false, true);
+				PlayState.instance.resetCamera(false, false, false);
+				PlayState.instance.cancelCameraFollowTween();
 				PlayState.instance.cameraFollowPoint.setPosition(targetX, targetY);
 			case 'INSTANT': // Instant ease. Duration is automatically 0.
 				PlayState.instance.tweenCameraToPosition(targetX, targetY, 0);
@@ -171,7 +172,7 @@ class FocusCameraSongEvent extends SongEvent
 				name: "x",
 				title: "X Position",
 				defaultValue: 0,
-				step: 10.0,
+				step: 0.5,
 				type: SongEventFieldType.FLOAT,
 				units: "px"
 			},
@@ -179,7 +180,7 @@ class FocusCameraSongEvent extends SongEvent
 				name: "y",
 				title: "Y Position",
 				defaultValue: 0,
-				step: 10.0,
+				step: 0.5,
 				type: SongEventFieldType.FLOAT,
 				units: "px"
 			},
@@ -187,7 +188,7 @@ class FocusCameraSongEvent extends SongEvent
 				name: 'duration',
 				title: 'Duration',
 				defaultValue: 4.0,
-				step: 0.5,
+				step: 0.1,
 				type: SongEventFieldType.FLOAT,
 				units: 'steps'
 			},
@@ -198,6 +199,12 @@ class FocusCameraSongEvent extends SongEvent
 				type: SongEventFieldType.ENUM,
 				keys: [
 					'Linear' => 'linear',
+					'Back In' => 'backIn',
+					'Back Out' => 'backOut',
+					'Back In/Out' => 'backInOut',
+					'Circ In' => 'circIn',
+					'Circ Out' => 'circOut',
+					'Circ In/Out' => 'circInOut',
 					'Sine In' => 'sineIn',
 					'Sine Out' => 'sineOut',
 					'Sine In/Out' => 'sineInOut',
@@ -219,6 +226,9 @@ class FocusCameraSongEvent extends SongEvent
 					'Smooth Step In' => 'smoothStepIn',
 					'Smooth Step Out' => 'smoothStepOut',
 					'Smooth Step In/Out' => 'smoothStepInOut',
+					'Smoother Step In' => 'smootherStepIn',
+					'Smoother Step Out' => 'smootherStepOut',
+					'Smoother Step In/Out' => 'smootherStepInOut',
 					'Elastic In' => 'elasticIn',
 					'Elastic Out' => 'elasticOut',
 					'Elastic In/Out' => 'elasticInOut',

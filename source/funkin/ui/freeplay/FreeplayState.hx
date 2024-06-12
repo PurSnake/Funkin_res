@@ -290,20 +290,13 @@ class FreeplayState extends MusicBeatSubState
 
 				songs.push(new FreeplaySongData(levelId, songId, song, displayedVariations));
 				for (difficulty in availableDifficultiesForSong)
-				{
 					diffIdsTotal.pushUnique(difficulty);
-				}
 			}
 		}
 
 		// LOAD MUSIC
 
 		// LOAD CHARACTERS
-
-		trace(FlxG.width);
-		trace(FlxG.camera.zoom);
-		trace(FlxG.camera.initialZoom);
-		trace(FlxCamera.defaultZoom);
 
 		pinkBack = FunkinSprite.create('freeplay/pinkBack');
 		pinkBack.color = 0xFFFFD4E9; // sets it to pink!
@@ -772,9 +765,7 @@ class FreeplayState extends MusicBeatSubState
 			var funnyMenu:SongMenuItem = grpCapsules.recycle(SongMenuItem);
 
 			funnyMenu.init(FlxG.width, 0, tempSongs[i]);
-			funnyMenu.onConfirm = function() {
-				capsuleOnConfirmDefault(funnyMenu);
-			};
+			funnyMenu.onConfirm = () -> capsuleOnConfirmDefault(funnyMenu);
 			funnyMenu.y = funnyMenu.intendedY(i + 1) + 10;
 			funnyMenu.targetPos.x = funnyMenu.x;
 			funnyMenu.ID = i;
@@ -1755,17 +1746,17 @@ class FreeplayState extends MusicBeatSubState
 		confirmGlow.alpha = 0;
 
 		FlxTween.tween(confirmGlow2, {alpha: 0.5}, 0.33,
-			{
-				ease: FlxEase.quadOut,
-				onComplete: function(_) {
-					confirmGlow2.alpha = 0.6;
-					confirmGlow.alpha = 1;
-					confirmTextGlow.visible = true;
-					confirmTextGlow.alpha = 1;
-					FlxTween.tween(confirmTextGlow, {alpha: 0.4}, 0.5);
-					FlxTween.tween(confirmGlow, {alpha: 0}, 0.5);
-				}
-			});
+		{
+			ease: FlxEase.quadOut,
+			onComplete: function(_) {
+				confirmGlow2.alpha = 0.6;
+				confirmGlow.alpha = 1;
+				confirmTextGlow.visible = true;
+				confirmTextGlow.alpha = 1;
+				FlxTween.tween(confirmTextGlow, {alpha: 0.4}, 0.5);
+				FlxTween.tween(confirmGlow, {alpha: 0}, 0.5);
+			}
+		});
 
 		// confirmGlow
 
@@ -1776,28 +1767,31 @@ class FreeplayState extends MusicBeatSubState
 		moreWays2.visible = false;
 		funnyScroll3.visible = false;
 
+		if (FlxG.sound.music != null)
+			FlxTween.tween(FlxG.sound.music, {pitch: 0}, .9, {ease: FlxEase.quadInOut});
+
 		new FlxTimer().start(1, function(tmr:FlxTimer) {
 			FunkinSound.emptyPartialQueue();
 
 			Paths.setCurrentLevel(cap.songData.levelId);
 			LoadingState.loadPlayState(
-				{
-					targetSong: targetSong,
-					targetDifficulty: targetDifficulty,
-					targetVariation: targetVariation,
-					practiceMode: false,
-					minimalMode: false,
+			{		
+				targetSong: targetSong,
+				targetDifficulty: targetDifficulty,
+				targetVariation: targetVariation,
+				practiceMode: false,
+				minimalMode: false,
 
-					#if (debug || FORCE_DEBUG_VERSION)
-					botPlayMode: FlxG.keys.pressed.SHIFT,
-					#else
-					botPlayMode: false,
-					#end
-					// TODO: Make these an option! It's currently only accessible via chart editor.
-					// startTimestamp: 0.0,
-					// playbackRate: 0.5,
-					// botPlayMode: true,
-				}, true);
+				#if (debug || FORCE_DEBUG_VERSION)
+				botPlayMode: FlxG.keys.pressed.SHIFT,
+				#else
+				botPlayMode: false,
+				#end
+				// TODO: Make these an option! It's currently only accessible via chart editor.
+				// startTimestamp: 0.0,
+				// playbackRate: 0.5,
+				// botPlayMode: true,
+			}, true);
 		});
 	}
 
@@ -1871,37 +1865,42 @@ class FreeplayState extends MusicBeatSubState
 
 	public function playCurSongPreview(daSongCapsule:SongMenuItem):Void
 	{
+		var volume:Float = 1;
+		if (dj.playingCartoon) volume *= 0.4; // 40%
+
 		if (curSelected == 0)
 		{
 			FunkinSound.playMusic('freeplayRandom',
-				{
-					startingVolume: 0.0,
-					overrideExisting: true,
-					restartTrack: false
-				});
-			FlxG.sound.music.fadeIn(2, 0, 0.8);
+			{
+				startingVolume: 0.0,
+				overrideExisting: true,
+				restartTrack: false
+			});
+			FlxG.sound.music.fadeIn(2, 0, volume);
 		}
 		else
 		{
-			trace("Trying to load preview for " + daSongCapsule.songData.songId);
-			var potentiallyErect:String = (currentDifficulty == "erect") || (currentDifficulty == "nightmare") ? "-erect" : "";
+			var previewSong:Null<Song> = SongRegistry.instance.fetchEntry(daSongCapsule.songData.songId);
+			var instSuffix:String = previewSong?.getDifficulty(currentDifficulty, previewSong?.variations ?? Constants.DEFAULT_VARIATION_LIST)?.characters?.instrumental ?? '';
+			instSuffix = (instSuffix != '') ? '-$instSuffix' : '';
+
 			FunkinSound.playMusic(daSongCapsule.songData.songId,
+			{
+				startingVolume: 0.0,
+				overrideExisting: true,
+				restartTrack: false,
+				pathsFunction: INST,
+				suffix: instSuffix,
+				partialParams:
 				{
-					startingVolume: 0.0,
-					overrideExisting: true,
-					restartTrack: false,
-					pathsFunction: INST,
-					suffix: potentiallyErect,
-					partialParams:
-						{
-							loadPartial: true,
-							start: 0.05,
-							end: 0.25
-						},
-					onLoad: function() {
-						FlxG.sound.music.fadeIn(2, 0, 0.4);
-					}
-				});
+					loadPartial: true,
+					start: 0.05, //0.05,
+					end: 0.40 //0.30
+				},
+				onLoad: () -> {
+					FlxG.sound.music.fadeIn(2, 0, volume);
+				}
+			});
 		}
 	}
 
@@ -2038,8 +2037,13 @@ class FreeplaySongData
 
 	var displayedVariations:Array<String> = [Constants.DEFAULT_VARIATION];
 
+	//public inline function getPreviewTiming():Array<Float>
+	//	return [song._data.playData.previewStart / 100000, song._data.playData.previewEnd / 100000];
+
 	function set_currentDifficulty(value:String):String
 	{
+		if (currentDifficulty == value) return value;
+
 		currentDifficulty = value;
 		updateValues(displayedVariations);
 		return value;

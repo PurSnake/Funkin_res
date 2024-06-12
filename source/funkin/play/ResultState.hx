@@ -772,11 +772,11 @@ class ResultState extends MusicBeatSubState
 			{
 				FlxTween.tween(FlxG.sound.music, {volume: 0}, 0.8);
 				FlxTween.tween(FlxG.sound.music, {pitch: 3}, 0.1,
-					{
-						onComplete: _ -> {
-							FlxTween.tween(FlxG.sound.music, {pitch: 0.5}, 0.4);
-						}
-					});
+				{
+					onComplete: _ ->  {
+						FlxTween.tween(FlxG.sound.music, {pitch: 0.5}, 0.4);
+					}
+				});
 			}
 			if (params.storyMode)
 			{

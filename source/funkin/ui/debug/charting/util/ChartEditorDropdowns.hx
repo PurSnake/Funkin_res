@@ -150,7 +150,7 @@ class ChartEditorDropdowns
 	{
 		dropDown.dataSource.clear();
 
-		var returnValue:DropDownEntry = lookupNoteKind('~CUSTOM');
+		var returnValue:DropDownEntry = lookupNoteKind('~CUSTOM~');
 
 		for (noteKindId in NOTE_KINDS.keys())
 		{
