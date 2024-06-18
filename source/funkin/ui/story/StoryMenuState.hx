@@ -1,6 +1,7 @@
 package funkin.ui.story;
 
 import flixel.addons.transition.FlxTransitionableState;
+import funkin.util.MathUtil;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
@@ -387,6 +388,7 @@ class StoryMenuState extends MusicBeatState
 	function changeLevel(change:Int = 0):Void
 	{
 		var currentIndex:Int = levelList.indexOf(currentLevelId);
+		var prevIndex:Int = currentIndex;
 
 		currentIndex += change;
 
@@ -417,7 +419,7 @@ class StoryMenuState extends MusicBeatState
 			}
 		}
 
-		FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
+		if (currentIndex != prevIndex) FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
 
 		updateText();
 		updateBackground(previousLevelId);
@@ -438,11 +440,7 @@ class StoryMenuState extends MusicBeatState
 		 var difficultyList:Array<String> = currentLevel.getDifficulties();
 		var currentIndex:Int = difficultyList.indexOf(currentDifficultyId);
 
-		currentIndex += change;
-
-		// Wrap around
-		if (currentIndex < 0) currentIndex = difficultyList.length - 1;
-		if (currentIndex >= difficultyList.length) currentIndex = 0;
+		currentIndex = MathUtil.curSelectionWrap(currentIndex, change, difficultyList);
 
 		var hasChanged:Bool = currentDifficultyId != difficultyList[currentIndex];
 		currentDifficultyId = difficultyList[currentIndex];

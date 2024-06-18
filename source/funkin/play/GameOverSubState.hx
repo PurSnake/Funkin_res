@@ -242,8 +242,9 @@ class GameOverSubState extends MusicBeatSubState
 		}
 
 		// KEYBOARD ONLY: Return to the menu when pressing the assigned key.
-		if (controls.BACK)
+		if (controls.BACK && !isEnding)
 		{
+			isEnding = true;
 			blueballed = false;
 			PlayState.instance.deathCounter = 0;
 			// PlayState.seenCutscene = false; // old thing...

@@ -266,36 +266,40 @@ class PolymodHandler
 
 		// `Sys`
 		// Sys.command() can run malicious processes
-		Polymod.blacklistImport('Sys');
+		//Polymod.blacklistImport('Sys');
+		Polymod.addDefaultImport(Sys);
 
 		// `Reflect`
 		// Reflect.callMethod() can access blacklisted packages
-		Polymod.blacklistImport('Reflect');
+		//Polymod.blacklistImport('Reflect');
+		Polymod.addDefaultImport(Reflect);
 
 		// `Type`
 		// Type.createInstance(Type.resolveClass()) can access blacklisted packages
-		Polymod.blacklistImport('Type');
+		//Polymod.blacklistImport('Type');
+		Polymod.addDefaultImport(Type);
 
 		// `cpp.Lib`
 		// Lib.load() can load malicious DLLs
-		Polymod.blacklistImport('cpp.Lib');
+		//Polymod.blacklistImport('cpp.Lib');
+		Polymod.addDefaultImport(cpp.Lib);
 
 		// `polymod.*`
 		// You can probably unblacklist a module
-		for (cls in ClassMacro.listClassesInPackage('polymod'))
+		/*for (cls in ClassMacro.listClassesInPackage('polymod'))
 		{
 			if (cls == null) continue;
 			var className:String = Type.getClassName(cls);
 			Polymod.blacklistImport(className);
-		}
+		}*/
 
 		// `sys.*`
-		for (cls in ClassMacro.listClassesInPackage('sys'))
+		/*for (cls in ClassMacro.listClassesInPackage('sys'))
 		{
 			if (cls == null) continue;
 			var className:String = Type.getClassName(cls);
 			Polymod.blacklistImport(className);
-		}
+		}*/
 	}
 
 	static function buildParseRules():polymod.format.ParseRules

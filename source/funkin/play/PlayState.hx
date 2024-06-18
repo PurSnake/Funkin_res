@@ -178,6 +178,12 @@ class PlayState extends MusicBeatSubState
 	public var currentVariation:String = Constants.DEFAULT_VARIATION;
 
 	/**
+	 * The currently selected instrumental ID.
+	 * @default `''`
+	 */
+	public var currentInstrumental:String = '';
+
+	/**
 	 * The currently active Stage. This is the object containing all the props.
 	 */
 	public var currentStage:Stage = null;
@@ -261,6 +267,12 @@ class PlayState extends MusicBeatSubState
 	public var cameraBopMultiplier:Float = 1.0;
 
 	/**
+	 * Multiplier for how slow should camera zoom back.
+	 * Lerped back to 1.0x every frame.
+	 */
+	public var cameraZoomingDecay:Float = 1.0;
+
+	/**
 	 * Default camera zoom for the current stage.
 	 * If we aren't in a stage, just use the default zoom (1.05x).
 	 */
@@ -279,6 +291,7 @@ class PlayState extends MusicBeatSubState
 	 * The camera zoom is increased every beat, and lerped back to this value every frame, creating a smooth 'zoom-in' effect.
 	 */
 	public var defaultHUDCameraZoom:Float = FlxCamera.defaultZoom * 1.0;
+
 
 	/**
 	 * Camera bop intensity multiplier.
@@ -610,6 +623,7 @@ class PlayState extends MusicBeatSubState
 		currentSong = params.targetSong;
 		if (params.targetDifficulty != null) currentDifficulty = params.targetDifficulty;
 		if (params.targetVariation != null) currentVariation = params.targetVariation;
+		if (params.targetInstrumental != null) currentInstrumental = params.targetInstrumental;
 		isPracticeMode = params.practiceMode ?? false;
 		isBotPlayMode = params.botPlayMode ?? false;
 		isMinimalMode = params.minimalMode ?? false;
@@ -971,11 +985,11 @@ class PlayState extends MusicBeatSubState
 		// Apply camera zoom + multipliers.
 		if (subState == null && cameraZoomRate > 0.0) // && !isInCutscene)
 		{
-			cameraBopMultiplier = FlxMath.lerp(1.0, cameraBopMultiplier, Math.exp(-elapsed * 3.125)); // Lerp bop multiplier back to 1.0x
+			cameraBopMultiplier = FlxMath.lerp(1.0, cameraBopMultiplier, Math.exp(-elapsed * 3.125 * cameraZoomingDecay)); // Lerp bop multiplier back to 1.0x
 			var zoomPlusBop = currentCameraZoom * cameraBopMultiplier; // Apply camera bop multiplier.
 			FlxG.camera.zoom = zoomPlusBop; // Actually apply the zoom to the camera.
 
-			camHUD.zoom = FlxMath.lerp(defaultHUDCameraZoom, camHUD.zoom, Math.exp(-elapsed * 3.125));
+			camHUD.zoom = FlxMath.lerp(defaultHUDCameraZoom, camHUD.zoom, Math.exp(-elapsed * 3.125 * cameraZoomingDecay));
 		}
 
 		if (currentStage != null && currentStage.getBoyfriend() != null)
@@ -1409,7 +1423,8 @@ class PlayState extends MusicBeatSubState
 			&& Conductor.instance.currentBeat % cameraZoomRate == 0)
 		{
 			// Set zoom multiplier for camera bop.
-			cameraBopMultiplier = cameraBopIntensity;
+			//cameraBopMultiplier =	cameraBopIntensity;
+			cameraBopMultiplier += (cameraBopIntensity - 1.0);
 			// HUD camera zoom still uses old system. To change. (+3%)
 			camHUD.zoom += hudCameraZoomIntensity * defaultHUDCameraZoom;
 		}
@@ -1936,7 +1951,7 @@ class PlayState extends MusicBeatSubState
 		startingSong = false;
 
 		if (!overrideMusic && !isGamePaused && currentChart != null)
-			currentChart.playInst(1.0, false);
+			currentChart.playInst(1.0, currentInstrumental, false);
 
 		if (FlxG.sound.music == null)
 		{
@@ -1985,10 +2000,11 @@ class PlayState extends MusicBeatSubState
 		// Skip this if the music is paused (GameOver, Pause menu, start-of-song offset, etc.)
 		if (!FlxG.sound.music.playing) return;
 
+		FlxG.sound.music.pause();
 		vocals.pause();
 
 		FlxG.sound.music.time = Conductor.instance.songPosition;
-		FlxG.sound.music.play(Conductor.instance.songPosition);
+		FlxG.sound.music.play(false, Conductor.instance.songPosition + Conductor.instance.instrumentalOffset);
 
 		vocals.time = Conductor.instance.songPosition;
 		vocals.play(false, Conductor.instance.songPosition);
@@ -2109,16 +2125,14 @@ class PlayState extends MusicBeatSubState
 		// Process hold notes on the opponent's side.
 		for (holdNote in opponentStrumline.holdNotes.members)
 		{
-			if (holdNote == null || !holdNote.alive) continue;
+			if (holdNote == null || !holdNote.alive || holdNote.noAnimation) continue;
 
 			// While the hold note is being hit, and there is length on the hold note...
 			if (holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0)
 			{
 				// Make sure the opponent keeps singing while the note is held.
 				if (currentStage != null && currentStage.getDad() != null && currentStage.getDad().isSinging())
-				{
 					currentStage.getDad().holdTimer = 0;
-				}
 			}
 
 			if (holdNote.missedNote && !holdNote.handledMiss)
@@ -2767,8 +2781,15 @@ class PlayState extends MusicBeatSubState
 
 		deathCounter = 0;
 
+
+		// TODO: This line of code makes me sad, but you can't really fix it without a breaking migration.
+		// `easy`, `erect`, `normal-pico`, etc.
+		var suffixedDifficulty = (currentVariation != Constants.DEFAULT_VARIATION
+			&& currentVariation != 'erect') ? '$currentDifficulty-${currentVariation}' : currentDifficulty;
+
 		var isNewHighscore = false;
-		var prevScoreData:Null<SaveScoreData> = Save.instance.getSongScore(currentSong.id, currentDifficulty);
+
+		var prevScoreData:Null<SaveScoreData> = Save.instance.getSongScore(currentSong.id, suffixedDifficulty);
 
 		if (currentSong != null && currentSong.validScore)
 		{
@@ -2793,13 +2814,21 @@ class PlayState extends MusicBeatSubState
 			// adds current song data into the tallies for the level (story levels)
 			Highscore.talliesLevel = Highscore.combineTallies(Highscore.tallies, Highscore.talliesLevel);
 
-			if (!isPracticeMode && !isBotPlayMode && Save.instance.isSongHighScore(currentSong.id, currentDifficulty, data))
+			if (!isPracticeMode && !isBotPlayMode)
 			{
-				Save.instance.setSongScore(currentSong.id, currentDifficulty, data);
-				#if newgrounds
-				NGio.postScore(score, currentSong.id);
-				#end
-				isNewHighscore = true;
+				isNewHighscore = Save.instance.isSongHighScore(currentSong.id, suffixedDifficulty, data);
+
+				// If no high score is present, save both score and rank.
+				// If score or rank are better, save the highest one.
+				// If neither are higher, nothing will change.
+				Save.instance.applySongRank(currentSong.id, suffixedDifficulty, data);
+
+				if (isNewHighscore)
+				{
+					#if newgrounds
+					NGio.postScore(score, currentSong.id);
+					#end
+				}
 			}
 		}
 

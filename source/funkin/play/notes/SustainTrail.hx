@@ -42,6 +42,11 @@ class SustainTrail extends FlxSprite
 	public var stumPlayConfirm:Bool = true;
 
 	/**
+	 * Set this flag to disable playing animation on hit/miss.
+	 */
+	public var noAnimation:Bool = false;
+
+	/**
 	 * Set to `true` if the user hit the note and is currently holding the sustain.
 	 * Should display associated effects.
 	 */
@@ -138,6 +143,11 @@ class SustainTrail extends FlxSprite
 		{
 			endOffset = bottomClip = 1;
 			antialiasing = false;
+		}
+		else
+		{
+			endOffset = 0.5;
+			bottomClip = 0.9;
 		}
 
 		zoom = 1.0;
