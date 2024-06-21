@@ -211,14 +211,10 @@ class FreeplayState extends MusicBeatSubState
 		fromResultsParams = params?.fromResults;
 
 		if (fromResultsParams?.playRankAnim == true)
-		{
 			prepForNewRank = true;
-		}
 
-		if (stickers != null)
-		{
+		if (stickers?.members != null)
 			stickerSubState = stickers;
-		}
 
 		super(FlxColor.TRANSPARENT);
 	}

@@ -114,9 +114,9 @@ class StoryMenuState extends MusicBeatState
 	{
 		super();
 		FlxTransitionableState.skipNextTransOut = false;
-		FlxTransitionableState.skipNextTransIn = stickers != null;
+		FlxTransitionableState.skipNextTransIn = stickers?.members != null;
 
-		if (stickers != null)
+		if (stickers?.members != null)
 			stickerSubState = stickers;
 	}
 

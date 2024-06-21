@@ -346,8 +346,10 @@ class GameOverSubState extends MusicBeatSubState
 					// Snap reset the camera which may have changed because of the player character data.
 					resetCameraZoom();
 
-					// Close the substate.
-					close();
+					if (this.isChartingMode || PlayState.instance.isMinimalMode)
+						close();
+					else
+						FlxG.resetState();
 				});
 			});
 		}

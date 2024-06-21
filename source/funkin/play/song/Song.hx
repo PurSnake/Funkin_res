@@ -16,6 +16,7 @@ import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
 import funkin.modding.events.ScriptEvent;
 import funkin.util.SortUtil;
 import openfl.utils.Assets;
+import flixel.sound.FlxSound;
 
 /**
  * This is a data structure managing information about the current song.
@@ -680,6 +681,7 @@ class SongDifficulty
 	public function cacheInst(instrumental = ''):Void
 	{
 		FlxG.sound.cache(getInstPath(instrumental));
+		FlxG.sound.list.add(new FlxSound().loadEmbedded(getInstPath(instrumental))); //huh
 	}
 
 	public function playInst(volume:Float = 1.0, instId:String = '', looped:Bool = false):Void
@@ -701,6 +703,7 @@ class SongDifficulty
 		for (voice in buildVoiceList())
 		{
 			FlxG.sound.cache(voice);
+			FlxG.sound.list.add(new FlxSound().loadEmbedded(voice)); //huh
 		}
 	}
 

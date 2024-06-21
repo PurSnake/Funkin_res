@@ -649,9 +649,15 @@ class PauseSubState extends MusicBeatSubState
 
 		FreeplayState.rememberedDifficulty = difficulty;
 
+		//////OG
 		PlayState.instance.needsReset = true;
-
-		state.close();
+		if (PlayState.instance.isChartingMode)
+			state.close();
+		else
+		{
+			FlxG.sound.music.volume = PlayState.instance.vocals.volume = 0;
+			FlxG.resetState();
+		}
 	}
 
 	/**
@@ -661,7 +667,14 @@ class PauseSubState extends MusicBeatSubState
 	static function restartPlayState(state:PauseSubState):Void
 	{
 		PlayState.instance.needsReset = true;
-		state.close();
+		if (PlayState.instance.isChartingMode)
+			state.close();
+		else
+		{
+			FlxG.sound.music.volume = PlayState.instance.vocals.volume = 0;
+			FlxTransitionableState.skipNextTransIn = FlxTransitionableState.skipNextTransOut = false;
+			FlxG.resetState();
+		}
 	}
 
 	/**

@@ -239,7 +239,11 @@ xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/
 		<!-- Turns on additional debug logging. -->
 		<haxedef name="POLYMOD_DEBUG" value="true" if="debug" />
 		<!-- The file extension to use for script files. -->
-		<haxedef name="POLYMOD_SCRIPT_EXT" value=".hscript" />
+		<haxedef name="POLYMOD_SCRIPT_EXT" value=".hxs" />
+
+		<!-- The file extension to use for scripted classes. -->
+		<haxedef name="POLYMOD_SCRIPT_CLASS_EXT" value=".hx" />
+
 		<!-- Which asset library to use for scripts. -->
 		<haxedef name="POLYMOD_SCRIPT_LIBRARY" value="scripts" />
 		<!-- The base path from which scripts should be accessed. -->

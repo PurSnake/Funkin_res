@@ -1804,35 +1804,6 @@ class PlayState extends MusicBeatSubState
 	}
 
 	/**
-	 * Initializes the song (applying the chart, generating the notes, etc.)
-	 * Should be done before the countdown starts.
-	 */
-	function generateSong():Void
-	{
-		if (currentChart == null)
-			trace('Song difficulty could not be loaded.');
-
-		// Conductor.instance.forceBPM(currentChart.getStartingBPM());
-
-		if (!overrideMusic)
-		{
-			// Stop the vocals if they already exist.
-			if (vocals != null) vocals.stop();
-			vocals = currentChart.buildVocals();
-
-			if (vocals.members.length == 0)
-				trace('WARNING: No vocals found for this song.');
-		}
-
-		regenNoteData();
-
-		var event:ScriptEvent = new ScriptEvent(CREATE, false);
-		ScriptEventDispatcher.callEvent(currentSong, event);
-
-		generatedMusic = true;
-	}
-
-	/**
 	 * Read note data from the chart and generate the notes.
 	 */
 	function regenNoteData(startTime:Float = 0):Void
@@ -1941,6 +1912,35 @@ class PlayState extends MusicBeatSubState
 
 		if (startingSong && !isInCountdown)
 			startCountdown();
+	}
+
+	/**
+	 * Initializes the song (applying the chart, generating the notes, etc.)
+	 * Should be done before the countdown starts.
+	 */
+	function generateSong():Void
+	{
+		if (currentChart == null)
+			trace('Song difficulty could not be loaded.');
+
+		// Conductor.instance.forceBPM(currentChart.getStartingBPM());
+
+		if (!overrideMusic)
+		{
+			// Stop the vocals if they already exist.
+			if (vocals != null) vocals.stop();
+			vocals = currentChart.buildVocals();
+
+			if (vocals.members.length == 0)
+				trace('WARNING: No vocals found for this song.');
+		}
+
+		regenNoteData();
+
+		var event:ScriptEvent = new ScriptEvent(CREATE, false);
+		ScriptEventDispatcher.callEvent(currentSong, event);
+
+		generatedMusic = true;
 	}
 
 	/**

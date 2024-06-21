@@ -55,6 +55,7 @@ class FlxSoundTray extends Sprite
 		screenCenter();
 
 		final splashSprite:Bitmap = new Bitmap(Assets.getBitmapData(Paths.file("images/soundtray/volume-back.png")));
+		splashSprite.smoothing = true;
 		_width = splashSprite.width;
 
 		final disBg:Bitmap = new Bitmap(new BitmapData(200, 68, false, FlxColor.GRAY));

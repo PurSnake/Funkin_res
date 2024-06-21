@@ -258,9 +258,15 @@ class PolymodHandler
 		Polymod.addDefaultImport(hxvlc.flixel.FlxVideoSprite);
 		Polymod.addDefaultImport(hxvlc.openfl.Video);
 
+		Polymod.addDefaultImport(flixel.FlxBasic);
+
 		// Add import aliases for certain classes.
 		// NOTE: Scripted classes are automatically aliased to their parent class.
 		Polymod.addImportAlias('flixel.math.FlxPoint', flixel.math.FlxPoint.FlxBasePoint);
+
+		//Polymod.addDefaultImport(flixel.util.FlxColor); FUCK
+		Polymod.addDefaultImport(Type.resolveClass('flixel.util.FlxColor_HSC'), "flixel.util.FlxColor");
+		Polymod.addDefaultImport(Type.resolveClass('flixel.util.FlxColor_HSC'), "FlxColor");
 
 		// Add blacklisting for prohibited classes and packages.
 
