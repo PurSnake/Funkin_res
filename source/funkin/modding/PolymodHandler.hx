@@ -41,8 +41,8 @@ class PolymodHandler
 		#elseif REDIRECT_ASSETS_FOLDER
 		'../../../../example_mods'
 		#else
-		'mods'
-		//'content'
+		//'mods'
+		'content'
 		#end;
 
 	static final CORE_FOLDER:Null<String> =

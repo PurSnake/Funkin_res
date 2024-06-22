@@ -110,6 +110,8 @@ class PauseSubState extends MusicBeatSubState
 	 */
 	public static var musicSuffix:String = '';
 
+	public static var restartState:Bool = false;
+
 	/**
 	 * Reset the pause configuration to the default.
 	 */
@@ -651,13 +653,14 @@ class PauseSubState extends MusicBeatSubState
 
 		//////OG
 		PlayState.instance.needsReset = true;
-		if (PlayState.instance.isChartingMode)
+		//if (PlayState.instance.isChartingMode)
 			state.close();
-		else
+		/*else
 		{
 			FlxG.sound.music.volume = PlayState.instance.vocals.volume = 0;
+			FlxTransitionableState.skipNextTransIn = FlxTransitionableState.skipNextTransOut = false;
 			FlxG.resetState();
-		}
+		}*/
 	}
 
 	/**
@@ -667,14 +670,15 @@ class PauseSubState extends MusicBeatSubState
 	static function restartPlayState(state:PauseSubState):Void
 	{
 		PlayState.instance.needsReset = true;
-		if (PlayState.instance.isChartingMode)
+		//if (PlayState.instance.isChartingMode && !restartState)
 			state.close();
-		else
+		/*else
 		{
 			FlxG.sound.music.volume = PlayState.instance.vocals.volume = 0;
 			FlxTransitionableState.skipNextTransIn = FlxTransitionableState.skipNextTransOut = false;
-			FlxG.resetState();
-		}
+			//FlxG.resetState();
+			FlxG.state.startOutro(() -> FlxG.resetState());
+		}*/
 	}
 
 	/**

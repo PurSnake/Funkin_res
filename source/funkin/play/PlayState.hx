@@ -973,7 +973,7 @@ class PlayState extends MusicBeatSubState
 				}
 
 				#if discord_rpc
-				DiscordClient.changePresence(detailsPausedText, currentSong.song + ' (' + storyDifficultyText + ')', iconRPC);
+				DiscordClient.changePresence(detailsPausedText, currentSong + ' (' + storyDifficultyText + ')', iconRPC);
 				#end
 			}
 		}
@@ -1052,7 +1052,7 @@ class PlayState extends MusicBeatSubState
 
 				#if discord_rpc
 				// Game Over doesn't get his own variable because it's only used here
-				DiscordClient.changePresence('Game Over - ' + detailsText, currentSong.song + ' (' + storyDifficultyText + ')', iconRPC);
+				DiscordClient.changePresence('Game Over - ' + detailsText, currentSong + ' (' + storyDifficultyText + ')', iconRPC);
 				#end
 			}
 			else if (isPlayerDying)
@@ -1264,7 +1264,7 @@ class PlayState extends MusicBeatSubState
 			//FlxTimer.globalManager.forEach((timer:FlxTimer) -> timer.active = true);
 
 			#if discord_rpc
-			if (startTimer.finished)
+			if (Countdown.countdownStep == AFTER)
 			{
 				DiscordClient.changePresence(detailsText, '${currentChart.songName} ($storyDifficultyText)', iconRPC, true,
 					currentSongLengthMs - Conductor.instance.songPosition);
@@ -1291,16 +1291,16 @@ class PlayState extends MusicBeatSubState
 	 */
 	public override function onFocus():Void
 	{
-		if (health > Constants.HEALTH_MIN && !paused && FlxG.autoPause)
+		if (health > Constants.HEALTH_MIN && !isGamePaused && FlxG.autoPause)
 		{
-			if (Conductor.instance.songPosition > 0.0) DiscordClient.changePresence(detailsText, currentSong.song
+			if (Conductor.instance.songPosition > 0.0) DiscordClient.changePresence(detailsText, currentSong
 				+ ' ('
 				+ storyDifficultyText
 				+ ')', iconRPC, true,
 				currentSongLengthMs
 				- Conductor.instance.songPosition);
 			else
-				DiscordClient.changePresence(detailsText, currentSong.song + ' (' + storyDifficultyText + ')', iconRPC);
+				DiscordClient.changePresence(detailsText, currentSong + ' (' + storyDifficultyText + ')', iconRPC);
 		}
 
 		super.onFocus();
@@ -1311,8 +1311,8 @@ class PlayState extends MusicBeatSubState
 	 */
 	public override function onFocusLost():Void
 	{
-		if (health > Constants.HEALTH_MIN && !paused && FlxG.autoPause) DiscordClient.changePresence(detailsPausedText,
-			currentSong.song + ' (' + storyDifficultyText + ')', iconRPC);
+		 if (health > Constants.HEALTH_MIN && !isGamePaused && FlxG.autoPause) DiscordClient.changePresence(detailsPausedText,
+     			currentSong + ' (' + storyDifficultyText + ')', iconRPC);
 
 		super.onFocusLost();
 	}
@@ -1774,8 +1774,8 @@ class PlayState extends MusicBeatSubState
 	function initDiscord():Void
 	{
 		#if discord_rpc
-		storyDifficultyText = difficultyString();
-		iconRPC = currentSong.player2;
+		storyDifficultyText = currentDifficulty;
+		iconRPC = currentStage.getDad().characterId;
 
 		// To avoid having duplicate images in Discord assets
 		switch (iconRPC)
@@ -1789,7 +1789,7 @@ class PlayState extends MusicBeatSubState
 		}
 
 		// String that contains the mode defined here so it isn't necessary to call changePresence for each mode
-		detailsText = isStoryMode ? 'Story Mode: Week $storyWeek' : 'Freeplay';
+		detailsText = PlayStatePlaylist.isStoryMode ? 'Story Mode: Week ${PlayStatePlaylist.campaignId}' : 'Freeplay';
 		detailsPausedText = 'Paused - $detailsText';
 
 		// Updating Discord Rich Presence.

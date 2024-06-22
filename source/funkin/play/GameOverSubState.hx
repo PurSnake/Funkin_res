@@ -89,6 +89,8 @@ class GameOverSubState extends MusicBeatSubState
 
 	var targetCameraZoom:Float = 1.0;
 
+	public static var restartState:Bool = false;
+
 	public function new(params:GameOverParams)
 	{
 		super();
@@ -346,10 +348,10 @@ class GameOverSubState extends MusicBeatSubState
 					// Snap reset the camera which may have changed because of the player character data.
 					resetCameraZoom();
 
-					if (this.isChartingMode || PlayState.instance.isMinimalMode)
+					//if ((this.isChartingMode || PlayState.instance.isMinimalMode) && !restartState)
 						close();
-					else
-						FlxG.resetState();
+					//else
+						//FlxG.resetState();
 				});
 			});
 		}

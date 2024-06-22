@@ -754,9 +754,7 @@ class ResultState extends MusicBeatSubState
 			clearPercentSmall.y += speedOfTween.y;
 
 			if (songName.x + songName.width < 100)
-			{
 				timerThenSongName();
-			}
 		}
 
 		if (FlxG.keys.justPressed.RIGHT) speedOfTween.x += 0.1;
@@ -813,18 +811,18 @@ class ResultState extends MusicBeatSubState
 				{
 					trace('rank is lower...... and/or equal');
 					openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> FreeplayState.build(
+					{
 						{
+							fromResults:
 							{
-								fromResults:
-									{
-										oldRank: null,
-										playRankAnim: false,
-										newRank: rank,
-										songId: params.songId,
-										difficultyId: params.difficultyId
-									}
+								oldRank: null,
+								playRankAnim: false,
+								newRank: rank,
+								songId: params.songId,
+								difficultyId: params.difficultyId
 							}
-						}, sticker)));
+						}
+					}, sticker)));
 				}
 			}
 		}

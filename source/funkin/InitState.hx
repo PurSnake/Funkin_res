@@ -133,7 +133,7 @@ class InitState extends FlxState
 		#if discord_rpc
 		DiscordClient.initialize();
 
-		Application.current.onExit.add(function(exitCode) {
+		openfl.Lib.current.stage.application.onExit.add(function(exitCode) {
 			DiscordClient.shutdown();
 		});
 		#end

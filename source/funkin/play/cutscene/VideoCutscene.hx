@@ -161,7 +161,7 @@ class VideoCutscene
 
 			// Resize videos bigger or smaller than the screen.
 			//vid.bitmap.onTextureSetup.add(() -> {
-			vid.bitmap.onDisplay.add(() -> {
+			vid.bitmap.onFormatSetup.add(() -> {
 				vid.setGraphicSize(FlxG.width, FlxG.height);
 				vid.updateHitbox();
 				vid.x = 0;
