@@ -52,6 +52,7 @@ import funkin.play.notes.notekind.NoteKindManager;
 import funkin.play.scoring.Scoring;
 import funkin.play.song.Song;
 import funkin.play.stage.Stage;
+import funkin.play.stage.Bopper;
 import funkin.save.Save;
 import funkin.ui.debug.charting.ChartEditorState;
 import funkin.ui.debug.stage.StageOffsetSubState;
@@ -193,6 +194,11 @@ class PlayState extends MusicBeatSubState
 	 * Gets disabled once resetting happens.
 	 */
 	public var needsReset:Bool = false;
+
+	/**
+	 * Map of the boppers that will reset their bop speed once the restart occurs.
+	 */
+	public var resetBoppers:Map<Bopper, Int> = new Map<Bopper, Int>();
 
 	/**
 	 * The current 'Blueball Counter' to display in the pause menu.
@@ -702,6 +708,9 @@ class PlayState extends MusicBeatSubState
 		{
 			initStage();
 			initCharacters();
+			#if discord_rpc
+			initDiscord();
+			#end
 		}
 		else
 		{
@@ -714,11 +723,6 @@ class PlayState extends MusicBeatSubState
 		comboPopUps.zIndex = 900;
 		add(comboPopUps);
 		//comboPopUps.cameras = [camHUD];
-
-		#if discord_rpc
-		// Initialize Discord Rich Presence.
-		initDiscord();
-		#end
 
 		// Read the song's note data and pass it to the strumlines.
 		generateSong();
@@ -899,6 +903,10 @@ class PlayState extends MusicBeatSubState
 			// Delete all notes and reset the arrays.
 			regenNoteData();
 
+			if (resetBoppers.size() > 0)
+				for (bopper => speed in resetBoppers)
+					bopper.danceEvery = speed;
+
 			// Reset camera zooming
 			cameraBopIntensity = Constants.DEFAULT_BOP_INTENSITY;
 			hudCameraZoomIntensity = (cameraBopIntensity - 1.0) * 2.0;
@@ -927,6 +935,14 @@ class PlayState extends MusicBeatSubState
 			Conductor.instance.update(Conductor.instance.songPosition - (Conductor.instance.instrumentalOffset + Conductor.instance.formatOffset + Conductor.instance.audioVisualOffset)
 			+ elapsed * 1000 * playbackRate); // Normal conductor update.
 
+			/*if (!endingSong && songGroup.sounds.length > 0 && Conductor.instance.songPosition >= 0)
+			{
+				//var mainSound = FlxG.sound.music;
+				//var timeDiff:Float = Math.abs(mainSound.time - Conductor.songPosition - Conductor.offset);
+				//Conductor.instance.songPosition = CoolUtil.fpsLerp(Conductor.instance.songPosition, mainSound.time, 0.04167);
+				//if (timeDiff > 1000 * playbackRate)
+				//	Conductor.instance.songPosition = Conductor.instance.songPosition + 1000 * FlxMath.signOf(timeDiff) * playbackRate;
+			}*/
 			//Conductor.instance.update(Conductor.instance.songPosition);
 		}
 
@@ -996,8 +1012,6 @@ class PlayState extends MusicBeatSubState
 			FlxG.watch.addQuick('bfAnim', currentStage.getBoyfriend().getCurrentAnimation());
 		FlxG.watch.addQuick('health', health);
 		FlxG.watch.addQuick('cameraBopIntensity', cameraBopIntensity);
-
-		// TODO: Add a song event for Handle GF dance speed.
 
 		// Handle player death.
 		if (!isInCutscene && !disableKeys)
@@ -1090,6 +1104,7 @@ class PlayState extends MusicBeatSubState
 
 		if (!isMinimalMode)
 		{
+			currentStage.getBoyfriend().canPlayOtherAnims = true;
 			iconP1.updatePosition();
 			iconP2.updatePosition();
 		}
@@ -1570,11 +1585,11 @@ class PlayState extends MusicBeatSubState
 	{
 		// Create the green background.
 		var menuBG = FunkinSprite.create('menuDesat');
-		menuBG.color = 0xFF4CAF50;
+		menuBG.color = FlxColor.fromHSB(FlxG.random.int(0, 359), FlxG.random.float(0, 0.8), FlxG.random.float(0.3, 1));
 		menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
 		menuBG.updateHitbox();
 		menuBG.screenCenter();
-		menuBG.scrollFactor.set(0, 0);
+		menuBG.scrollFactor.set();
 		menuBG.zIndex = -1000;
 		add(menuBG);
 	}

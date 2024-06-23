@@ -60,8 +60,8 @@ class ChartEditorThemeHandler
 	static final SELECTION_SQUARE_FILL_COLOR_DARK:FlxColor = 0x4033FF33;
 
 	static final PLAYHEAD_BLOCK_BORDER_WIDTH:Int = 2;
-	static final PLAYHEAD_BLOCK_BORDER_COLOR:FlxColor = 0xFF9D0011;
-	static final PLAYHEAD_BLOCK_FILL_COLOR:FlxColor = 0xFFBD0231;
+	static final PLAYHEAD_BLOCK_BORDER_COLOR:FlxColor = 0xFF351c75;
+	static final PLAYHEAD_BLOCK_FILL_COLOR:FlxColor = 0xFF2b1966;
 
 	// Border on the square over the note preview.
 	static final NOTE_PREVIEW_VIEWPORT_BORDER_COLOR_LIGHT = 0xFFF8A657;

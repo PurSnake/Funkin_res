@@ -6464,12 +6464,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 		{
 			inner += '*';
 		}
-		WindowUtil.setWindowTitle('Friday Night Funkin\' Chart Editor - ${inner}');
+		WindowUtil.setWindowTitle(openfl.Lib.application.meta["name"] + ' || Chart Editor - ${inner}');
 	}
 
 	function resetWindowTitle():Void
 	{
-		WindowUtil.setWindowTitle('Friday Night Funkin\'');
+		WindowUtil.setWindowTitle(openfl.Lib.application.meta["name"]);
 	}
 
 	/**
