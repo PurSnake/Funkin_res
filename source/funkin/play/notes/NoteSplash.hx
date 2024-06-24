@@ -56,9 +56,9 @@ class NoteSplash extends FlxSprite
 		// Vary the speed of the animation a bit.
 		animation.curAnim.frameRate = noteStyle.getNoteSplashAnimationFrameRate(direction, variant) + FlxG.random.int(-FRAMERATE_VARIANCE, FRAMERATE_VARIANCE);
 
-		centerOffsets();
+		scale.x = scale.y = noteStyle.getNoteSplashScale();
 		angle = FlxG.random.int(-ANGLE_VARIANCE, ANGLE_VARIANCE);
-
+		centerOffsets();
 		var styleOffsets = noteStyle.getNoteSplashOffsets();
 		setPosition(x - ((width * 0.25 / scale.x) - styleOffsets[0]), y - ((height * 0.3 / scale.y) - styleOffsets[1]));
 	}

@@ -75,6 +75,11 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
 		return _data.fallback;
 	}
 
+	public function getStyleOffset():Array<Float>
+	{
+		return _data.offsets;
+	}
+
 	public function buildNoteSprite(target:NoteSprite):Void
 	{
 		// Apply the note sprite frames.
@@ -409,6 +414,13 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
 		var data = _data?.assets?.noteSplash;
 		if (data == null) return fallback.getNoteSplashOffsets();
 		return data.offsets;
+	}
+
+	public function getNoteSplashScale():Float
+	{
+		var data = _data?.assets?.noteSplash;
+		if (data == null) return fallback.getNoteSplashScale();
+		return data.scale;
 	}
 
 	public function isNoteSplashEnabled():Bool

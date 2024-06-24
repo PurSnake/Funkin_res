@@ -28,6 +28,14 @@ typedef NoteStyleData =
 	var author:String;
 
 	/**
+	 * Offset the sprite's position by this amount.
+	 * @default [0, 0]
+	 */
+	@:default([0, 0])
+	@:optional
+	var offsets:Null<Array<Float>>;
+
+	/**
 	 * The note style to use as a fallback/parent.
 	 * @default null
 	 */
