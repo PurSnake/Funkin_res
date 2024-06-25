@@ -31,19 +31,19 @@ class NoteHoldCover extends FlxTypedSpriteGroup<FlxSprite>
 		super.update(elapsed);
 	}
 
-	public function playStart():Void
+	public dynamic function playStart():Void
 	{
 		var direction:NoteDirection = holdNote.noteDirection;
 		glow.animation.play('holdCoverStart${direction.colorName.toTitleCase()}');
 	}
 
-	public function playContinue():Void
+	public dynamic function playContinue():Void
 	{
 		var direction:NoteDirection = holdNote.noteDirection;
 		glow.animation.play('holdCover${direction.colorName.toTitleCase()}');
 	}
 
-	public function playEnd():Void
+	public dynamic function playEnd():Void
 	{
 		var direction:NoteDirection = holdNote.noteDirection;
 		glow.animation.play('holdCoverEnd${direction.colorName.toTitleCase()}');
@@ -70,7 +70,7 @@ class NoteHoldCover extends FlxTypedSpriteGroup<FlxSprite>
 		if (sparks != null) sparks.visible = true;
 	}
 
-	public function onAnimationFinished(animationName:String):Void
+	public dynamic function onAnimationFinished(animationName:String):Void
 	{
 		if (animationName.startsWith('holdCoverStart'))
 		{

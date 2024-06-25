@@ -35,7 +35,7 @@ class NoteSplash extends FlxSprite
 		this.animation.play(name, force, reversed, startFrame);
 	}
 
-	public function play(direction:NoteDirection, variant:Int = null):Void
+	public dynamic function play(direction:NoteDirection, variant:Int = null):Void
 	{
 		if (variant == null) variant = FlxG.random.int(1, 2);
 
@@ -63,7 +63,7 @@ class NoteSplash extends FlxSprite
 		setPosition(x - ((width * 0.25 / scale.x) - styleOffsets[0]), y - ((height * 0.3 / scale.y) - styleOffsets[1]));
 	}
 
-	public function onAnimationFinished(animationName:String):Void
+	public dynamic function onAnimationFinished(animationName:String):Void
 	{
 		// *lightning* *zap* *crackle*
 		this.kill();

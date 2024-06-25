@@ -73,6 +73,8 @@ abstract SongEventSchema(SongEventSchemaRaw)
 					if (Std.string(field.keys.get(key)) == valueString) return key;
 				}
 				return valueString;
+			case SongEventFieldType.COLOR:
+				return Std.string(value);
 			default:
 				return 'Unknown';
 		}
@@ -173,4 +175,9 @@ enum abstract SongEventFieldType(String) from String to String
 	 * Make sure to specify the `keys` field in the schema.
 	 */
 	var ENUM = "enum";
+
+	/**
+	 * The COLOR type will display as a Color Picker.
+	 */
+	var COLOR = "color";
 }

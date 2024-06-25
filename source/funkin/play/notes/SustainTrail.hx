@@ -387,6 +387,8 @@ class SustainTrail extends FlxSprite
 		noteData = null;
 
 		stumPlayConfirm = true;
+		noAnimation = false;
+
 		handledMiss = missedNote = hitNote = false;
 	}
 

@@ -1229,8 +1229,10 @@ class PlayState extends MusicBeatSubState
 			////////////////////////////////////////////////////////////////////////
 			FlxG.camera.followLerp = 0;
 			//FlxG.sound.pause();
-			//FlxTween.globalManager.forEach((tween:FlxTween) -> tween.active = false);
-			//FlxTimer.globalManager.forEach((timer:FlxTimer) -> timer.active = false);
+
+
+			FlxTween.globalManager.forEach((tween:FlxTween) -> tween.active = false);
+			FlxTimer.globalManager.forEach((timer:FlxTimer) -> timer.active = false);
 		}
 
 		super.openSubState(subState);
@@ -1275,8 +1277,10 @@ class PlayState extends MusicBeatSubState
 			////////////////////////////////////////////////////////////////////////
 			FlxG.camera.followLerp = Constants.DEFAULT_CAMERA_FOLLOW_RATE;
 			//FlxG.sound.resume();
-			//FlxTween.globalManager.forEach((tween:FlxTween) -> tween.active = true);
-			//FlxTimer.globalManager.forEach((timer:FlxTimer) -> timer.active = true);
+
+
+			FlxTween.globalManager.forEach((tween:FlxTween) -> tween.active = true);
+			FlxTimer.globalManager.forEach((timer:FlxTimer) -> timer.active = true);
 
 			#if discord_rpc
 			if (Countdown.countdownStep == AFTER)
