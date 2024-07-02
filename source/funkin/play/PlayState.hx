@@ -439,6 +439,11 @@ class PlayState extends MusicBeatSubState
 	var startingSong:Bool = false;
 
 	/**
+	 * True when song finished.
+	 */
+	var endedSong:Bool = false;
+
+	/**
 	 * Track if we currently have the music paused for a Pause substate, so we can unpause it when we return.
 	 */
 	var musicPausedBySubState:Bool = false;
@@ -718,6 +723,13 @@ class PlayState extends MusicBeatSubState
 		}
 		initStrumlines();
 
+		// Configure camera follow point.
+		if (previousCameraFollowPoint != null)
+		{
+			cameraFollowPoint.setPosition(previousCameraFollowPoint.x, previousCameraFollowPoint.y);
+			previousCameraFollowPoint = null;
+		}
+
 		// Initialize the judgements and combo meter.
 		comboPopUps = new PopUpStuff();
 		comboPopUps.zIndex = 900;
@@ -932,17 +944,22 @@ class PlayState extends MusicBeatSubState
 		}
 		else
 		{
-			Conductor.instance.update(Conductor.instance.songPosition - (Conductor.instance.instrumentalOffset + Conductor.instance.formatOffset + Conductor.instance.audioVisualOffset)
-			+ elapsed * 1000 * playbackRate); // Normal conductor update.
 
-			/*if (!endingSong && songGroup.sounds.length > 0 && Conductor.instance.songPosition >= 0)
+			if (!endedSong && FlxG.sound.music != null)
 			{
-				//var mainSound = FlxG.sound.music;
-				//var timeDiff:Float = Math.abs(mainSound.time - Conductor.songPosition - Conductor.offset);
-				//Conductor.instance.songPosition = CoolUtil.fpsLerp(Conductor.instance.songPosition, mainSound.time, 0.04167);
-				//if (timeDiff > 1000 * playbackRate)
-				//	Conductor.instance.songPosition = Conductor.instance.songPosition + 1000 * FlxMath.signOf(timeDiff) * playbackRate;
-			}*/
+				var mainSound = FlxG.sound.music;
+				var timeDiff:Float = Math.abs(mainSound.time - Conductor.instance.songPosition - (Conductor.instance.instrumentalOffset + Conductor.instance.formatOffset + Conductor.instance.audioVisualOffset));
+				//Conductor.instance.update(funkin.util.MathUtil.fpsLerp(Conductor.instance.songPosition, mainSound.time, 0.04167));
+
+				Conductor.instance.update(funkin.util.MathUtil.fpsLerp(Conductor.instance.songPosition, mainSound.time, 0.04167) - (Conductor.instance.instrumentalOffset + Conductor.instance.formatOffset + Conductor.instance.audioVisualOffset) + elapsed * 1000 * playbackRate); // Normal conductor update.
+
+				if (timeDiff > 1000 * playbackRate)
+					Conductor.instance.update(Conductor.instance.songPosition - (Conductor.instance.instrumentalOffset + Conductor.instance.formatOffset + Conductor.instance.audioVisualOffset)
+					+ elapsed * 1000 * FlxMath.signOf(timeDiff) * playbackRate);
+			}
+			else
+				Conductor.instance.update(Conductor.instance.songPosition - (Conductor.instance.instrumentalOffset + Conductor.instance.formatOffset + Conductor.instance.audioVisualOffset) + elapsed * 1000 * playbackRate); // Normal conductor update.
+
 			//Conductor.instance.update(Conductor.instance.songPosition);
 		}
 
@@ -989,7 +1006,7 @@ class PlayState extends MusicBeatSubState
 				}
 
 				#if discord_rpc
-				DiscordClient.changePresence(detailsPausedText, currentSong + ' (' + storyDifficultyText + ')', iconRPC);
+				DiscordClient.changePresence(detailsPausedText, currentChart.songName + ' (' + storyDifficultyText.toTitleCase() + ')', iconRPC);
 				#end
 			}
 		}
@@ -1066,7 +1083,7 @@ class PlayState extends MusicBeatSubState
 
 				#if discord_rpc
 				// Game Over doesn't get his own variable because it's only used here
-				DiscordClient.changePresence('Game Over - ' + detailsText, currentSong + ' (' + storyDifficultyText + ')', iconRPC);
+				DiscordClient.changePresence('Game Over - ' + detailsText, currentChart.songName + ' (' + storyDifficultyText.toTitleCase() + ')', iconRPC);
 				#end
 			}
 			else if (isPlayerDying)
@@ -1285,12 +1302,12 @@ class PlayState extends MusicBeatSubState
 			#if discord_rpc
 			if (Countdown.countdownStep == AFTER)
 			{
-				DiscordClient.changePresence(detailsText, '${currentChart.songName} ($storyDifficultyText)', iconRPC, true,
+				DiscordClient.changePresence(detailsText, '${currentChart.songName} (${storyDifficultyText.toTitleCase()})', iconRPC, true,
 					currentSongLengthMs - Conductor.instance.songPosition);
 			}
 			else
 			{
-				DiscordClient.changePresence(detailsText, '${currentChart.songName} ($storyDifficultyText)', iconRPC);
+				DiscordClient.changePresence(detailsText, '${currentChart.songName} (${storyDifficultyText.toTitleCase()})', iconRPC);
 			}
 			#end
 
@@ -1310,16 +1327,18 @@ class PlayState extends MusicBeatSubState
 	 */
 	public override function onFocus():Void
 	{
+		if (VideoCutscene.isPlaying() && FlxG.autoPause && isGamePaused) VideoCutscene.resumeVideo();
+
 		if (health > Constants.HEALTH_MIN && !isGamePaused && FlxG.autoPause)
 		{
-			if (Conductor.instance.songPosition > 0.0) DiscordClient.changePresence(detailsText, currentSong
+			if (Conductor.instance.songPosition > 0.0) DiscordClient.changePresence(detailsText, currentChart.songName
 				+ ' ('
-				+ storyDifficultyText
+				+ storyDifficultyText.toTitleCase()
 				+ ')', iconRPC, true,
 				currentSongLengthMs
 				- Conductor.instance.songPosition);
 			else
-				DiscordClient.changePresence(detailsText, currentSong + ' (' + storyDifficultyText + ')', iconRPC);
+				DiscordClient.changePresence(detailsText, currentChart.songName + ' (' + storyDifficultyText.toTitleCase() + ')', iconRPC);
 		}
 
 		super.onFocus();
@@ -1331,7 +1350,7 @@ class PlayState extends MusicBeatSubState
 	public override function onFocusLost():Void
 	{
 		 if (health > Constants.HEALTH_MIN && !isGamePaused && FlxG.autoPause) DiscordClient.changePresence(detailsPausedText,
-     			currentSong + ' (' + storyDifficultyText + ')', iconRPC);
+     			currentChart.songName + ' (' + storyDifficultyText.toTitleCase() + ')', iconRPC);
 
 		super.onFocusLost();
 	}
@@ -1403,7 +1422,7 @@ class PlayState extends MusicBeatSubState
 
 		if (isGamePaused) return false;
 
-		if (!startingSong
+		/*if (!startingSong
 			&& FlxG.sound.music != null
 			&& (Math.abs(FlxG.sound.music.time - (Conductor.instance.songPosition + Conductor.instance.instrumentalOffset)) > 100 * playbackRate
 				|| Math.abs(vocals.checkSyncError(Conductor.instance.songPosition + Conductor.instance.instrumentalOffset)) > 100 * playbackRate))
@@ -1412,7 +1431,7 @@ class PlayState extends MusicBeatSubState
 			if (vocals != null) trace(vocals.checkSyncError(Conductor.instance.songPosition + Conductor.instance.instrumentalOffset));
 			trace(FlxG.sound.music.time - (Conductor.instance.songPosition + Conductor.instance.instrumentalOffset));
 			resyncVocals();
-		}
+		}*/
 
 		if (iconP1 != null) iconP1.onStepHit(Std.int(Conductor.instance.currentStep));
 		if (iconP2 != null) iconP2.onStepHit(Std.int(Conductor.instance.currentStep));
@@ -1537,12 +1556,13 @@ class PlayState extends MusicBeatSubState
 		FlxG.cameras.add(camHUD, false);
 		FlxG.cameras.add(camOther, false);
 
+		/*
 		// Configure camera follow point.
 		if (previousCameraFollowPoint != null)
 		{
 			cameraFollowPoint.setPosition(previousCameraFollowPoint.x, previousCameraFollowPoint.y);
 			previousCameraFollowPoint = null;
-		}
+		}*/
 		add(cameraFollowPoint);
 	}
 
@@ -1814,7 +1834,7 @@ class PlayState extends MusicBeatSubState
 		detailsPausedText = 'Paused - $detailsText';
 
 		// Updating Discord Rich Presence.
-		DiscordClient.changePresence(detailsText, '${currentChart.songName} ($storyDifficultyText)', iconRPC);
+		DiscordClient.changePresence(detailsText, '${currentChart.songName} (${storyDifficultyText.toTitleCase()})', iconRPC);
 		#end
 	}
 
@@ -1999,7 +2019,7 @@ class PlayState extends MusicBeatSubState
 
 		#if discord_rpc
 		// Updating Discord Rich Presence (with Time Left)
-		DiscordClient.changePresence(detailsText, '${currentChart.songName} ($storyDifficultyText)', iconRPC, true, currentSongLengthMs);
+		DiscordClient.changePresence(detailsText, '${currentChart.songName} (${storyDifficultyText.toTitleCase()})', iconRPC, true, currentSongLengthMs);
 		#end
 
 		if (startTimestamp > 0)
@@ -2618,14 +2638,14 @@ class PlayState extends MusicBeatSubState
 		// 9: Toggle the old icon.
 		if (FlxG.keys.justPressed.NINE) iconP1.toggleOldIcon();
 
-		#if (debug || FORCE_DEBUG_VERSION)
+		//#if (debug || FORCE_DEBUG_VERSION)
 		// PAGEUP: Skip forward two sections.
 		// SHIFT+PAGEUP: Skip forward twenty sections.
 		if (FlxG.keys.justPressed.PAGEUP) changeSection(FlxG.keys.pressed.SHIFT ? 20 : 2);
 		// PAGEDOWN: Skip backward two section. Doesn't replace notes.
 		// SHIFT+PAGEDOWN: Skip backward twenty sections.
 		if (FlxG.keys.justPressed.PAGEDOWN) changeSection(FlxG.keys.pressed.SHIFT ? -20 : -2);
-		#end
+		//#end
 
 		if (FlxG.keys.justPressed.B) trace(inputSpitter.join('\n'));
 	}
@@ -2787,6 +2807,7 @@ class PlayState extends MusicBeatSubState
 		if (FlxG.sound.music != null) FlxG.sound.music.volume = 0;
 		vocals.volume = 0;
 		mayPauseGame = false;
+		endedSong = true;
 
 		// Check if any events want to prevent the song from ending.
 		var event = new ScriptEvent(SONG_END, true);
@@ -3259,7 +3280,7 @@ class PlayState extends MusicBeatSubState
 		scrollSpeedTweens = [];
 	}
 
-	#if (debug || FORCE_DEBUG_VERSION)
+	//#if (debug || FORCE_DEBUG_VERSION)
 	/**
 	 * Jumps forward or backward a number of sections in the song.
 	 * Accounts for BPM changes, does not prevent death from skipped notes.
@@ -3286,5 +3307,5 @@ class PlayState extends MusicBeatSubState
 
 		resyncVocals();
 	}
-	#end
+	//#end
 }

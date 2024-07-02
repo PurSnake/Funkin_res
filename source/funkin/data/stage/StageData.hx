@@ -16,6 +16,11 @@ class StageData
 	public var props:Array<StageDataProp> = [];
 	public var characters:StageDataCharacters;
 
+	@:nullSafety(Off)
+	@:optional
+	@:default([0, 0])
+	public var ratingsOffset:Array<Float>;
+
 	@:default(1.0)
 	@:optional
 	public var cameraZoom:Null<Float>;
@@ -28,28 +33,29 @@ class StageData
 
 	function makeDefaultCharacters():StageDataCharacters
 	{
-		return {
+		return
+		{
 			bf:
-				{
-					zIndex: 0,
-					scale: 1,
-					position: [0, 0],
-					cameraOffsets: [-100, -100]
-				},
+			{
+				zIndex: 0,
+				scale: 1,
+				position: [0, 0],
+				cameraOffsets: [-100, -100]
+			},
 			dad:
-				{
-					zIndex: 0,
-					scale: 1,
-					position: [0, 0],
-					cameraOffsets: [100, -100]
-				},
+			{
+				zIndex: 0,
+				scale: 1,
+				position: [0, 0],
+				cameraOffsets: [100, -100]
+			},
 			gf:
-				{
-					zIndex: 0,
-					scale: 1,
-					position: [0, 0],
-					cameraOffsets: [0, 0]
-				}
+			{
+				zIndex: 0,
+				scale: 1,
+				position: [0, 0],
+				cameraOffsets: [0, 0]
+			}
 		};
 	}
 

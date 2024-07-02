@@ -10,11 +10,20 @@ import flixel.graphics.FlxGraphic;
 import haxe.PosInfos;
 import haxe.io.Path;
 
+import flash.media.Sound;
+import flixel.util.typeLimit.OneOfTwo;
+
 /**
  * A core class which handles determining asset paths.
  */
 class Paths
 {
+
+	public static var localTrackedAssets:Array<String> = [];
+	public static var currentTrackedAssets:Map<String, FlxGraphic> = [];
+	public static var currentTrackedSounds:Map<String, Sound> = [];
+
+
 	static var currentLevel:Null<String> = null;
 
 	public static function setCurrentLevel(name:String):Void
@@ -125,7 +134,6 @@ class Paths
 	public static function voices(song:String, ?suffix:String = ''):String
 	{
 		if (suffix == null) suffix = ''; // no suffix, for a sorta backwards compatibility with older-ish voice files
-
 		return 'songs:assets/songs/${song.toLowerCase()}/Voices$suffix.${Constants.EXT_SOUND}';
 	}
 
@@ -147,7 +155,7 @@ class Paths
 		return imageGraphic(key, allowGPU, library);
 	}
 
-	static public function imageGraphic(key:String, ?allowGPU:Bool = true, ?library:String, ?unique:Bool = false, ?filePos:PosInfos):FlxGraphic
+	public static function imageGraphic(key:String, ?allowGPU:Bool = true, ?library:String, ?unique:Bool = false, ?filePos:PosInfos):FlxGraphic
 	{
 		OpenFlAssets.allowGPU = (Main.GPULoadAllowed && allowGPU); // Main config AND choise
 		final graphic:FlxGraphic = FlxG.bitmap.add(getPath('images/$key.png', IMAGE, library));
@@ -158,6 +166,23 @@ class Paths
 		OpenFlAssets.allowGPU = Main.GPULoadAllowed;
 		return graphic;
 	}
+
+	/*public static function returnSound(key:String, ?type:Bool = SOUND, ?lib:String)
+	{
+		final file:String = getPath(key, type, lib);
+		if(!currentTrackedSounds.exists(file))
+		{
+			#if sys
+			if(FileSystem.exists(file))
+				currentTrackedSounds.set(file, Sound.fromFile(file));
+			#else
+			if(OpenFlAssets.exists(file, type))
+				currentTrackedSounds.set(file, OpenFlAssets.getSound(file));
+			#end // I just fucking hate openfl caching - PurSnake
+		}
+		localTrackedAssets.push(file);
+		return currentTrackedSounds.get(file);
+	}*/
 
 	public static function font(key:String):String
 	{

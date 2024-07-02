@@ -46,12 +46,20 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
 		return _data?.name ?? 'Unknown';
 	}
 
+	public var ratingsOffset(get, never):Array<Float>;
+
+	function get_ratingsOffset():Array<Float>
+	{
+		return _data?.ratingsOffset;
+	}
+
 	public var camZoom(get, never):Float;
 
 	function get_camZoom():Float
 	{
 		return _data?.cameraZoom ?? 1.0;
 	}
+
 
 	var frameBufferMan:FrameBufferManager;
 
@@ -227,7 +235,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
 			if (propSprite.frames == null || propSprite.frames.numFrames == 0)
 			{
 				@:privateAccess
-				trace('		ERROR: Could not build texture for prop. Check the asset path (${Paths.currentLevel ?? 'default'}, ${dataProp.assetPath}).');
+				trace('ERROR: Could not build texture for prop. Check the asset path (${Paths.currentLevel ?? 'default'}, ${dataProp.assetPath}).');
 				continue;
 			}
 

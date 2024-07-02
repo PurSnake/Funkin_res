@@ -13,7 +13,7 @@ class DiscordClient
 		trace("Discord Client starting...");
 		DiscordRpc.start(
 		{
-			clientID: "814588678700924999",
+			clientID: "885223855327698985",
 			onReady: onReady,
 			onError: onError,
 			onDisconnected: onDisconnected
@@ -74,16 +74,16 @@ class DiscordClient
 		}
 
 		DiscordRpc.presence(
-			{
-				details: details,
-				state: state,
-				largeImageKey: 'icon',
-				largeImageText: "Friday Night Funkin': Grafex",
-				smallImageKey: smallImageKey,
-				// Obtained times are in milliseconds so they are divided so Discord can use it
-				startTimestamp: Std.int(startTimestamp / 1000),
-				endTimestamp: Std.int(endTimestamp / 1000)
-			});
+		{
+			details: details,
+			state: state,
+			largeImageKey: 'gameicon',
+			largeImageText: "Friday Night Funkin': Grafex",
+			smallImageKey: smallImageKey,
+			// Obtained times are in milliseconds so they are divided so Discord can use it
+			startTimestamp: Std.int(startTimestamp / 1000),
+			endTimestamp: Std.int(endTimestamp / 1000)
+		});
 
 		// trace('Discord RPC Updated. Arguments: $details, $state, $smallImageKey, $hasStartTimestamp, $endTimestamp');
 	}

@@ -21,6 +21,8 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 	{
 		if (daRating == null) daRating = "good";
 
+		var stageOffset:Array<Float> = PlayState.instance.currentStage == null ? [0, 0] : PlayState.instance.currentStage.ratingsOffset;
+
 		var ratingPath:String = daRating;
 
 		if (PlayState.instance.currentChart.noteStyle.startsWith('pixel')) ratingPath = "weeb/pixelUI/" + ratingPath + "-pixel";
@@ -29,8 +31,8 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 		rating.scrollFactor.set(.75, .75);
 
 		rating.zIndex = 1000;
-		rating.x = (FlxG.width * 0.474) + offsets[0];
-		rating.y = (FlxG.camera.height * 0.45 - 60) + offsets[1];
+		rating.x = (FlxG.width * 0.474) + offsets[0] + stageOffset[0];
+		rating.y = (FlxG.camera.height * 0.45 - 60) + offsets[1] + stageOffset[1];
 		rating.acceleration.y = 550;
 		rating.velocity.y -= FlxG.random.int(140, 175);
 		rating.velocity.x -= FlxG.random.int(0, 10);
@@ -70,6 +72,8 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 	{
 		if (combo == null) combo = 0;
 
+		var stageOffset:Array<Float> = PlayState.instance.currentStage == null ? [0, 0] : PlayState.instance.currentStage.ratingsOffset;
+
 		var pixelShitPart1:String = "";
 		var pixelShitPart2:String = '';
 
@@ -79,8 +83,8 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 			pixelShitPart2 = '-pixel';
 		}
 		var comboSpr:FunkinSprite = FunkinSprite.create(pixelShitPart1 + 'combo' + pixelShitPart2);
-		comboSpr.x = (FlxG.width * 0.507) + offsets[0];
-		comboSpr.y = (FlxG.camera.height * 0.44) + offsets[1];
+		comboSpr.x = (FlxG.width * 0.507) + offsets[0] + stageOffset[0];
+		comboSpr.y = (FlxG.camera.height * 0.44) + offsets[1] + stageOffset[1];
 		comboSpr.acceleration.y = FlxG.random.int(450, 600);
 		comboSpr.velocity.y = -FlxG.random.int(130, 160);
 		comboSpr.velocity.x = FlxG.random.int(-10, 15);
@@ -152,7 +156,6 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 			numScore.angularVelocity = FlxG.random.int(-5, 5);
 			numScore.scrollFactor.set(.75, .75);
 			add(numScore);
-
 
 			numScore.scale.x *= 0.95;
 			numScore.scale.y *= 0.95;

@@ -187,6 +187,16 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
 		return this.animation.getByName(id) != null;
 	}
 
+	override function update(elapsed:Float)
+	{
+		if(animation != null && animation.curAnim != null)
+			if(isAnimationFinished() && hasAnimation(getCurrentAnimation() + '-loop'))
+				playAnimation(getCurrentAnimation() + '-loop');
+
+		super.update(elapsed);
+	}
+
+
 	/**
 	 * Ensure that a given animation exists before playing it.
 	 * Will gracefully check for name, then name with stripped suffixes, then fail to play.

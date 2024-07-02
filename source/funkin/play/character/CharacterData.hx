@@ -390,7 +390,7 @@ class CharacterDataParser
 		catch (e)
 		{
 			trace('	Error parsing data for character: ${charId}');
-			trace('		${e}');
+			trace('	${e}');
 			return null;
 		}
 	}
@@ -410,6 +410,10 @@ class CharacterDataParser
 	static final DEFAULT_ISPIXEL:Bool = false;
 	static final DEFAULT_LOOP:Bool = false;
 	static final DEFAULT_NAME:String = 'Untitled Character';
+
+	static final DEFAULT_LOOPHOLD:Bool = false;
+	static final DEFAULT_LOOPHOLDFRAME:Int = 3;
+
 	static final DEFAULT_OFFSETS:Array<Float> = [0, 0];
 	static final DEFAULT_HEALTHICON_OFFSETS:Array<Int> = [0, 25];
 	static final DEFAULT_PIXELICON_ORIGIN_OFFSETS:Array<Int> = [0, 0];
@@ -536,6 +540,14 @@ class CharacterDataParser
 
 		if (input.flipX == null)
 			input.flipX = DEFAULT_FLIPX;
+
+
+		if (input.loopHold == null)
+			input.loopHold = DEFAULT_LOOPHOLD;
+
+		if (input.loopHoldFrame == null)
+			input.loopHoldFrame = DEFAULT_LOOPHOLDFRAME;
+
 
 		if (input.animations.length == 0 && input.startingAnimation != null)
 			return null;
@@ -667,6 +679,15 @@ typedef CharacterData =
 	 */
 	var isPixel:Null<Bool>;
 
+
+
+
+	var loopHold:Null<Bool>;
+	var loopHoldFrame:Null<Int>;
+
+
+
+
 	/**
 	 * The frequency at which the character will play its idle animation, in beats.
 	 * Increasing this number will make the character dance less often.
@@ -758,23 +779,23 @@ typedef HealthIconData =
  */
 typedef PixelIconData =
 {
-  /**
-   * The ID to use for the pixel icon.
-   * @default The character's ID
-   */
-  var id:Null<String>;
+	/**
+	 * The ID to use for the pixel icon.
+	 * @default The character's ID
+	 */
+	var id:Null<String>;
 
-  /**
-   * Whether to flip the pixel icon horizontally.
-   * @default false
-   */
-  var flipX:Null<Bool>;
+	/**
+	 * Whether to flip the pixel icon horizontally.
+	 * @default false
+	 */
+	var flipX:Null<Bool>;
 
-  /**
-   * The origin offsets of the pixel icon, in pixels.
-   * @default [0, 0]
-   */
-  var originOffsets:Null<Array<Int>>;
+	/**
+	 * The origin offsets of the pixel icon, in pixels.
+	 * @default [0, 0]
+	 */
+	var originOffsets:Null<Array<Int>>;
 }
 
 typedef DeathData =
