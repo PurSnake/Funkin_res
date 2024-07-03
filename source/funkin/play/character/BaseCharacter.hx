@@ -384,9 +384,9 @@ class BaseCharacter extends Bopper
 	}
 
 	/**
-	 * Stored the direction of the last note that was hit by this player.
+	 * Stored the animation of the last note that was hit by this player.
 	 */
-	var lastNoteDirection:Null<NoteDirection> = null;
+	var lastNoteAnimation:Null<String> = null;
 
 	/**
 	 * Stores the time at which the player should stop looping the sing animation when pressing a hold note.
@@ -436,9 +436,10 @@ class BaseCharacter extends Bopper
 
 
 			// Repeat the sing animation when pressing a hold note just like in the old input system.
-			if (_data.loopHold && ((this.characterType != BF || isHoldingNote()) && this.animation.curAnim.curFrame >= _data.loopHoldFrame && lastNoteDirection != null && (lastHoldFinish != null && lastHoldFinish >= Conductor.instance.songPosition)))
+			if (_data.loopHold && ((this.characterType != BF || isHoldingNote()) && this.animation.curAnim.curFrame >= _data.loopHoldFrame && lastNoteAnimation != null && (lastHoldFinish != null && lastHoldFinish >= Conductor.instance.songPosition)))
 			{
-				this.playSingAnimation(lastNoteDirection, false);
+				//this.playSingAnimation(lastNoteDirection, false);
+				this.playAnimation(lastNoteAnimation, true);
 				holdTimer = 0;
 			}
 
@@ -542,7 +543,7 @@ class BaseCharacter extends Bopper
 	 */
 	function stopHolding()
 	{
-		lastNoteDirection = null;
+		lastNoteAnimation = null;
 		lastHoldFinish = null;
 	}
 
@@ -555,14 +556,13 @@ class BaseCharacter extends Bopper
 		super.onNoteHit(event);
 		if (event.note.noteData.kind == "noAnimation" || event.note.noAnimation) return;
 
-		var noteDirection:NoteDirection = event.note.noteData.getDirection();
 		if ((event.note.noteData.getMustHitNote() && characterType == BF) || (!event.note.noteData.getMustHitNote() && characterType == DAD))
 		{
 			// If the note is from the same strumline, play the sing animation.
-			this.playSingAnimation(noteDirection, false);
+			this.playSingAnimation(event.note.noteData.getDirection(), false);
 			holdTimer = 0;
 
-			lastNoteDirection = noteDirection;
+			//lastNoteDirection = noteDirection;
 			if (event.note.noteData.isHoldNote) lastHoldFinish = event.note.strumTime + event.note.noteData.length;
 		}
 		else if (event.note.noteData.getMustHitNote() && characterType == GF)
@@ -633,7 +633,7 @@ class BaseCharacter extends Bopper
 	public function playSingAnimation(dir:NoteDirection, miss:Bool = false, ?suffix:String = ''):Void
 	{
 		var anim:String = 'sing${dir.nameUpper}${miss ? 'miss' : ''}${suffix != '' ? '-${suffix}' : ''}';
-
+		lastNoteAnimation = anim;
 		// restart even if already playing, because the character might sing the same note twice.
 		playAnimation(anim, true);
 	}
