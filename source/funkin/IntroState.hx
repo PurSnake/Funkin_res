@@ -20,7 +20,7 @@ class IntroState extends funkin.ui.MusicBeatState
 		#if hxvlc
 		if (Main.config?.allowIntro) {
 			final _cachedAutoPause = FlxG.autoPause;
-			FlxG.sound.cache(Paths.sound("introSound")); //Paths.sound('introSound');
+			Paths.sound('introSound');
 			FunkinSprite.cacheTexture("introHeads"); //Paths.image('introHeads');
 			FlxG.autoPause = true;
 			var video:FlxVideo = new FlxVideo(false);

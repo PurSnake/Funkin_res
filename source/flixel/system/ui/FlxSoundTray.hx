@@ -18,7 +18,7 @@ import flixel.tweens.FlxEase;
 import flixel.util.FlxTimer;
 
 import funkin.util.MathUtil;
-
+import flixel.system.FlxAssets.FlxSoundAsset;
 
 import funkin.Paths;
 
@@ -33,9 +33,9 @@ class FlxSoundTray extends Sprite
 	var _width:Float = 80;
 	var _defaultScale:Float = 1.0;
 
-	public var volumeUpSound:String = Paths.sound("soundtray/Volup");
-	public var volumeDownSound:String = Paths.sound("soundtray/Voldown");
-	public var volumeMaxSound = Paths.sound("soundtray/VolMAX");
+	public var volumeUpSound:FlxSoundAsset = Paths.sound("soundtray/Volup");
+	public var volumeDownSound:FlxSoundAsset = Paths.sound("soundtray/Voldown");
+	public var volumeMaxSound:FlxSoundAsset = Paths.sound("soundtray/VolMAX");
 
 	public var silent:Bool = false;
 	public var shouldShow:Bool = true;
@@ -88,7 +88,7 @@ class FlxSoundTray extends Sprite
 
 		if (shouldShow && !silent && forceSound)
 		{
-			var sound = up ? volumeUpSound : volumeDownSound;
+			var sound:FlxSoundAsset = up ? volumeUpSound : volumeDownSound;
 			if (globalVolume == 20) sound = volumeMaxSound;
 			if (sound != null) {
 				final volumeSound = FlxG.sound.load(sound);

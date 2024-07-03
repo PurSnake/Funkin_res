@@ -5884,6 +5884,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 		this.playSound(Paths.sound('chartingSounds/metronome${high ? '1' : '2'}'), metronomeVolume);
 	}
 
+	function playSound(sound, volume:Float = 1):Void
+	{
+		//this.playSound(Paths.sound('chartingSounds/metronome${high ? '1' : '2'}'), metronomeVolume);
+		FunkinSound.playOnce(sound, volume);
+	}
+
+
 	function switchToCurrentInstrumental():Void
 	{
 		// ChartEditorAudioHandler

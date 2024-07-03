@@ -3,6 +3,7 @@ package funkin;
 import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.utils.AssetType;
 import openfl.utils.Assets as OpenFlAssets;
+import lime.utils.Assets;
 
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.graphics.FlxGraphic;
@@ -11,7 +12,9 @@ import haxe.PosInfos;
 import haxe.io.Path;
 
 import flash.media.Sound;
-import flixel.util.typeLimit.OneOfTwo;
+
+import sys.FileSystem;
+import sys.io.File;
 
 /**
  * A core class which handles determining asset paths.
@@ -19,9 +22,28 @@ import flixel.util.typeLimit.OneOfTwo;
 class Paths
 {
 
+
+	//БЛЯТЬ, ДОБАВЬ ПРОВЕРКУ НА ОКОНЧАНИЕ ПУТЯ К ФАЙЛУ ЗВУКА .ogg
+
 	public static var localTrackedAssets:Array<String> = [];
-	public static var currentTrackedAssets:Map<String, FlxGraphic> = [];
 	public static var currentTrackedSounds:Map<String, Sound> = [];
+
+	public static var dumpExclusions:Array<String> = ['assets/music/freakyMenu/freakyMenu.${Constants.EXT_SOUND}'];
+
+	public static function clearStoredMemory() {
+		// clear all sounds that are cached
+		for (key => asset in currentTrackedSounds)
+		{
+			if (!localTrackedAssets.contains(key) && !dumpExclusions.contains(key) && asset != null)
+			{
+				Assets.cache.clear(key);
+				currentTrackedSounds.remove(key);
+			}
+		}
+		// flags everything to be cleared out next unused memory clear
+		localTrackedAssets = [];
+		//#if !html5 openfl.Assets.cache.clear("songs"); #end
+	}
 
 
 	static var currentLevel:Null<String> = null;
@@ -47,6 +69,11 @@ class Paths
 
 	static function getPath(file:String, type:AssetType, library:Null<String>):String
 	{
+		file = file.replace("\\", "/");
+		while(file.contains("//")) {
+			file = file.replace("//", "/");
+		}
+
 		if (library != null) return getLibraryPath(file, library);
 
 		if (currentLevel != null)
@@ -111,19 +138,29 @@ class Paths
 		return getPath('data/$key.json', TEXT, library);
 	}
 
-	public static function sound(key:String, ?library:String):String
+	public static function soundStr(key:String, ?library:String):String
 	{
 		return getPath('sounds/$key.${Constants.EXT_SOUND}', SOUND, library);
 	}
 
-	public static function soundRandom(key:String, min:Int, max:Int, ?library:String):String
+	public static function sound(key:String, ?library:String):Sound
+	{
+		return returnSound('sounds/$key.${Constants.EXT_SOUND}', SOUND, library);
+	}
+
+	public static function soundRandom(key:String, min:Int, max:Int, ?library:String):Sound
 	{
 		return sound(key + FlxG.random.int(min, max), library);
 	}
 
-	public static function music(key:String, ?library:String):String
+	public static function musicStr(key:String, ?library:String):String
 	{
 		return getPath('music/$key.${Constants.EXT_SOUND}', MUSIC, library);
+	}
+
+	public static function music(key:String, ?library:String):Sound
+	{
+		return returnSound('music/$key.${Constants.EXT_SOUND}', MUSIC, library);
 	}
 
 	public static function videos(key:String, ?library:String):String
@@ -131,12 +168,25 @@ class Paths
 		return getPath('videos/$key.${Constants.EXT_VIDEO}', BINARY, library ?? 'videos');
 	}
 
-	public static function voices(song:String, ?suffix:String = ''):String
+
+	public static function voicesStr(song:String, ?suffix:String = ''):String
 	{
 		if (suffix == null) suffix = ''; // no suffix, for a sorta backwards compatibility with older-ish voice files
-		return 'songs:assets/songs/${song.toLowerCase()}/Voices$suffix.${Constants.EXT_SOUND}';
+		return 'assets/songs/${song.toLowerCase()}/Voices$suffix.${Constants.EXT_SOUND}';
+	}
+	public static function voices(song:String, ?suffix:String = ''):Sound
+	{
+		if (suffix == null) suffix = ''; // no suffix, for a sorta backwards compatibility with older-ish voice files
+		return returnSound('songs/${song.toLowerCase()}/Voices$suffix', MUSIC);
 	}
 
+
+
+	public static function instStr(song:String, ?suffix:String = '', ?withExtension:Bool = true):String
+	{
+		var ext:String = withExtension ? '.${Constants.EXT_SOUND}' : '';
+		return 'assets/songs/${song.toLowerCase()}/Inst$suffix$ext';
+	}
 	/**
 	 * Gets the path to an `Inst.mp3/ogg` song instrumental from songs:assets/songs/`song`/
 	 * @param song name of the song to get instrumental for
@@ -144,10 +194,9 @@ class Paths
 	 * @param withExtension if it should return with the audio file extension `.mp3` or `.ogg`.
 	 * @return String
 	 */
-	public static function inst(song:String, ?suffix:String = '', ?withExtension:Bool = true):String
+	public static function inst(song:String, ?suffix:String = '', ?withExtension:Bool = true):Sound
 	{
-		var ext:String = withExtension ? '.${Constants.EXT_SOUND}' : '';
-		return 'songs:assets/songs/${song.toLowerCase()}/Inst$suffix$ext';
+		return returnSound('songs/${song.toLowerCase()}/Inst$suffix', MUSIC);
 	}
 
 	public static function image(key:String, ?library:String, ?allowGPU:Bool = true):FlxGraphic
@@ -157,8 +206,10 @@ class Paths
 
 	public static function imageGraphic(key:String, ?allowGPU:Bool = true, ?library:String, ?unique:Bool = false, ?filePos:PosInfos):FlxGraphic
 	{
+		if(key.lastIndexOf('.') < 0) key += '.png';
+
 		OpenFlAssets.allowGPU = (Main.GPULoadAllowed && allowGPU); // Main config AND choise
-		final graphic:FlxGraphic = FlxG.bitmap.add(getPath('images/$key.png', IMAGE, library));
+		final graphic:FlxGraphic = FlxG.bitmap.add(getPath('images/$key', IMAGE, library));
 		if (graphic == null)
 			trace('oh no $key returning null NOOOO');
 		else
@@ -167,22 +218,19 @@ class Paths
 		return graphic;
 	}
 
-	/*public static function returnSound(key:String, ?type:Bool = SOUND, ?lib:String)
+	public static function returnSound(key:String, ?type:AssetType = SOUND, ?lib:String)
 	{
+		if(key.lastIndexOf('.') < 0) key += '.${Constants.EXT_SOUND}';
+
 		final file:String = getPath(key, type, lib);
+		trace(file);
 		if(!currentTrackedSounds.exists(file))
-		{
-			#if sys
-			if(FileSystem.exists(file))
-				currentTrackedSounds.set(file, Sound.fromFile(file));
-			#else
 			if(OpenFlAssets.exists(file, type))
 				currentTrackedSounds.set(file, OpenFlAssets.getSound(file));
-			#end // I just fucking hate openfl caching - PurSnake
-		}
+
 		localTrackedAssets.push(file);
 		return currentTrackedSounds.get(file);
-	}*/
+	}
 
 	public static function font(key:String):String
 	{

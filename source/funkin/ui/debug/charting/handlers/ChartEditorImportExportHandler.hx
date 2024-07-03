@@ -66,11 +66,11 @@ class ChartEditorImportExportHandler
 		{
 			if (variation == Constants.DEFAULT_VARIATION)
 			{
-				state.loadInstFromAsset(Paths.inst(songId));
+				state.loadInstFromAsset(Paths.instStr(songId));
 			}
 			else
 			{
-				state.loadInstFromAsset(Paths.inst(songId, '-$variation'), variation);
+				state.loadInstFromAsset(Paths.instStr(songId, '-$variation'), variation);
 			}
 
 			for (difficultyId in song.listDifficulties(variation, true, true))
@@ -79,7 +79,7 @@ class ChartEditorImportExportHandler
 				if (diff == null) continue;
 
 				var instId:String = diff.variation == Constants.DEFAULT_VARIATION ? '' : diff.variation;
-				var voiceList:Array<String> = diff.buildVoiceList(); // SongDifficulty accounts for variation already.
+				var voiceList:Array<String> = diff.buildVoiceListStr(); // SongDifficulty accounts for variation already.
 
 				if (voiceList.length == 2)
 				{

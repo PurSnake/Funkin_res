@@ -18,6 +18,8 @@ import funkin.util.SortUtil;
 import openfl.utils.Assets;
 import flixel.sound.FlxSound;
 
+import flash.media.Sound;
+
 /**
  * This is a data structure managing information about the current song.
  * This structure is created when the game starts, and includes all the data
@@ -663,6 +665,28 @@ class SongDifficulty
 			if (instrumental != '' && characters.altInstrumentals.contains(instrumental))
 			{
 				var instId = '-$instrumental';
+				return Paths.instStr(this.song.id, instId);
+			}
+			else
+			{
+				// Fallback to default instrumental.
+				var instId = (characters.instrumental ?? '') != '' ? '-${characters.instrumental}' : '';
+				return Paths.instStr(this.song.id, instId);
+			}
+		}
+		else
+		{
+			return Paths.instStr(this.song.id);
+		}
+	}
+
+	public function getInstSound(instrumental = '')
+	{
+		if (characters != null)
+		{
+			if (instrumental != '' && characters.altInstrumentals.contains(instrumental))
+			{
+				var instId = '-$instrumental';
 				return Paths.inst(this.song.id, instId);
 			}
 			else
@@ -678,10 +702,11 @@ class SongDifficulty
 		}
 	}
 
+
 	public function cacheInst(instrumental = ''):Void
 	{
-		FlxG.sound.cache(getInstPath(instrumental));
-		FlxG.sound.list.add(new FlxSound().loadEmbedded(getInstPath(instrumental))); //huh
+		getInstSound(instrumental);
+		FlxG.sound.list.add(new FlxSound().loadEmbedded(getInstSound(instrumental))); //huh
 	}
 
 	public function playInst(volume:Float = 1.0, instId:String = '', looped:Bool = false):Void
@@ -701,10 +726,7 @@ class SongDifficulty
 	public inline function cacheVocals():Void
 	{
 		for (voice in buildVoiceList())
-		{
-			FlxG.sound.cache(voice);
 			FlxG.sound.list.add(new FlxSound().loadEmbedded(voice)); //huh
-		}
 	}
 
 	/**
@@ -713,71 +735,123 @@ class SongDifficulty
 	 *
 	 * @param id The character we are about to play.
 	 */
-	public function buildVoiceList():Array<String>
+	public function buildVoiceList():Array<Sound>
 	{
 		var suffix:String = (variation != null && variation != '' && variation != 'default') ? '-$variation' : '';
 
-		// Automatically resolve voices by removing suffixes.
-		// For example, if `Voices-bf-car-erect.ogg` does not exist, check for `Voices-bf-erect.ogg`.
-		// Then, check for	`Voices-bf-car.ogg`, then `Voices-bf.ogg`.
-
 		var playerId:String = characters.player;
-		var voicePlayer:String = Paths.voices(this.song.id, '-$playerId$suffix');
+		var voicePlayer:String = Paths.voicesStr(this.song.id, '-$playerId$suffix');
+		var voicePlayerSound = Paths.voices(this.song.id, '-$playerId$suffix');
 		while (voicePlayer != null && !Assets.exists(voicePlayer))
 		{
-			// Remove the last suffix.
-			// For example, bf-car becomes bf.
 			playerId = playerId.split('-').slice(0, -1).join('-');
-			// Try again.
-			voicePlayer = playerId == '' ? null : Paths.voices(this.song.id, '-${playerId}$suffix');
+			voicePlayer = playerId == '' ? null : Paths.voicesStr(this.song.id, '-${playerId}$suffix');
+			voicePlayerSound  = playerId == '' ? null : Paths.voices(this.song.id, '-${playerId}$suffix');
 		}
 		if (voicePlayer == null)
 		{
-			// Try again without $suffix.
 			playerId = characters.player;
-			voicePlayer = Paths.voices(this.song.id, '-${playerId}');
+			voicePlayer = Paths.voicesStr(this.song.id, '-${playerId}');
+			voicePlayerSound = Paths.voices(this.song.id, '-${playerId}');
 			while (voicePlayer != null && !Assets.exists(voicePlayer))
 			{
-				// Remove the last suffix.
 				playerId = playerId.split('-').slice(0, -1).join('-');
-				// Try again.
-				voicePlayer = playerId == '' ? null : Paths.voices(this.song.id, '-${playerId}$suffix');
+				voicePlayer = playerId == '' ? null : Paths.voicesStr(this.song.id, '-${playerId}$suffix');
+				voicePlayerSound = playerId == '' ? null : Paths.voices(this.song.id, '-${playerId}$suffix');
 			}
 		}
 
+		/////////////////////////////////////////////////
+
 		var opponentId:String = characters.opponent;
-		var voiceOpponent:String = Paths.voices(this.song.id, '-${opponentId}$suffix');
+		var voiceOpponent:String = Paths.voicesStr(this.song.id, '-${opponentId}$suffix');
+		var voiceOpponentSound = Paths.voices(this.song.id, '-${opponentId}$suffix');
 		while (voiceOpponent != null && !Assets.exists(voiceOpponent))
 		{
-			// Remove the last suffix.
 			opponentId = opponentId.split('-').slice(0, -1).join('-');
-			// Try again.
-			voiceOpponent = opponentId == '' ? null : Paths.voices(this.song.id, '-${opponentId}$suffix');
+			voiceOpponent = opponentId == '' ? null : Paths.voicesStr(this.song.id, '-${opponentId}$suffix');
+			voiceOpponentSound = opponentId == '' ? null : Paths.voices(this.song.id, '-${opponentId}$suffix');
 		}
 		if (voiceOpponent == null)
 		{
-			// Try again without $suffix.
 			opponentId = characters.opponent;
-			voiceOpponent = Paths.voices(this.song.id, '-${opponentId}');
+			voiceOpponent = Paths.voicesStr(this.song.id, '-${opponentId}');
+			voiceOpponentSound = Paths.voices(this.song.id, '-${opponentId}');
 			while (voiceOpponent != null && !Assets.exists(voiceOpponent))
 			{
-				// Remove the last suffix.
 				opponentId = opponentId.split('-').slice(0, -1).join('-');
-				// Try again.
-				voiceOpponent = opponentId == '' ? null : Paths.voices(this.song.id, '-${opponentId}$suffix');
+				voiceOpponent = opponentId == '' ? null : Paths.voicesStr(this.song.id, '-${opponentId}$suffix');
+				voiceOpponentSound = opponentId == '' ? null : Paths.voices(this.song.id, '-${opponentId}$suffix');
 			}
 		}
+
+		/////////////////////////////////////////////////
+
+		var result:Array<Sound> = [];
+		if (voicePlayer != null) result.push(voicePlayerSound);
+		if (voiceOpponent != null) result.push(voiceOpponentSound);
+
+		if (voicePlayer == null && voiceOpponent == null)
+			if (Assets.exists(Paths.voicesStr(this.song.id, ''))) result.push(Paths.voices(this.song.id, '$suffix'));
+
+		return result;
+	}
+
+	public function buildVoiceListStr():Array<String>
+	{
+		var suffix:String = (variation != null && variation != '' && variation != 'default') ? '-$variation' : '';
+
+		var playerId:String = characters.player;
+		var voicePlayer:String = Paths.voicesStr(this.song.id, '-$playerId$suffix');
+		while (voicePlayer != null && !Assets.exists(voicePlayer))
+		{
+			playerId = playerId.split('-').slice(0, -1).join('-');
+			voicePlayer = playerId == '' ? null : Paths.voicesStr(this.song.id, '-${playerId}$suffix');
+		}
+		if (voicePlayer == null)
+		{
+			playerId = characters.player;
+			voicePlayer = Paths.voicesStr(this.song.id, '-${playerId}');
+			while (voicePlayer != null && !Assets.exists(voicePlayer))
+			{
+				playerId = playerId.split('-').slice(0, -1).join('-');
+				voicePlayer = playerId == '' ? null : Paths.voicesStr(this.song.id, '-${playerId}$suffix');
+			}
+		}
+
+		/////////////////////////////////////////////////
+
+		var opponentId:String = characters.opponent;
+		var voiceOpponent:String = Paths.voicesStr(this.song.id, '-${opponentId}$suffix');
+		while (voiceOpponent != null && !Assets.exists(voiceOpponent))
+		{
+			opponentId = opponentId.split('-').slice(0, -1).join('-');
+			voiceOpponent = opponentId == '' ? null : Paths.voicesStr(this.song.id, '-${opponentId}$suffix');
+		}
+		if (voiceOpponent == null)
+		{
+			opponentId = characters.opponent;
+			voiceOpponent = Paths.voicesStr(this.song.id, '-${opponentId}');
+			while (voiceOpponent != null && !Assets.exists(voiceOpponent))
+			{
+				opponentId = opponentId.split('-').slice(0, -1).join('-');
+				voiceOpponent = opponentId == '' ? null : Paths.voicesStr(this.song.id, '-${opponentId}$suffix');
+			}
+		}
+
+		/////////////////////////////////////////////////
 
 		var result:Array<String> = [];
 		if (voicePlayer != null) result.push(voicePlayer);
 		if (voiceOpponent != null) result.push(voiceOpponent);
+
 		if (voicePlayer == null && voiceOpponent == null)
-		{
-			// Try to use `Voices.ogg` if no other voices are found.
-			if (Assets.exists(Paths.voices(this.song.id, ''))) result.push(Paths.voices(this.song.id, '$suffix'));
-		}
+			if (Assets.exists(Paths.voicesStr(this.song.id, ''))) result.push(Paths.voicesStr(this.song.id, '$suffix'));
+
 		return result;
 	}
+
+
 
 	/**
 	 * Create a VoicesGroup, an audio object that can play the vocals for all characters.
@@ -788,7 +862,7 @@ class SongDifficulty
 	{
 		var result:VoicesGroup = new VoicesGroup();
 
-		var voiceList:Array<String> = buildVoiceList();
+		var voiceList:Array<Sound> = buildVoiceList();
 
 		if (voiceList.length == 0)
 		{
@@ -806,7 +880,7 @@ class SongDifficulty
 		{
 			for (i in 2...voiceList.length)
 			{
-				result.add(FunkinSound.load(Assets.getSound(voiceList[i])));
+				result.add(FunkinSound.load(voiceList[i]));
 			}
 		}
 

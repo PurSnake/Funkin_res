@@ -60,7 +60,7 @@ class LoadingState extends MusicBeatSubState
 		loadBar = new FunkinSprite(0, FlxG.height - 20).makeSolidColor(0, 10, 0xFFff16d2);
 		add(loadBar);
 
-		initSongsManifest().onComplete(function(lib) {
+		/*initSongsManifest().onComplete(function(lib) {
 			callbacks = new MultiCallback(onLoad);
 			var introComplete = callbacks.add('introComplete');
 
@@ -77,7 +77,7 @@ class LoadingState extends MusicBeatSubState
 				var variation:String = playParams.targetVariation ?? Constants.DEFAULT_VARIATION;
 				var targetChart:SongDifficulty = playParams.targetSong?.getDifficulty(difficulty, variation);
 				var instPath:String = targetChart.getInstPath(playParams.targetInstrumental);
-				var voicesPaths:Array<String> = targetChart.buildVoiceList();
+				var voicesPaths:Array<String> = targetChart.buildVoiceListStr();
 
 				checkLoadSong(instPath);
 				for (voicePath in voicesPaths)
@@ -93,7 +93,7 @@ class LoadingState extends MusicBeatSubState
 			var fadeTime:Float = 0.5;
 			FlxG.camera.fade(FlxG.camera.bgColor, fadeTime, true);
 			new FlxTimer().start(fadeTime + MIN_TIME, function(_) introComplete());
-		});
+		});*/
 	}
 
 	function checkLoadSong(path:String):Void
@@ -102,10 +102,6 @@ class LoadingState extends MusicBeatSubState
 		{
 			var library = Assets.getLibrary('songs');
 			var symbolPath = path.split(':').pop();
-			// @:privateAccess
-			// library.types.set(symbolPath, SOUND);
-			// @:privateAccess
-			// library.pathGroups.set(symbolPath, [library.__cacheBreak(symbolPath)]);
 			var callback = callbacks.add('song:' + path);
 			Assets.loadSound(path).onComplete(function(_) {
 				callback();
@@ -193,7 +189,7 @@ class LoadingState extends MusicBeatSubState
 
 	static function getSongPath():String
 	{
-		return Paths.inst(PlayState.instance.currentSong.id);
+		return Paths.instStr(PlayState.instance.currentSong.id);
 	}
 
 	/**
@@ -336,7 +332,7 @@ class LoadingState extends MusicBeatSubState
 				return 'Done precaching ${path}';
 			}, true);
 
-			trace("Queued ${path} for precaching");
+			trace('Queued ${path} for precaching');
 			//FunkinSprite.cacheTexture(path);
 		}
 

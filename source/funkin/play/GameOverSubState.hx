@@ -368,13 +368,14 @@ class GameOverSubState extends MusicBeatSubState
 	 * Rather than hardcoding stuff, we look for the presence of a music file
 	 * with the given suffix, and strip it down until we find one that's valid.
 	 */
-	function resolveMusicPath(suffix:String, starting:Bool = false, ending:Bool = false):Null<String>
+	@:nullSafety(Off)
+	function resolveMusicPath(suffix:String, starting:Bool = false, ending:Bool = false)
 	{
 		var basePath:String = 'gameplay/gameover/gameOver';
 		if (ending) basePath += 'End';
 		else if (starting) basePath += 'Start';
 
-		var musicPath:String = Paths.music(basePath + suffix);
+		/*var musicPath:String = Paths.music(basePath + suffix);
 		while (!Assets.exists(musicPath) && suffix.length > 0)
 		{
 			suffix = suffix.split('-').slice(0, -1).join('-');
@@ -382,7 +383,19 @@ class GameOverSubState extends MusicBeatSubState
 		}
 		if (!Assets.exists(musicPath)) return null;
 		trace('Resolved music path: ' + musicPath);
-		return musicPath;
+		return musicPath;*/
+
+		var music = Paths.music(basePath + suffix);
+		var musicPath:String = Paths.musicStr(basePath + suffix);
+		while (!Assets.exists(musicPath) && suffix.length > 0)
+		{
+			suffix = suffix.split('-').slice(0, -1).join('-');
+			music = Paths.music(basePath + suffix);
+			musicPath = Paths.musicStr(basePath + suffix);
+		}
+		if (!Assets.exists(musicPath)) return null;
+		trace('Resolved music path: ' + musicPath);
+		return music;
 	}
 
 	/**
@@ -390,9 +403,10 @@ class GameOverSubState extends MusicBeatSubState
 	 * @param startingVolume The initial volume for the music.
 	 * @param force Whether or not to force the music to restart.
 	 */
+	@:nullSafety(Off)
 	public function startDeathMusic(startingVolume:Float = 1, force:Bool = false):Void
 	{
-		var musicPath:Null<String> = resolveMusicPath(musicSuffix, isStarting, isEnding);
+		var musicPath = resolveMusicPath(musicSuffix, isStarting, isEnding);
 		var onComplete:() -> Void = () -> {};
 
 		if (isStarting)
@@ -444,13 +458,13 @@ class GameOverSubState extends MusicBeatSubState
 	public static function playBlueBalledSFX():Void
 	{
 		blueballed = true;
-		if (Assets.exists(Paths.sound('gameplay/gameover/fnf_loss_sfx' + blueBallSuffix)))
+		if (Assets.exists(Paths.soundStr('gameplay/gameover/fnf_loss_sfx' + blueBallSuffix)))
 		{
 			FunkinSound.playOnce(Paths.sound('gameplay/gameover/fnf_loss_sfx' + blueBallSuffix));
 		}
 		else
 		{
-			FlxG.log.error('Missing blue ball sound effect: ' + Paths.sound('gameplay/gameover/fnf_loss_sfx' + blueBallSuffix));
+			FlxG.log.error('Missing blue ball sound effect: ' + Paths.soundStr('gameplay/gameover/fnf_loss_sfx' + blueBallSuffix));
 		}
 	}
 

@@ -319,7 +319,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 			{
 				var existingSound:FunkinSound = cast FlxG.sound.music;
 				// Stop here if we would play a matching music track.
-				if (existingSound._label == Paths.music('$key/$key'))
+				if (existingSound._label == Paths.musicStr('$key/$key'))
 				{
 					return false;
 				}
@@ -350,9 +350,9 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 		var suffix = params.suffix ?? '';
 		var pathToUse = switch (pathsFunction)
 		{
-			case MUSIC: Paths.music('$key/$key');
-			case INST: Paths.inst('$key', suffix);
-			default: Paths.music('$key/$key');
+			case MUSIC: Paths.musicStr('$key/$key');
+			case INST: Paths.instStr('$key', suffix);
+			default: Paths.musicStr('$key/$key');
 		}
 
 		var shouldLoadPartial = params.partialParams?.loadPartial ?? false;
@@ -537,7 +537,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 	 * @param volume
 	 * @return A `FunkinSound` object, or `null` if the sound could not be loaded.
 	 */
-	public static function playOnce(key:String, volume:Float = 1.0, ?onComplete:Void->Void, ?onLoad:Void->Void):Null<FunkinSound>
+	public static function playOnce(key:FlxSoundAsset, volume:Float = 1.0, ?onComplete:Void->Void, ?onLoad:Void->Void):Null<FunkinSound>
 	{
 		var result:Null<FunkinSound> = FunkinSound.load(key, volume, false, true, true, onComplete, onLoad);
 		return result;

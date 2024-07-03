@@ -61,8 +61,8 @@ class TitleState extends MusicBeatState
 		swagShader = new ColorSwap();
 
 		curWacky = FlxG.random.getObject(getIntroTextShit());
-		FlxG.sound.cache(Paths.music('freakyMenu/freakyMenu'));
-		FlxG.sound.cache(Paths.music('girlfriendsRingtone/girlfriendsRingtone'));
+		Paths.music('freakyMenu/freakyMenu');
+		Paths.music('girlfriendsRingtone/girlfriendsRingtone');
 
 		// DEBUG BULLSHIT
 

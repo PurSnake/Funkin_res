@@ -422,7 +422,7 @@ class ResultState extends MusicBeatSubState
 			if (rank.hasMusicIntro())
 			{
 				// Play the intro music.
-				var introMusic:String = Paths.music(rank.getMusicPath() + '/' + rank.getMusicPath() + '-intro');
+				var introMusic = Paths.music(rank.getMusicPath() + '/' + rank.getMusicPath() + '-intro');
 				FunkinSound.load(introMusic, 1.0, false, true, true, () -> {
 					FunkinSound.playMusic(rank.getMusicPath(),
 						{

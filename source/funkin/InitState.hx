@@ -220,6 +220,10 @@ class InitState extends FlxState
 			openfl.Assets.cache.clear();
 		}
 		
+		FlxG.signals.preStateSwitch.add(function() {
+			Paths.clearStoredMemory();
+		});
+
 		FlxG.signals.postStateSwitch.add(function() {
 			clearCache();
 			gc(true);
@@ -289,7 +293,7 @@ class InitState extends FlxState
 		}
 		else
 		{
-			FlxG.sound.cache(Paths.music('freakyMenu/freakyMenu'));
+			Paths.music('freakyMenu/freakyMenu');
 			//FlxG.switchState(() -> new TitleState());
 			FlxG.switchState(() -> new IntroState());
 		}
