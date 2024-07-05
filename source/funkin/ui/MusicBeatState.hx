@@ -15,6 +15,8 @@ import funkin.modding.module.ModuleHandler;
 import funkin.util.SortUtil;
 import funkin.input.Controls;
 
+import funkin.ui.transition.CustomTransition;
+
 /**
  * MusicBeatState actually represents the core utility FlxState of the game.
  * It includes functionality for event handling, as well as maintaining BPM-based update events.
@@ -65,6 +67,19 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
 		Conductor.beatHit.add(this.beatHit);
 		Conductor.stepHit.add(this.stepHit);
+	}
+
+
+	public override function transitionIn():Void
+	{
+		trace('Trans in');
+		if (FlxTransitionableState.skipNextTransIn)
+		{
+			FlxTransitionableState.skipNextTransIn = false;
+			return;
+		}
+
+		getCurrentState().openSubState(new CustomTransition(0.6, true));
 	}
 
 	public override function destroy():Void
@@ -157,7 +172,6 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
 	override function startOutro(onComplete:() -> Void):Void
 	{
-		trace(() -> onComplete);
 		var event = new StateChangeScriptEvent(STATE_CHANGE_BEGIN, null, true);
 		//FlxG.state
 
@@ -174,6 +188,22 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 			//onComplete();
 			super.startOutro(onComplete);
 		}
+	}
+
+	public override function transitionOut(?OnExit:Void->Void):Void
+	{
+		_onExit = OnExit;
+		getCurrentState().openSubState(new CustomTransition(0.6, false));
+		CustomTransition.finishCallback = finishTransOut;
+	}
+
+	public static function getCurrentState():FlxState
+	{
+		var state = FlxG.state;
+		while (state.subState != null && Type.getClass(state.subState) != CustomTransition)
+			state = state.subState;
+
+		return state;
 	}
 
 	public override function openSubState(targetSubState:FlxSubState):Void

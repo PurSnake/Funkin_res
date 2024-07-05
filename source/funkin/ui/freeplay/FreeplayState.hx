@@ -214,11 +214,14 @@ class FreeplayState extends MusicBeatSubState
 
 		fromResultsParams = params?.fromResults;
 
-		if (fromResultsParams?.playRankAnim == true)
+		if (fromResultsParams?.playRankAnim)
 			prepForNewRank = true;
 
 		if (stickers?.members != null)
 			stickerSubState = stickers;
+
+		FlxTransitionableState.skipNextTransIn = (stickers?.members != null || prepForNewRank);
+		FlxTransitionableState.skipNextTransOut = false;
 
 		super(FlxColor.TRANSPARENT);
 	}
@@ -1484,8 +1487,8 @@ class FreeplayState extends MusicBeatSubState
 			}
 
 			new FlxTimer().start(longestTimer, (_) -> {
-				FlxTransitionableState.skipNextTransIn = true;
-				FlxTransitionableState.skipNextTransOut = true;
+				//FlxTransitionableState.skipNextTransIn = true;
+				//FlxTransitionableState.skipNextTransOut = true;
 				if (Type.getClass(_parentState) == MainMenuState)
 				{
 					FunkinSound.playMusic('freakyMenu',
@@ -1511,8 +1514,8 @@ class FreeplayState extends MusicBeatSubState
 
 	public override function destroy():Void
 	{
-		//FlxTransitionableState.skipNextTransIn = false;
-		//FlxTransitionableState.skipNextTransOut = false;
+		FlxTransitionableState.skipNextTransIn = false;
+		FlxTransitionableState.skipNextTransOut = false;
 		super.destroy();
 		var daSong:Null<FreeplaySongData> = currentFilteredSongs[curSelected];
 		if (daSong != null)
@@ -1544,7 +1547,7 @@ class FreeplayState extends MusicBeatSubState
 				FlxG.log.warn('WARN: could not find song with id (${grpCapsules.members[curSelected].songData.songId})');
 				return;
 			}
-			var targetVariation:String = targetSong.getFirstValidVariation(currentDifficulty);
+			var targetVariation:String = targetSong.getFirstValidVariation(currentDifficulty, targetSong.getVariationsByCharId(currentCharacter));
 
 			// TODO: This line of code makes me sad, but you can't really fix it without a breaking migration.
 			var suffixedDifficulty = (targetVariation != Constants.DEFAULT_VARIATION
@@ -1685,7 +1688,7 @@ class FreeplayState extends MusicBeatSubState
 			return;
 		}
 		var targetDifficultyId:String = currentDifficulty;
-		var targetVariation:String = targetSong.getFirstValidVariation(targetDifficultyId);
+		var targetVariation:String = targetSong.getFirstValidVariation(targetDifficultyId, targetSong.getVariationsByCharId(currentCharacter));
 
 		PlayStatePlaylist.campaignId = cap.songData.levelId;
 
@@ -1882,11 +1885,15 @@ class FreeplayState extends MusicBeatSubState
 	 */
 	public static function build(?params:FreeplayStateParams, ?stickers:StickerSubState):MusicBeatState
 	{
+		FlxTransitionableState.skipNextTransIn = (stickers?.members != null || params?.fromResults.playRankAnim);
+		FlxTransitionableState.skipNextTransOut = false;
 		var result:MainMenuState;
 		if (params?.fromResults.playRankAnim) result = new MainMenuState(true);
 		else
 			result = new MainMenuState(false);
 
+		FlxTransitionableState.skipNextTransIn = (stickers?.members != null || params?.fromResults.playRankAnim);
+		FlxTransitionableState.skipNextTransOut = false;
 		result.openSubState(new FreeplayState(params, stickers));
 		result.persistentUpdate = false;
 		result.persistentDraw = true;

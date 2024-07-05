@@ -410,7 +410,7 @@ class Constants
 	/**
 	 * The amount of health the player gains when hitting a note with the BAD rating.
 	 */
-	public static final HEALTH_BAD_BONUS:Float = 0.0 / 100.0 * HEALTH_MAX; // +0.0%
+	public static final HEALTH_BAD_BONUS:Float = -0.25 / 100.0 * HEALTH_MAX; // -0.25%
 
 	/**
 	 * The amount of health the player gains when hitting a note with the SHIT rating.
@@ -436,7 +436,7 @@ class Constants
 	/**
 	 * The amount of health the player loses upon letting go of a hold note while it is still going.
 	 */
-	public static final HEALTH_HOLD_DROP_PENALTY:Float = 0.0; // 0.0%
+	public static final HEALTH_HOLD_DROP_PENALTY:Float = 1.0 / 100.0 * HEALTH_MAX; // 1.0%
 
 	/**
 	 * The amount of health the player loses upon hitting a mine.
@@ -520,7 +520,7 @@ class Constants
 	/**
 	 * The maximum number of previous file paths for the Chart Editor to remember.
 	 */
-	public static final MAX_PREVIOUS_WORKING_FILES:Int = 10;
+	public static final MAX_PREVIOUS_WORKING_FILES:Int = 20;
 
 	/**
 	 * The separator between an asset library and the asset path.

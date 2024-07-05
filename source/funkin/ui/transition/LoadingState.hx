@@ -279,16 +279,9 @@ class LoadingState extends MusicBeatSubState
 		FunkinSprite.cacheTexture("healthBar");
 		FunkinSprite.cacheTexture("menuDesat");
 		FunkinSprite.cacheTexture("combo");
-		FunkinSprite.cacheTexture("num0");
-		FunkinSprite.cacheTexture("num1");
-		FunkinSprite.cacheTexture("num2");
-		FunkinSprite.cacheTexture("num3");
-		FunkinSprite.cacheTexture("num4");
-		FunkinSprite.cacheTexture("num5");
-		FunkinSprite.cacheTexture("num6");
-		FunkinSprite.cacheTexture("num7");
-		FunkinSprite.cacheTexture("num8");
-		FunkinSprite.cacheTexture("num9");
+		for (i in 0...10)
+			FunkinSprite.cacheTexture("num" + i);
+
 		FunkinSprite.cacheTexture("notes", "shared");
 		FunkinSprite.cacheTexture("noteSplashes", "shared");
 		FunkinSprite.cacheTexture("noteStrumline", "shared");
@@ -301,6 +294,9 @@ class LoadingState extends MusicBeatSubState
 		FunkinSprite.cacheTexture("bad", "shared");
 		FunkinSprite.cacheTexture("shit", "shared");
 		//FunkinSprite.cacheTexture("miss", "shared"); // TODO: remove this
+
+		for (i in 0...4)
+			Paths.sound("missnote" + i);
 
 
 		// List all image assets in the level's library.

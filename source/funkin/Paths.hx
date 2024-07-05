@@ -206,7 +206,7 @@ class Paths
 
 	public static function imageGraphic(key:String, ?allowGPU:Bool = true, ?library:String, ?unique:Bool = false, ?filePos:PosInfos):FlxGraphic
 	{
-		if(key.lastIndexOf('.') < 0) key += '.png';
+		if(key.lastIndexOf('.') < 0) key += '.${Constants.EXT_IMAGE}';
 
 		OpenFlAssets.allowGPU = (Main.GPULoadAllowed && allowGPU); // Main config AND choise
 		final graphic:FlxGraphic = FlxG.bitmap.add(getPath('images/$key', IMAGE, library));
@@ -223,7 +223,6 @@ class Paths
 		if(key.lastIndexOf('.') < 0) key += '.${Constants.EXT_SOUND}';
 
 		final file:String = getPath(key, type, lib);
-		trace(file);
 		if(!currentTrackedSounds.exists(file))
 			if(OpenFlAssets.exists(file, type))
 				currentTrackedSounds.set(file, OpenFlAssets.getSound(file));

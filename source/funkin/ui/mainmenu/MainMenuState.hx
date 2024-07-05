@@ -52,7 +52,7 @@ class MainMenuState extends MusicBeatState
 
 		overrideMusic = _overrideMusic;
 
-		//FlxTransitionableState.skipNextTransIn = false;
+		FlxTransitionableState.skipNextTransIn = _overrideMusic;
 		//FlxTransitionableState.skipNextTransOut = false;
 	}
 
@@ -114,8 +114,8 @@ class MainMenuState extends MusicBeatState
 			persistentDraw = true;
 			persistentUpdate = false;
 			// Freeplay has its own custom transition
-			FlxTransitionableState.skipNextTransIn = true;
-			FlxTransitionableState.skipNextTransOut = true;
+			FlxTransitionableState.skipNextTransIn = false; //true;
+			FlxTransitionableState.skipNextTransOut = false; //true;
 
 			openSubState(new FreeplayState());
 		});

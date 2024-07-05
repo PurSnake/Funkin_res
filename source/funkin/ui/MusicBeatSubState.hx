@@ -1,6 +1,7 @@
 package funkin.ui;
 
 import flixel.addons.transition.FlxTransitionableState;
+import flixel.FlxState;
 import flixel.FlxSubState;
 import flixel.text.FlxText;
 import funkin.ui.mainmenu.MainMenuState;
@@ -13,6 +14,8 @@ import funkin.modding.PolymodHandler;
 import funkin.util.SortUtil;
 import flixel.util.FlxSort;
 import funkin.input.Controls;
+
+import funkin.ui.transition.CustomTransition;
 
 /**
  * MusicBeatSubState reincorporates the functionality of MusicBeatState into an FlxSubState.
@@ -51,11 +54,37 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 	override function create():Void
 	{
 		super.create();
+		stateTransitionIn();
 
 		createWatermarkText();
 
 		Conductor.beatHit.add(this.beatHit);
 		Conductor.stepHit.add(this.stepHit);
+	}
+
+	public function stateTransitionIn():Void
+	{
+		if (_parentState != null) return;
+
+		trace('Trans in');
+		if (FlxTransitionableState.skipNextTransIn)
+		{
+			FlxTransitionableState.skipNextTransIn = false;
+
+			trace('Transition skipped :(');
+			return;
+		}
+
+		getCurrentState().openSubState(new CustomTransition(0.6, true));
+	}
+
+	public static function getCurrentState():FlxState
+	{
+		var state = FlxG.state;
+		while (state.subState != null)
+			state = state.subState;
+
+		return state;
 	}
 
 	public override function destroy():Void
@@ -178,7 +207,18 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 		{
 			FunkinSound.stopAllAudio();
 
-			onComplete();
+			/*if (_parentState == null)
+			{
+				transitionOut(onComplete);
+			
+				if (FlxTransitionableState.skipNextTransOut)
+				{
+					FlxTransitionableState.skipNextTransOut = false;
+					finishTransOut();
+				}
+			}
+			else*/
+				onComplete();
 		}
 	}
 
@@ -212,5 +252,10 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 	function onCloseSubStateComplete(targetState:FlxSubState):Void
 	{
 		dispatchEvent(new SubStateScriptEvent(SUBSTATE_CLOSE_END, targetState, true));
+	}
+
+	function finishTransIn()
+	{
+		closeSubState();
 	}
 }
