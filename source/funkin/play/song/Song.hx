@@ -83,8 +83,6 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
 	// key = variation id, value = metadata
 	final _metadata:Map<String, SongMetadata>;
 	final difficulties:Map<String, SongDifficulty>;
-	// key = character id, value = allowed variation ids
-	final charVariations:Map<String, Array<String>>;
 
 	/**
 	 * The list of variations a song has.
@@ -155,13 +153,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
 
 		_data = _fetchData(id);
 
-		_metadata = new Map<String, SongMetadata>();
-		charVariations = new Map<String, Array<String>>();
-		if (_data != null)
-		{
-			_metadata.set(Constants.DEFAULT_VARIATION, _data);
-			charVariations.set(_data.campaignCharacter, [Constants.DEFAULT_VARIATION]);
-		}
+		_metadata = _data == null ? [] : [Constants.DEFAULT_VARIATION => _data];
 
 		if (_data != null && _data.playData != null)
 		{
@@ -171,10 +163,6 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
 				if (variMeta != null)
 				{
 					_metadata.set(variMeta.variation, variMeta);
-					var variChar:Null<Array<String>> = charVariations.get(variMeta.campaignCharacter);
-					variChar != null ? variChar.push(variMeta.variation)
-					 : charVariations.set(variMeta.campaignCharacter, [variMeta.variation]);
-
 					trace('	Loaded variation: $vari');
 				}
 				else
@@ -443,7 +431,11 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
 	public function getVariationsByCharId(?charId:String):Array<String>
 	{
 		if (charId == null) charId = Constants.DEFAULT_CHARACTER;
-		return charVariations.get(charId) ?? [];
+
+		if (variations.contains(charId))
+			return [charId];
+		else
+			return variations;
 	}
 
 	/**

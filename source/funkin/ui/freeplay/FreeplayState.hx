@@ -1547,7 +1547,7 @@ class FreeplayState extends MusicBeatSubState
 				FlxG.log.warn('WARN: could not find song with id (${grpCapsules.members[curSelected].songData.songId})');
 				return;
 			}
-			var targetVariation:String = targetSong.getFirstValidVariation(currentDifficulty, targetSong.getVariationsByCharId(currentCharacter));
+			var targetVariation:String = targetSong.getFirstValidVariation(currentDifficulty);
 
 			// TODO: This line of code makes me sad, but you can't really fix it without a breaking migration.
 			var suffixedDifficulty = (targetVariation != Constants.DEFAULT_VARIATION
@@ -1688,7 +1688,7 @@ class FreeplayState extends MusicBeatSubState
 			return;
 		}
 		var targetDifficultyId:String = currentDifficulty;
-		var targetVariation:String = targetSong.getFirstValidVariation(targetDifficultyId, targetSong.getVariationsByCharId(currentCharacter));
+		var targetVariation:String = targetSong.getFirstValidVariation(targetDifficultyId);
 
 		PlayStatePlaylist.campaignId = cap.songData.levelId;
 
