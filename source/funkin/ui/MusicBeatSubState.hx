@@ -76,6 +76,7 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 		}
 
 		getCurrentState().openSubState(new CustomTransition(0.6, true));
+		CustomTransition.finishCallback = finishTransIn;
 	}
 
 	public static function getCurrentState():FlxState
@@ -256,6 +257,6 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 
 	function finishTransIn()
 	{
-		closeSubState();
+		if (CustomTransition.currentTransition != null) CustomTransition.currentTransition.close();
 	}
 }

@@ -12,6 +12,7 @@ import flixel.tweens.FlxTween;
 import openfl.display3D.textures.TextureBase;
 import funkin.graphics.framebuffer.FixedBitmapData;
 import openfl.display.BitmapData;
+import funkin.util.MemoryUtil;
 
 /**
  * An FlxSprite with additional functionality.
@@ -341,14 +342,18 @@ class FunkinSprite extends flixel.addons.effects.FlxSkewedSprite //FlxSprite
 			var graphic = previousCachedTextures.get(graphicKey);
 			if (graphic == null) continue;
 			FlxG.bitmap.remove(graphic);
-
+			openfl.Assets.cache.removeBitmapData(graphicKey);
 			@:privateAccess
 			if (graphic.bitmap != null && graphic.bitmap.__texture != null)
 				graphic.bitmap.__texture.dispose();
 
+			graphic.persist = false;
+			graphic.destroyOnNoUse = true;
+
 			graphic.destroy();
 			previousCachedTextures.remove(graphicKey);
 		}
+		MemoryUtil.collect(true);
 	}
 
 	public static function isGraphicCached(graphic:FlxGraphic):Bool

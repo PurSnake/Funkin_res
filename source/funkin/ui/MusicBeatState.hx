@@ -80,6 +80,8 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 		}
 
 		getCurrentState().openSubState(new CustomTransition(0.6, true));
+		CustomTransition.finishCallback = finishTransIn;
+
 	}
 
 	public override function destroy():Void
@@ -237,4 +239,10 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 	{
 		dispatchEvent(new SubStateScriptEvent(SUBSTATE_CLOSE_END, targetState, true));
 	}
+
+	override function finishTransIn()
+	{
+		if (CustomTransition.currentTransition != null) CustomTransition.currentTransition.close();
+	}
+
 }

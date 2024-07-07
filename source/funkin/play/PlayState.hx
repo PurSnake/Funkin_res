@@ -1971,6 +1971,7 @@ class PlayState extends MusicBeatSubState
 			// Stop the vocals if they already exist.
 			if (vocals != null) vocals.stop();
 			vocals = currentChart.buildVocals();
+			add(vocals);
 
 			if (vocals.members.length == 0)
 				trace('WARNING: No vocals found for this song.');
@@ -2011,7 +2012,7 @@ class PlayState extends MusicBeatSubState
 		if (FlxG.sound.music.fadeTween != null) FlxG.sound.music.fadeTween.cancel();
 
 		trace('Playing vocals...');
-		add(vocals);
+		//add(vocals);
 		vocals.play();
 		vocals.volume = 1.0;
 		vocals.pitch = playbackRate;

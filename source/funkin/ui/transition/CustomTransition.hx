@@ -25,7 +25,7 @@ class CustomTransition extends flixel.FlxSubState
 	public dynamic function startTransition(duration:Float, isTransIn:Bool)
 	{
 		if (duration <= 0) {
-			finish(isTransIn);	// dont bother creating shit
+			finish();	// dont bother creating shit
 			return;				// actually nvmd it soflocks you lmao
 		}
 
@@ -48,21 +48,15 @@ class CustomTransition extends flixel.FlxSubState
 		transGradient.cameras = [nextCamera ?? FlxG.cameras.list[FlxG.cameras.list.length - 1]];
 		nextCamera = null;
 
-		FlxTween.tween(transGradient, {y: isTransIn ? height : 0}, duration * transTimeMult, {onComplete: (t:FlxTween) -> finish(isTransIn)});
+		FlxTween.tween(transGradient, {y: isTransIn ? height : 0}, duration * transTimeMult, {onComplete: (t:FlxTween) -> finish()});
 
 		CustomTransition.currentTransition = this;
 	}
 
-	public dynamic function finish(transIn:Bool) 
+	public dynamic function finish() 
 	{
-		transIn ?  {
-			trace("Closing transition subState");
-			close();
-		} : {
-			trace("Trying to use customCallback");
-			if(finishCallback != null)
-				finishCallback();
-		}
+		trace("Closing transition and using custom callback");
+		if(finishCallback != null) finishCallback();
 		CustomTransition.currentTransition = null;
 	}
 }
