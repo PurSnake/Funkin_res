@@ -29,14 +29,14 @@ import funkin.util.Constants;
  * - i.e. `PlayState.instance.iconP1.animation.addByPrefix("jumpscare", "jumpscare", 24, false);`
  * @author MasterEric
  */
-//@:nullSafety
+@:nullSafety
 class HealthIcon extends FunkinSprite
 {
 	/**
 	 * The character this icon is representing.
 	 * Setting this variable will automatically update the graphic.
 	 */
-	public var characterId(default, set):Null<String>;
+	public var characterId(default, set):String = Constants.DEFAULT_HEALTH_ICON;
 
 	/**
 	 * Whether this health icon should automatically update its state based on the character's health.
@@ -133,7 +133,7 @@ class HealthIcon extends FunkinSprite
 	 */
 	static final POSITION_OFFSET:Int = 26;
 
-	public function new(char:String = 'bf', playerId:Int = 0)
+	public function new(char:Null<String>, playerId:Int = 0)
 	{
 		super(0, 0);
 		this.playerId = playerId;
@@ -144,7 +144,7 @@ class HealthIcon extends FunkinSprite
 		initTargetSize();
 	}
 
-	function set_characterId(value:Null<String>):Null<String>
+	function set_characterId(value:Null<String>):String
 	{
 		if (value == characterId) return value;
 
@@ -180,6 +180,7 @@ class HealthIcon extends FunkinSprite
 	 * Use the provided CharacterHealthIconData to configure this health icon's appearance.
 	 * @param data The data to use to configure this health icon.
 	 */
+	@:nullSafety(Off)
 	public function configure(data:Null<HealthIconData>):Void
 	{
 		if (data == null)
@@ -391,18 +392,9 @@ class HealthIcon extends FunkinSprite
 			this.animation.add(Winning, [2], 0, false, false);
 	}
 
-	function correctCharacterId(charId:Null<String>):String
+	function iconExists(charId:String):Bool
 	{
-		if (charId == null)
-			return Constants.DEFAULT_HEALTH_ICON;
-
-		if (!Assets.exists(Paths.file('images/icons/icon-$charId.png', IMAGE)))
-		{
-			FlxG.log.warn('No icon for character: $charId : using default placeholder face instead!');
-			return Constants.DEFAULT_HEALTH_ICON;
-		}
-
-		return charId;
+		return Assets.exists(Paths.file('images/icons/icon-$charId.png'));
 	}
 
 	inline function isNewSpritesheet(charId:String):Bool
@@ -412,11 +404,11 @@ class HealthIcon extends FunkinSprite
 
 	function loadCharacter(charId:Null<String>):Void
 	{
-		if (charId == null || correctCharacterId(charId) != charId)
+		if (charId == null || !iconExists(charId))
 		{
-			// This will recursively trigger loadCharacter to be called again.
-			characterId = correctCharacterId(charId);
-			return;
+			FlxG.log.warn('No icon for character: $charId : using default placeholder face instead!');
+			characterId = Constants.DEFAULT_HEALTH_ICON;
+			charId = characterId;
 		}
 
 		isLegacyStyle = !isNewSpritesheet(charId);

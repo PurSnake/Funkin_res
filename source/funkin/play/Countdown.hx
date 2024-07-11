@@ -34,15 +34,13 @@ class Countdown
 		countdownStep = BEFORE;
 		var cancelled:Bool = propagateCountdownEvent(countdownStep);
 		if (cancelled)
-		{
 			return false;
-		}
 
 		// Stop any existing countdown.
 		stopCountdown();
 
 		PlayState.instance.isInCountdown = true;
-		Conductor.instance.update(PlayState.instance.startTimestamp + Conductor.instance.beatLengthMs * -5);
+		Conductor.instance.update(PlayState.startTimestamp + Conductor.instance.beatLengthMs * -5);
 		// Handle onBeatHit events manually
 		// @:privateAccess
 		// PlayState.instance.dispatchEvent(new SongTimeScriptEvent(SONG_BEAT_HIT, 0, 0));

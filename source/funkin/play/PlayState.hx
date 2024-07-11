@@ -204,7 +204,7 @@ class PlayState extends MusicBeatSubState
 	 * The current 'Blueball Counter' to display in the pause menu.
 	 * Resets when you beat a song or go back to the main menu.
 	 */
-	public var deathCounter:Int = 0;
+	public static var deathCounter:Int = 0;
 
 	/**
 	 * The player's current health.
@@ -222,7 +222,7 @@ class PlayState extends MusicBeatSubState
 	 * For example, if `startTimestamp` is `30000`, the song will start at the 30 second mark.
 	 * Used for chart playtesting or practice.
 	 */
-	public var startTimestamp:Float = 0.0;
+	public static var startTimestamp:Float = 0.0;
 
 	/**
 	 * Play back the song at this speed.
@@ -611,6 +611,7 @@ class PlayState extends MusicBeatSubState
 		super();
 
 		FlxTransitionableState.skipNextTransIn = (lastParams != null);
+		if (lastParams == null) deathCounter = 0;
 		//FlxTransitionableState.skipNextTransOut = false;
 
 		//lastParams

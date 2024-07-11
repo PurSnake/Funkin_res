@@ -89,7 +89,7 @@ class GameOverSubState extends MusicBeatSubState
 
 	var targetCameraZoom:Float = 1.0;
 
-	public static var restartState:Bool = false;
+	public static var resetState:Bool = true;
 
 	public function new(params:GameOverParams)
 	{
@@ -248,7 +248,7 @@ class GameOverSubState extends MusicBeatSubState
 		{
 			isEnding = true;
 			blueballed = false;
-			PlayState.instance.deathCounter = 0;
+			PlayState.deathCounter = 0;
 			// PlayState.seenCutscene = false; // old thing...
 			if (gameOverMusic != null) gameOverMusic.stop();
 
@@ -315,7 +315,7 @@ class GameOverSubState extends MusicBeatSubState
 	/**
 	 * Do behavior which occurs when you confirm and move to restart the level.
 	 */
-	function confirmDeath():Void
+	dynamic function confirmDeath():Void
 	{
 		if (!isEnding)
 		{
@@ -336,7 +336,7 @@ class GameOverSubState extends MusicBeatSubState
 					FlxG.camera.fade(FlxColor.BLACK, 1, true, null, true);
 					PlayState.instance.needsReset = true;
 
-					if (PlayState.instance.isMinimalMode || boyfriend == null) {}
+					if (PlayState.instance.isMinimalMode || boyfriend == null || resetState) {}
 					else
 					{
 						// Readd Boyfriend to the stage.
@@ -349,9 +349,15 @@ class GameOverSubState extends MusicBeatSubState
 					resetCameraZoom();
 
 					//if ((this.isChartingMode || PlayState.instance.isMinimalMode) && !restartState)
-						close();
+						//close();
 					//else
 						//FlxG.resetState();
+
+					if (resetState && !(this.isChartingMode || PlayState.instance.isMinimalMode))
+					{
+						flixel.addons.transition.FlxTransitionableState.skipNextTransIn = flixel.addons.transition.FlxTransitionableState.skipNextTransOut = true;
+						FlxG.resetState();
+					} else close();
 				});
 			});
 		}
@@ -374,16 +380,6 @@ class GameOverSubState extends MusicBeatSubState
 		var basePath:String = 'gameplay/gameover/gameOver';
 		if (ending) basePath += 'End';
 		else if (starting) basePath += 'Start';
-
-		/*var musicPath:String = Paths.music(basePath + suffix);
-		while (!Assets.exists(musicPath) && suffix.length > 0)
-		{
-			suffix = suffix.split('-').slice(0, -1).join('-');
-			musicPath = Paths.music(basePath + suffix);
-		}
-		if (!Assets.exists(musicPath)) return null;
-		trace('Resolved music path: ' + musicPath);
-		return musicPath;*/
 
 		var music = Paths.music(basePath + suffix);
 		var musicPath:String = Paths.musicStr(basePath + suffix);

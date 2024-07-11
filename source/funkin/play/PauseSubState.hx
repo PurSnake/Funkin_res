@@ -110,7 +110,7 @@ class PauseSubState extends MusicBeatSubState
 	 */
 	public static var musicSuffix:String = '';
 
-	public static var restartState:Bool = false;
+	public static var resetState:Bool = true;
 
 	/**
 	 * Reset the pause configuration to the default.
@@ -313,7 +313,7 @@ class PauseSubState extends MusicBeatSubState
 		metadataDifficulty.scrollFactor.set(0, 0);
 		metadata.add(metadataDifficulty);
 
-		metadataDeaths = new FlxText(20, metadataDifficulty.y + 32, FlxG.width - 40, '${PlayState.instance?.deathCounter} Blue Balls');
+		metadataDeaths = new FlxText(20, metadataDifficulty.y + 32, FlxG.width - 40, '${PlayState?.deathCounter} Blue Balls');
 		metadataDeaths.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
 		metadataDeaths.scrollFactor.set(0, 0);
 		metadata.add(metadataDeaths);
@@ -399,9 +399,7 @@ class PauseSubState extends MusicBeatSubState
 			delay += 0.1;
 		}
 
-		new FlxTimer().start(0.2, (_) -> {
-			allowInput = true;
-		});
+		new FlxTimer().start(0.2, (_) -> allowInput = true);
 	}
 
 	// ===============
@@ -415,14 +413,8 @@ class PauseSubState extends MusicBeatSubState
 	{
 		if (!allowInput) return;
 
-		if (controls.UI_UP_P)
-		{
-			changeSelection(-1);
-		}
-		if (controls.UI_DOWN_P)
-		{
-			changeSelection(1);
-		}
+
+		if (controls.UI_UP_P || controls.UI_DOWN_P) changeSelection(controls.UI_UP_P ? -1 : 1);
 
 		if (controls.ACCEPT)
 		{
@@ -597,7 +589,7 @@ class PauseSubState extends MusicBeatSubState
 		switch (this.currentMode)
 		{
 			case Standard | Difficulty:
-				metadataDeaths.text = '${PlayState.instance?.deathCounter} Blue Balls';
+				metadataDeaths.text = '${PlayState?.deathCounter} Blue Balls';
 			case Charting:
 				metadataDeaths.text = 'Chart Editor Preview';
 			case Conversation:
@@ -653,14 +645,13 @@ class PauseSubState extends MusicBeatSubState
 
 		//////OG
 		PlayState.instance.needsReset = true;
-		//if (PlayState.instance.isChartingMode)
-			state.close();
-		/*else
+		if (resetState && !PlayState.instance.isChartingMode)
 		{
-			FlxG.sound.music.volume = PlayState.instance.vocals.volume = 0;
+			FlxG.sound?.music?.volume = 0;
+			PlayState.instance?.vocals?.volume = 0;
 			FlxTransitionableState.skipNextTransIn = FlxTransitionableState.skipNextTransOut = false;
 			FlxG.resetState();
-		}*/
+		} else state.close();
 	}
 
 	/**
@@ -670,15 +661,13 @@ class PauseSubState extends MusicBeatSubState
 	static function restartPlayState(state:PauseSubState):Void
 	{
 		PlayState.instance.needsReset = true;
-		//if (PlayState.instance.isChartingMode && !restartState)
-			state.close();
-		/*else
+		if (resetState && !PlayState.instance.isChartingMode)
 		{
-			FlxG.sound.music.volume = PlayState.instance.vocals.volume = 0;
+			FlxG.sound?.music?.volume = 0;
+			PlayState.instance?.vocals?.volume = 0;
 			FlxTransitionableState.skipNextTransIn = FlxTransitionableState.skipNextTransOut = false;
-			//FlxG.resetState();
-			FlxG.state.startOutro(() -> FlxG.resetState());
-		}*/
+			FlxG.resetState();
+		} else state.close();
 	}
 
 	/**
@@ -745,7 +734,7 @@ class PauseSubState extends MusicBeatSubState
 	{
 		state.allowInput = false;
 
-		PlayState.instance.deathCounter = 0;
+		PlayState.deathCounter = 0;
 
 		FlxTransitionableState.skipNextTransIn = true;
 		FlxTransitionableState.skipNextTransOut = true;

@@ -82,7 +82,7 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 	public static function getCurrentState():FlxState
 	{
 		var state = FlxG.state;
-		while (state.subState != null)
+		while (state.subState != null && Type.getClass(state.subState) != CustomTransition)
 			state = state.subState;
 
 		return state;
@@ -218,9 +218,36 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 					finishTransOut();
 				}
 			}
-			else*/
-				onComplete();
+			else
+				onComplete();*/
+
+			_parentState == null ? stateStartOutro(onComplete) : onComplete();
 		}
+	}
+
+	function stateStartOutro(onOutroComplete:() -> Void)
+	{
+		if (!_exiting)
+		{
+			// play the exit transition, and when it's done call FlxG.switchState
+			_exiting = true;
+			transitionOut(onOutroComplete);
+			trace("KInda using transition out");
+			if (FlxTransitionableState.skipNextTransOut)
+			{
+				FlxTransitionableState.skipNextTransOut = false;
+				finishTransOut();
+				trace("Okay, we skipped it :p");
+			}
+		}
+	}
+
+
+	public function transitionOut(?OnExit:Void->Void):Void
+	{
+		_onExit = OnExit;
+		getCurrentState().openSubState(new CustomTransition(0.6, false));
+		CustomTransition.finishCallback = finishTransOut;
 	}
 
 	public override function openSubState(targetSubState:FlxSubState):Void
@@ -258,5 +285,24 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 	function finishTransIn()
 	{
 		if (CustomTransition.currentTransition != null) CustomTransition.currentTransition.close();
+	}
+
+	var transOutFinished:Bool = false;
+
+	var _exiting:Bool = false;
+	var _onExit:Void->Void;
+	function finishTransOut()
+	{
+		transOutFinished = true;
+
+		if (!_exiting)
+		{
+			closeSubState();
+		}
+
+		if (_onExit != null)
+		{
+			_onExit();
+		}
 	}
 }

@@ -319,7 +319,7 @@ class Strumline extends FlxSpriteGroup
 		// I don't remember what bug I was trying to fix by adding this.
 		// if (conductorInUse.currentStep == 0) nextNoteIndex = 0;
 
-		var songStart:Float = PlayState.instance?.startTimestamp ?? 0.0;
+		var songStart:Float = PlayState?.startTimestamp ?? 0.0;
 		var hitWindowStart:Float = conductorInUse.songPosition - Constants.HIT_WINDOW_MS;
 		var renderWindowStart:Float = conductorInUse.songPosition + RENDER_DISTANCE_MS;
 
