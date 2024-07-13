@@ -49,6 +49,8 @@ import flixel.tweens.misc.ShakeTween;
 import funkin.effects.IntervalShake;
 import funkin.ui.freeplay.SongMenuItem.FreeplayRank;
 
+import funkin.data.song.SongData.SongTimeChange;
+
 #if discord_rpc
 import funkin.api.discord.Discord.DiscordClient;
 #end
@@ -257,10 +259,10 @@ class FreeplayState extends MusicBeatSubState
 		if (prepForNewRank == false)
 		{
 			FunkinSound.playMusic('freakyMenu',
-				{
-					overrideExisting: true,
-					restartTrack: false
-				});
+			{
+				overrideExisting: true,
+				restartTrack: false
+			});
 		}
 
 		// Add a null entry that represents the RANDOM option
@@ -1257,8 +1259,6 @@ class FreeplayState extends MusicBeatSubState
 		{
 			case 3:
 				txtCompletion.offset.x = 10;
-			case 2:
-				txtCompletion.offset.x = 0;
 			case 1:
 				txtCompletion.offset.x = -24;
 			default:
@@ -1492,10 +1492,10 @@ class FreeplayState extends MusicBeatSubState
 				if (Type.getClass(_parentState) == MainMenuState)
 				{
 					FunkinSound.playMusic('freakyMenu',
-						{
-							overrideExisting: true,
-							restartTrack: false
-						});
+					{
+						overrideExisting: true,
+						restartTrack: false
+					});
 					FlxG.sound.music.fadeIn(4.0, 0.0, 1.0);
 					close();
 				}
@@ -1511,6 +1511,19 @@ class FreeplayState extends MusicBeatSubState
 			grpCapsules.members[curSelected].onConfirm();
 		}
 	}
+
+	/*override function beatHit():Bool
+	{
+		if (!super.beatHit()) return false;
+
+		if (dj != null && dj.visible && dj.currentState == Idle && Conductor.instance.currentBeat > 0)
+		{
+			dj.playAnimation("Boyfriend DJ", true, true, false);
+			dj.applyAnimOffset();
+		}
+
+		return true;
+	}*/
 
 	public override function destroy():Void
 	{
@@ -1857,6 +1870,7 @@ class FreeplayState extends MusicBeatSubState
 		{
 			var previewSong:Null<Song> = SongRegistry.instance.fetchEntry(daSongCapsule.songData.songId);
 			var instSuffix:String = previewSong?.getDifficulty(currentDifficulty, previewSong?.variations ?? Constants.DEFAULT_VARIATION_LIST)?.characters?.instrumental ?? '';
+			var previewTimeChanges = previewSong?.getDifficulty(currentDifficulty, previewSong?.variations ?? Constants.DEFAULT_VARIATION_LIST)?.timeChanges ?? [new SongTimeChange(0, 100)];
 			instSuffix = (instSuffix != '') ? '-$instSuffix' : '';
 
 			FunkinSound.playMusic(daSongCapsule.songData.songId,
@@ -1870,10 +1884,11 @@ class FreeplayState extends MusicBeatSubState
 				{
 					loadPartial: true,
 					start: 0.05, //0.05,
-					end: 0.40 //0.30
+					end: 0.45 //0.30
 				},
 				onLoad: () -> {
 					FlxG.sound.music.fadeIn(2, 0, volume);
+					Conductor.instance.mapTimeChanges(previewTimeChanges);
 				}
 			});
 		}

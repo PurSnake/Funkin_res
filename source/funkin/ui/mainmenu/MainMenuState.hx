@@ -146,11 +146,7 @@ class MainMenuState extends MusicBeatState
 
 		subStateOpened.add(sub -> {
 			if (Type.getClass(sub) == FreeplayState)
-			{
-				new FlxTimer().start(0.5, _ -> {
-					magenta.visible = false;
-				});
-			}
+				new FlxTimer().start(0.5, _ -> magenta.visible = false);
 		});
 
 		// FlxG.camera.setScrollBounds(bg.x, bg.x + bg.width, bg.y, bg.y + bg.height * 1.2);
@@ -285,16 +281,7 @@ class MainMenuState extends MusicBeatState
 		rememberedSelectedIndex = menuItems.selectedIndex;
 
 		var duration = 0.4;
-		menuItems.forEach((item) -> {
-			if (menuItems.selectedIndex != item.ID)
-			{
-				FlxTween.tween(item, {alpha: 0}, duration, {ease: FlxEase.quadOut});
-			}
-			else
-			{
-				item.visible = false;
-			}
-		});
+		menuItems.forEach((item) -> menuItems.selectedIndex != item.ID ? FlxTween.tween(item, {alpha: 0}, duration, {ease: FlxEase.quadOut}) : item.visible = false);
 
 		new FlxTimer().start(duration, (_) -> FlxG.switchState(state));
 	}
@@ -306,20 +293,10 @@ class MainMenuState extends MusicBeatState
 		if (FlxG.onMobile)
 		{
 			var touch:FlxTouch = FlxG.touches.getFirst();
-
 			if (touch != null)
-			{
 				for (item in menuItems)
-				{
 					if (touch.overlaps(item))
-					{
-						if (menuItems.selectedIndex == item.ID && touch.justPressed)
-							menuItems.accept();
-						else
-							menuItems.selectItem(item.ID);
-					}
-				}
-			}
+						(menuItems.selectedIndex == item.ID && touch.justPressed) ? menuItems.accept() : menuItems.selectItem(item.ID);
 		}
 
 		// Open the debug menu, defaults to ` / ~
@@ -334,34 +311,8 @@ class MainMenuState extends MusicBeatState
 		}
 		#end
 
-		#if (debug || FORCE_DEBUG_VERSION)
-		if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.W)
-		{
-			// Give the user a score of 1 point on Weekend 1 story mode.
-			// This makes the level count as cleared and displays the songs in Freeplay.
-			funkin.save.Save.instance.setLevelScore('weekend1', 'easy',
-			{
-				score: 1,
-				tallies:
-					{
-					sick: 0,
-					good: 0,
-					bad: 0,
-					shit: 0,
-					missed: 0,
-					combo: 0,
-					maxCombo: 0,
-					totalNotesHit: 0,
-					totalNotes: 0,
-				}
-			});
-		}
-		#end
-
 		if (FlxG.sound.music != null && FlxG.sound.music.volume < 0.8)
-		{
 			FlxG.sound.music.volume += 0.5 * elapsed;
-		}
 
 		if (_exiting) menuItems.enabled = false;
 

@@ -21,10 +21,6 @@ import sys.io.File;
  */
 class Paths
 {
-
-
-	//БЛЯТЬ, ДОБАВЬ ПРОВЕРКУ НА ОКОНЧАНИЕ ПУТЯ К ФАЙЛУ ЗВУКА .ogg
-
 	public static var localTrackedAssets:Array<String> = [];
 	public static var currentTrackedSounds:Map<String, Sound> = [];
 

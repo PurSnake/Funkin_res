@@ -647,8 +647,9 @@ class PauseSubState extends MusicBeatSubState
 		PlayState.instance.needsReset = true;
 		if (resetState && !PlayState.instance.isChartingMode)
 		{
-			FlxG.sound?.music?.volume = 0;
-			PlayState.instance?.vocals?.volume = 0;
+			if (FlxG.sound.music != null) FlxG.sound.music.volume = 0;
+			if (PlayState.instance.vocals != null) PlayState.instance.vocals.playerVolume = PlayState.instance.vocals.opponentVolume = 0;
+
 			FlxTransitionableState.skipNextTransIn = FlxTransitionableState.skipNextTransOut = false;
 			FlxG.resetState();
 		} else state.close();
@@ -663,8 +664,9 @@ class PauseSubState extends MusicBeatSubState
 		PlayState.instance.needsReset = true;
 		if (resetState && !PlayState.instance.isChartingMode)
 		{
-			FlxG.sound?.music?.volume = 0;
-			PlayState.instance?.vocals?.volume = 0;
+			if (FlxG.sound.music != null) FlxG.sound.music.volume = 0;
+			if (PlayState.instance.vocals != null) PlayState.instance.vocals.playerVolume = PlayState.instance.vocals.opponentVolume = 0;
+
 			FlxTransitionableState.skipNextTransIn = FlxTransitionableState.skipNextTransOut = false;
 			FlxG.resetState();
 		} else state.close();

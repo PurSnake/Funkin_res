@@ -325,7 +325,7 @@ class DJBoyfriend extends FlxAtlasSprite
 		applyAnimOffset();
 	}
 
-	function applyAnimOffset()
+	public function applyAnimOffset()
 	{
 		var AnimName = getCurrentAnimation();
 		var daOffset = animOffsets.get(AnimName);

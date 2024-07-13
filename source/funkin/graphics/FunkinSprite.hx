@@ -13,15 +13,24 @@ import openfl.display3D.textures.TextureBase;
 import funkin.graphics.framebuffer.FixedBitmapData;
 import openfl.display.BitmapData;
 import funkin.util.MemoryUtil;
+import openfl.geom.Matrix;
+import flixel.math.FlxAngle;
+import haxe.io.Path;
+import openfl.Assets;
+import flixel.graphics.frames.FlxFrame;
+import flixel.graphics.frames.FlxFrame.FlxFrameAngle;
+import flixel.system.FlxAssets.FlxGraphicAsset;
+import flixel.util.FlxDestroyUtil;
+import flixel.util.FlxSignal;
 
 /**
  * An FlxSprite with additional functionality.
  * - A more efficient method for creating solid color sprites.
  * - TODO: Better cache handling for textures.
  */
-class FunkinSprite extends flixel.addons.effects.FlxSkewedSprite //FlxSprite
+@:access(flxanimate.animate)
+class FunkinSprite extends flixel.addons.effects.FlxSkewedSprite // FlxSprite
 {
-
 	/**
 	 * An internal list of all the textures cached with `cacheTexture`.
 	 * This excludes any temporary textures like those from `FlxText` or `makeSolidColor`.
@@ -47,12 +56,13 @@ class FunkinSprite extends flixel.addons.effects.FlxSkewedSprite //FlxSprite
 	 * Works similar to scrollFactor, but with sprite's camera zoom.
 	 */
 	public var zoomFactor:Float = 1;
+
 	public var initialZoom:Float = 1;
 
 	public override function getScreenBounds(?newRect:FlxRect, ?camera:FlxCamera):FlxRect
 	{
 		__doPreZoomScaleProcedure(camera);
-		//var r = super.getScreenBounds(newRect, camera);
+		// var r = super.getScreenBounds(newRect, camera);
 		var r = getScreenBoundsFixed(newRect, camera);
 		__doPostZoomScaleProcedure();
 		return r;
@@ -60,21 +70,17 @@ class FunkinSprite extends flixel.addons.effects.FlxSkewedSprite //FlxSprite
 
 	public function getScreenBoundsFixed(?newRect:FlxRect, ?camera:FlxCamera):FlxRect
 	{
-		if (newRect == null)
-			newRect = FlxRect.get();
-		
-		if (camera == null)
-			camera = FlxG.camera;
-		
+		if (newRect == null) newRect = FlxRect.get();
+
+		if (camera == null) camera = FlxG.camera;
+
 		newRect.setPosition(x, y);
-		if (pixelPerfectPosition)
-			newRect.floor();
+		if (pixelPerfectPosition) newRect.floor();
 
 		_scaledOrigin.set(origin.x * Math.abs(scale.x), origin.y * Math.abs(scale.y));
 		newRect.x += -Std.int(camera.scroll.x * scrollFactor.x) - (offset.x + frameOffset.x) + origin.x - _scaledOrigin.x;
 		newRect.y += -Std.int(camera.scroll.y * scrollFactor.y) - (offset.y + frameOffset.y) + origin.y - _scaledOrigin.y;
-		if (isPixelPerfectRender(camera))
-			newRect.floor();
+		if (isPixelPerfectRender(camera)) newRect.floor();
 		newRect.setSize(frameWidth * Math.abs(scale.x), frameHeight * Math.abs(scale.y));
 		return newRect.getRotatedBounds(angle, _scaledOrigin, newRect);
 	}
@@ -87,8 +93,7 @@ class FunkinSprite extends flixel.addons.effects.FlxSkewedSprite //FlxSprite
 
 	private function __doPreZoomScaleProcedure(camera:FlxCamera)
 	{
-		if (__skipZoomProcedure = !__shouldDoScaleProcedure())
-			return;
+		if (__skipZoomProcedure = !__shouldDoScaleProcedure()) return;
 		__oldScale = FlxPoint.get(scale.x, scale.y);
 		var requestedZoom = FlxMath.lerp(initialZoom, camera.zoom, zoomFactor);
 		var diff = requestedZoom * camera.zoom;
@@ -98,11 +103,15 @@ class FunkinSprite extends flixel.addons.effects.FlxSkewedSprite //FlxSprite
 
 	private function __doPostZoomScaleProcedure()
 	{
-		if (__skipZoomProcedure)
-			return;
+		if (__skipZoomProcedure) return;
 		scale.set(__oldScale.x, __oldScale.y);
 		__oldScale.put();
 		__oldScale = null;
+	}
+
+	public override function draw()
+	{
+		super.draw();
 	}
 
 	public override function drawComplex(camera:FlxCamera)
@@ -121,11 +130,10 @@ class FunkinSprite extends flixel.addons.effects.FlxSkewedSprite //FlxSprite
 			{
 				updateTrig();
 
-				if (angle != 0)
-					_matrix.rotateWithTrig(_cosAngle, _sinAngle);
+				if (angle != 0) _matrix.rotateWithTrig(_cosAngle, _sinAngle);
 			}
 
-			updateSkewMatrix();
+			updateSkew(_matrix);
 			_matrix.concat(_skewMatrix);
 		}
 
@@ -173,6 +181,23 @@ class FunkinSprite extends flixel.addons.effects.FlxSkewedSprite //FlxSprite
 			return r;
 		}
 		return super.getScreenPosition(point, Camera);
+	}
+
+	function updateSkew(matrix:Matrix):Void
+	{
+		final tanX = -skew.x * FlxAngle.TO_RAD, tanY = skew.y * FlxAngle.TO_RAD;
+
+		var old = matrix.a + matrix.b * tanX;
+		matrix.b = matrix.a * tanY + matrix.b;
+		matrix.a = old;
+
+		old = matrix.c + matrix.d * tanX;
+		matrix.d = matrix.c * tanY + matrix.d;
+		matrix.c = old;
+
+		old = _matrix.tx + _matrix.ty * tanX;
+		_matrix.ty = _matrix.tx * tanY + _matrix.ty;
+		_matrix.tx = old;
 	}
 
 	/**
@@ -287,7 +312,7 @@ class FunkinSprite extends flixel.addons.effects.FlxSkewedSprite //FlxSprite
 
 	public static function cacheTexture(key:String, ?library:String, ?allowGPU:Bool = true):Void
 	{
-		//Paths.image(key);
+		// Paths.image(key);
 
 		// We don't want to cache the same texture twice.
 		if (currentCachedTextures.exists(key)) return;
@@ -344,8 +369,7 @@ class FunkinSprite extends flixel.addons.effects.FlxSkewedSprite //FlxSprite
 			FlxG.bitmap.remove(graphic);
 			openfl.Assets.cache.removeBitmapData(graphicKey);
 			@:privateAccess
-			if (graphic.bitmap != null && graphic.bitmap.__texture != null)
-				graphic.bitmap.__texture.dispose();
+			if (graphic.bitmap != null && graphic.bitmap.__texture != null) graphic.bitmap.__texture.dispose();
 
 			graphic.persist = false;
 			graphic.destroyOnNoUse = true;
@@ -402,6 +426,11 @@ class FunkinSprite extends flixel.addons.effects.FlxSkewedSprite //FlxSprite
 		result.updateHitbox();
 
 		return result;
+	}
+
+	public function loadAvalaibleAnimsFromXml()
+	{
+		funkin.util.Utils.findAndLoadXMLAnims(this);
 	}
 
 	public override function destroy():Void
