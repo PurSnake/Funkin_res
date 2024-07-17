@@ -261,14 +261,14 @@ class Strumline extends FlxSpriteGroup
 			var targetY:Float = FlxG.height + note.y;
 			if (Preferences.downscroll) targetY = 0 - note.height;
 			FlxTween.tween(note, {y: targetY}, 0.5,
-				{
-					ease: FlxEase.expoIn,
-					onComplete: function(twn) {
-						note.kill();
-						notesVwoosh.remove(note, true);
-						note.destroy();
-					}
-				});
+			{
+				ease: FlxEase.expoIn,
+				onComplete: function(twn) {
+					note.kill();
+					notesVwoosh.remove(note, true);
+					note.destroy();
+				}
+			});
 		}
 
 		for (holdNote in holdNotes.members)
@@ -282,14 +282,14 @@ class Strumline extends FlxSpriteGroup
 			var targetY:Float = FlxG.height + holdNote.y;
 			if (Preferences.downscroll) targetY = 0 - holdNote.height;
 			FlxTween.tween(holdNote, {y: targetY}, 0.5,
-				{
-					ease: FlxEase.expoIn,
-					onComplete: function(twn) {
-						holdNote.kill();
-						holdNotesVwoosh.remove(holdNote, true);
-						holdNote.destroy();
-					}
-				});
+			{
+				ease: FlxEase.expoIn,
+				onComplete: function(twn) {
+					holdNote.kill();
+					holdNotesVwoosh.remove(holdNote, true);
+					holdNote.destroy();
+				}
+			});
 		}
 	}
 

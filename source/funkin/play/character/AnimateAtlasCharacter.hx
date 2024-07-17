@@ -113,6 +113,17 @@ class AnimateAtlasCharacter extends BaseCharacter
 		animFinished = false;
 	}
 
+	public override function loopCurrentAnim():Void
+	{
+		if (mainSprite == null) return;
+
+		if ((this.characterType != BF || isHoldingNote()) && this.mainSprite.anim.curFrame >= _data.loopHoldFrame && lastNoteAnimation != null && (lastHoldFinish != null && lastHoldFinish >= Conductor.instance.songPosition))
+		{
+			this.playAnimation(lastNoteAnimation, true);
+			holdTimer = 0;
+		}
+	}
+
 	public override function hasAnimation(name:String):Bool
 	{
 		return getAnimationData(name) != null;

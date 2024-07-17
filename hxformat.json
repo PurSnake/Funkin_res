@@ -2,8 +2,8 @@
   "disableFormatting": false,
 
   "indentation": {
-    "character": "  ",
-    "tabWidth": 2,
+    "character": "	",
+    "tabWidth": 1,
     "indentCaseLabels": true
   },
   "lineEnds": {

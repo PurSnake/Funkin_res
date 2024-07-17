@@ -40,6 +40,7 @@ class OptionsState extends MusicBeatState
 
 		var options = addPage(Options, new OptionsMenu());
 		var preferences = addPage(Preferences, new PreferencesMenu());
+		var mods = addPage(Mods, new ModMenu());
 		var controls = addPage(Controls, new ControlsMenu());
 
 		if (options.hasMultipleOptions())
@@ -192,7 +193,8 @@ class OptionsMenu extends Page
 
 		add(items = new TextMenuList());
 		createItem("PREFERENCES", () -> switchPage(Preferences));
-		createItem("CONTROLS", () ->  switchPage(Controls));
+		createItem("CONTROLS", () -> switchPage(Controls));
+		createItem("MODS", () -> switchPage(Mods));
 		createItem("INPUT OFFSETS", () -> FlxG.state.openSubState(new LatencyState()));
 		createItem("EXIT", exit);
 	}

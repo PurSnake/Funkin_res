@@ -25,6 +25,11 @@ class StageData
 	@:optional
 	public var cameraZoom:Null<Float>;
 
+	@:default(1.0)
+	@:optional
+	public var cameraSpeed:Null<Float>;
+	//Affects only on CLASSIC camera movement, via thats Eases used for cool views
+
 	public function new()
 	{
 		this.version = StageRegistry.STAGE_DATA_VERSION;

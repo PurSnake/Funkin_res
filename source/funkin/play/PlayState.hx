@@ -291,6 +291,20 @@ class PlayState extends MusicBeatSubState
 			return FlxCamera.defaultZoom * 1.05;
 	}
 
+	public var currentCameraSpeed(get, set):Float;
+
+	function get_currentCameraSpeed():Float
+	{
+		return (currentStage != null) ? currentStage.camSpeed : (FlxG.camera.followLerp / Constants.DEFAULT_CAMERA_FOLLOW_RATE);
+	}
+
+	function set_currentCameraSpeed(newSpeed:Float):Float
+	{
+		if (currentStage != null) currentStage.camSpeed = newSpeed;
+		FlxG.camera.followLerp = Constants.DEFAULT_CAMERA_FOLLOW_RATE * newSpeed;
+		return newSpeed;
+	}
+
 	/**
 	 * The current HUD camera zoom level.
 	 *
@@ -710,6 +724,8 @@ class PlayState extends MusicBeatSubState
 		// The song is now loaded. We can continue to initialize the play state.
 		initCameras();
 		initHealthBar();
+		comboPopUps = new PopUpStuff();
+		comboPopUps.zIndex = 900;
 		if (!isMinimalMode)
 		{
 			initStage();
@@ -732,8 +748,6 @@ class PlayState extends MusicBeatSubState
 		}
 
 		// Initialize the judgements and combo meter.
-		comboPopUps = new PopUpStuff();
-		comboPopUps.zIndex = 900;
 		add(comboPopUps);
 		//comboPopUps.cameras = [camHUD];
 
@@ -950,7 +964,6 @@ class PlayState extends MusicBeatSubState
 			{
 				var mainSound = FlxG.sound.music;
 				var timeDiff:Float = Math.abs(mainSound.time - Conductor.instance.songPosition - (Conductor.instance.instrumentalOffset + Conductor.instance.formatOffset + Conductor.instance.audioVisualOffset));
-				//Conductor.instance.update(funkin.util.MathUtil.fpsLerp(Conductor.instance.songPosition, mainSound.time, 0.04167));
 
 				Conductor.instance.update(funkin.util.MathUtil.fpsLerp(Conductor.instance.songPosition, mainSound.time, 0.04167) - (Conductor.instance.instrumentalOffset + Conductor.instance.formatOffset + Conductor.instance.audioVisualOffset) + elapsed * 1000 * playbackRate); // Normal conductor update.
 
@@ -1293,7 +1306,7 @@ class PlayState extends MusicBeatSubState
 			Countdown.resumeCountdown();
 
 			////////////////////////////////////////////////////////////////////////
-			FlxG.camera.followLerp = Constants.DEFAULT_CAMERA_FOLLOW_RATE;
+			FlxG.camera.followLerp = Constants.DEFAULT_CAMERA_FOLLOW_RATE * currentCameraSpeed;
 			//FlxG.sound.resume();
 
 
@@ -3149,7 +3162,7 @@ class PlayState extends MusicBeatSubState
 		if (cancelTweens)
 			cancelAllCameraTweens();
 
-		FlxG.camera.follow(cameraFollowPoint, LOCKON, Constants.DEFAULT_CAMERA_FOLLOW_RATE);
+		FlxG.camera.follow(cameraFollowPoint, LOCKON, Constants.DEFAULT_CAMERA_FOLLOW_RATE * currentCameraSpeed);
 		FlxG.camera.targetOffset.set();
 
 		if (resetZoom)

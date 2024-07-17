@@ -8,6 +8,8 @@ import funkin.play.stage.Bopper;
 import funkin.play.notes.NoteDirection;
 import funkin.Highscore;
 
+import funkin.play.components.HealthIcon;
+
 /**
  * A Character is a stage prop which bops to the music as well as controlled by the strumlines.
  *
@@ -360,26 +362,31 @@ class BaseCharacter extends Bopper
 		this.cameraFocusPoint = new FlxPoint(charCenterX + _data.cameraOffsets[0], charCenterY + _data.cameraOffsets[1]);
 	}
 
-	public function initHealthIcon(isOpponent:Bool):Void
+	public function initHealthIcon(isOpponent:Bool):HealthIcon
 	{
 		if (!isOpponent)
 		{
-			if (PlayState.instance.iconP1 == null)
+			final icon = PlayState.instance.iconP1;
+			if (icon == null)
 			{
 				trace('[WARN] Player 1 health icon not found!');
-				return;
+				return null;
 			}
-			PlayState.instance.iconP1.configure(_data.healthIcon);
-			PlayState.instance.iconP1.flipX = !PlayState.instance.iconP1.flipX; // BF is looking the other way.
+			icon.configure(_data.healthIcon);
+			icon.flipX = !icon.flipX; // BF is looking the other way.
+			return icon;
 		}
 		else
 		{
-			if (PlayState.instance.iconP2 == null)
+			final icon = PlayState.instance.iconP2;
+
+			if (icon == null)
 			{
 				trace('[WARN] Player 2 health icon not found!');
-				return;
+				return null;
 			}
-			PlayState.instance.iconP2.configure(_data.healthIcon);
+			icon.configure(_data.healthIcon);
+			return icon;
 		}
 	}
 
@@ -434,14 +441,16 @@ class BaseCharacter extends Bopper
 
 			if (getCurrentAnimation().endsWith('miss')) singTimeSec *= 2; // makes it feel more awkward when you miss???
 
-
 			// Repeat the sing animation when pressing a hold note just like in the old input system.
-			if (_data.loopHold && ((this.characterType != BF || isHoldingNote()) && this.animation.curAnim.curFrame >= _data.loopHoldFrame && lastNoteAnimation != null && (lastHoldFinish != null && lastHoldFinish >= Conductor.instance.songPosition)))
+			if (_data.loopHold)
+				loopCurrentAnim();
+			
+			/*if ((this.characterType != BF || isHoldingNote()) && this.animation.curAnim.curFrame >= _data.loopHoldFrame && lastNoteAnimation != null && (lastHoldFinish != null && lastHoldFinish >= Conductor.instance.songPosition))
 			{
 				//this.playSingAnimation(lastNoteDirection, false);
 				this.playAnimation(lastNoteAnimation, true);
 				holdTimer = 0;
-			}
+			}*/
 
 
 			// Without this check here, the player character would only play the `sing` animation
@@ -467,6 +476,15 @@ class BaseCharacter extends Bopper
 	public function isSinging():Bool
 	{
 		return getCurrentAnimation().startsWith('sing');
+	}
+
+	public function loopCurrentAnim():Void
+	{
+		if ((this.characterType != BF || isHoldingNote()) && this.animation.curAnim.curFrame >= _data.loopHoldFrame && lastNoteAnimation != null && (lastHoldFinish != null && lastHoldFinish >= Conductor.instance.songPosition))
+		{
+			this.playAnimation(lastNoteAnimation, true);
+			holdTimer = 0;
+		}
 	}
 
 	override function dance(force:Bool = false):Void

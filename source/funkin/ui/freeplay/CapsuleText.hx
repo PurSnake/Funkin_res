@@ -74,8 +74,25 @@ class CapsuleText extends FlxSpriteGroup
 		{
 			tooLong = true;
 
-			blurredText.clipRect = new FlxRect(0, 0, wid, blurredText.height);
-			whiteText.clipRect = new FlxRect(0, 0, wid, whiteText.height);
+			if (whiteText.clipRect == null)
+			{
+				whiteText.clipRect = new FlxRect(0, 0, wid, whiteText.height);
+			}
+			else
+			{
+				whiteText.clipRect.set(0, 0, wid, whiteText.height);
+				whiteText.clipRect = whiteText.clipRect;
+			}
+
+			if (blurredText.clipRect == null)
+			{
+				blurredText.clipRect = new FlxRect(0, 0, wid, blurredText.height);
+			}
+			else
+			{
+				blurredText.clipRect.set(whiteText.offset.x, 0, wid, blurredText.height);
+				blurredText.clipRect = blurredText.clipRect;
+			}
 		}
 		else
 		{
@@ -119,12 +136,15 @@ class CapsuleText extends FlxSpriteGroup
 	function moveTextRight():Void
 	{
 		var distToMove:Float = whiteText.width - clipWidth;
+		updateClipRects();
 		moveTween = FlxTween.tween(whiteText.offset, {x: distToMove}, 2,
 		{
 			onUpdate: function(_) {
-				whiteText.clipRect = new FlxRect(whiteText.offset.x, 0, clipWidth, whiteText.height);
-				blurredText.offset = whiteText.offset;
-				blurredText.clipRect = new FlxRect(whiteText.offset.x, 0, clipWidth, blurredText.height);
+				whiteText.clipRect.set(whiteText.offset.x, 0, clipWidth, whiteText.height);
+				blurredText.offset.copyFrom(whiteText.offset);
+				blurredText.clipRect.set(whiteText.offset.x, 0, clipWidth, blurredText.height);
+				whiteText.clipRect = whiteText.clipRect;
+				blurredText.clipRect = blurredText.clipRect;
 			},
 			onComplete: function(_) {
 				moveTimer.start(0.3, (timer) -> {
@@ -137,12 +157,15 @@ class CapsuleText extends FlxSpriteGroup
 
 	function moveTextLeft():Void
 	{
+		updateClipRects();
 		moveTween = FlxTween.tween(whiteText.offset, {x: 0}, 2,
 			{
 				onUpdate: function(_) {
-					whiteText.clipRect = new FlxRect(whiteText.offset.x, 0, clipWidth, whiteText.height);
-					blurredText.offset = whiteText.offset;
-					blurredText.clipRect = new FlxRect(whiteText.offset.x, 0, clipWidth, blurredText.height);
+					whiteText.clipRect.set(whiteText.offset.x, 0, clipWidth, whiteText.height);
+					blurredText.offset.copyFrom(whiteText.offset);
+					blurredText.clipRect.set(whiteText.offset.x, 0, clipWidth, blurredText.height);
+					whiteText.clipRect = whiteText.clipRect;
+					blurredText.clipRect = blurredText.clipRect;
 				},
 				onComplete: function(_) {
 					moveTimer.start(0.3, (timer) -> {
@@ -153,13 +176,35 @@ class CapsuleText extends FlxSpriteGroup
 			});
 	}
 
+	function updateClipRects()
+	{
+		if (whiteText.clipRect == null)
+		{
+			whiteText.clipRect = new FlxRect(whiteText.offset.x, 0, clipWidth, whiteText.height);
+		}
+		else
+		{
+			whiteText.clipRect.set(whiteText.offset.x, 0, clipWidth, whiteText.height);
+			whiteText.clipRect = whiteText.clipRect;
+		}
+
+		if (blurredText.clipRect == null)
+		{
+			blurredText.clipRect = new FlxRect(whiteText.offset.x, 0, clipWidth, blurredText.height);
+		}
+		else
+		{
+			blurredText.clipRect.set(whiteText.offset.x, 0, clipWidth, blurredText.height);
+			blurredText.clipRect = blurredText.clipRect;
+		}
+	}
+
 	public function resetText():Void
 	{
 		if (moveTween != null) moveTween.cancel();
 		if (moveTimer != null) moveTimer.cancel();
 		whiteText.offset.x = 0;
-		whiteText.clipRect = new FlxRect(whiteText.offset.x, 0, clipWidth, whiteText.height);
-		blurredText.clipRect = new FlxRect(whiteText.offset.x, 0, clipWidth, whiteText.height);
+		updateClipRects();
 	}
 
 	var flickerState:Bool = false;
@@ -173,31 +218,23 @@ class CapsuleText extends FlxSpriteGroup
 
 	function flickerProgress(timer:FlxTimer):Void
 	{
-		if (flickerState == true)
+		if (flickerState)
 		{
 			whiteText.blend = BlendMode.ADD;
 			blurredText.blend = BlendMode.ADD;
 			blurredText.color = 0xFFFFFFFF;
 			whiteText.color = 0xFFFFFFFF;
-			whiteText.textField.filters = [
-				new openfl.filters.GlowFilter(0xFFFFFF, 1, 5, 5, 210, BitmapFilterQuality.MEDIUM),
-				// new openfl.filters.BlurFilter(5, 5, BitmapFilterQuality.LOW)
-			];
 		}
 		else
 		{
+			whiteText.blend = BlendMode.NORMAL;
+			blurredText.blend = BlendMode.NORMAL;
 			blurredText.color = 0xFF00aadd;
 			whiteText.color = 0xFFDDDDDD;
 			whiteText.textField.filters = [
-				new openfl.filters.GlowFilter(0xDDDDDD, 1, 5, 5, 210, BitmapFilterQuality.MEDIUM),
-				// new openfl.filters.BlurFilter(5, 5, BitmapFilterQuality.LOW)
+				new openfl.filters.GlowFilter(whiteText.color.to24Bit(), 1, 5, 5, 210, BitmapFilterQuality.MEDIUM)
 			];
 		}
 		flickerState = !flickerState;
-	}
-
-	override function update(elapsed:Float):Void
-	{
-		super.update(elapsed);
 	}
 }

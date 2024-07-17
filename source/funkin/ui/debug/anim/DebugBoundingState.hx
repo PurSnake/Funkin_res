@@ -446,9 +446,10 @@ class DebugBoundingState extends FlxState
 		}
 
 		if (FlxG.keys.justPressed.F)
-		{
 			onionSkinChar.visible = !onionSkinChar.visible;
-		}
+
+		if (FlxG.keys.justPressed.G)
+			swagChar.flipX = !swagChar.flipX;
 
 		// Plays the idle animation
 		if (FlxG.keys.justPressed.SPACE)

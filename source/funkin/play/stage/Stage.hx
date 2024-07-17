@@ -60,6 +60,17 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
 		return _data?.cameraZoom ?? 1.0;
 	}
 
+	public var camSpeed(get, set):Float;
+
+	function set_camSpeed(newSpeed:Float):Float
+	{
+		return _data.cameraSpeed = newSpeed;
+	}
+
+	function get_camSpeed():Float
+	{
+		return _data?.cameraSpeed ?? 1.0;
+	}
 
 	var frameBufferMan:FrameBufferManager;
 
@@ -859,6 +870,8 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
 	public function onSongEnd(event:ScriptEvent) {}
 
 	public function onGameOver(event:ScriptEvent) {}
+
+	public function onGameOverLoop(event:GameOverLoopScriptEvent) {}
 
 	public function onCountdownStart(event:CountdownScriptEvent) {}
 

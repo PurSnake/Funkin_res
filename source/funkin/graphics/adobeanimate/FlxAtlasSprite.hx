@@ -13,16 +13,16 @@ import openfl.utils.Assets;
 class FlxAtlasSprite extends FlxAnimate
 {
 	static final SETTINGS:Settings =
-		{
-			// ?ButtonSettings:Map<String, flxanimate.animate.FlxAnim.ButtonSettings>,
-			FrameRate: 24.0,
-			Reversed: false,
-			// ?OnComplete:Void -> Void,
-			ShowPivot: #if debug false #else false #end,
-			Antialiasing: true,
-			ScrollFactor: null,
-			// Offset: new FlxPoint(0, 0), // This is just FlxSprite.offset
-		};
+	{
+		// ?ButtonSettings:Map<String, flxanimate.animate.FlxAnim.ButtonSettings>,
+		FrameRate: 24.0,
+		Reversed: false,
+		// ?OnComplete:Void -> Void,
+		ShowPivot: #if debug false #else false #end,
+		Antialiasing: true,
+		ScrollFactor: null,
+		// Offset: new FlxPoint(0, 0), // This is just FlxSprite.offset
+	};
 
 	/**
 	 * Signal dispatched when an animation finishes playing.
@@ -45,15 +45,14 @@ class FlxAtlasSprite extends FlxAnimate
 		super(x, y, path, settings);
 
 		if (this.anim.curInstance == null)
-		{
 			throw 'FlxAtlasSprite not initialized properly. Are you sure the path (${path}) exists?';
-		}
 
+		anim.onComplete = () -> onAnimationFinish.dispatch(currentAnimation);
 		onAnimationFinish.add(cleanupAnimation);
 
 		// This defaults the sprite to play the first animation in the atlas,
 		// then pauses it. This ensures symbols are intialized properly.
-		this.anim.play('');
+		this.anim.play();
 		this.anim.pause();
 	}
 
@@ -71,9 +70,10 @@ class FlxAtlasSprite extends FlxAnimate
 	 * @param id A string ID of the animation.
 	 * @return Whether the animation was found on this sprite.
 	 */
+	@:access(flxanimate.animate.FlxAnim)
 	public function hasAnimation(id:String):Bool
 	{
-		return getLabelIndex(id) != -1;
+		return anim.animsMap.exists(id) || anim.symbolDictionary.exists(id) || anim.getLabel(id) != null;
 	}
 
 	/**
@@ -90,13 +90,14 @@ class FlxAtlasSprite extends FlxAnimate
 	 */
 	public function isLoopFinished():Bool
 	{
-		if (this.anim == null) return false;
-		if (!this.anim.isPlaying) return false;
+		if (this.anim == null || !this.anim.isPlaying) return false;
 
 		// Reverse animation finished.
-		if (this.anim.reversed && this.anim.curFrame == 0) return true;
-		// Forward animation finished.
-		if (!this.anim.reversed && this.anim.curFrame >= (this.anim.length - 1)) return true;
+		if (this.anim.reversed
+			&& this.anim.curFrame == 0
+			|| // Forward animation finished.
+			!this.anim.reversed
+			&& this.anim.curFrame >= (this.anim.length - 1)) return true;
 
 		return false;
 	}
@@ -111,25 +112,17 @@ class FlxAtlasSprite extends FlxAnimate
 	 */
 	public function playAnimation(id:String, restart:Bool = false, ignoreOther:Bool = false, ?loop:Bool = false):Void
 	{
-		if (loop == null) loop = false;
+		if (loop == null) loop = false; // ???????????
 
 		// Skip if not allowed to play animations.
-		if ((!canPlayOtherAnims && !ignoreOther)) return;
+		if (!canPlayOtherAnims && !ignoreOther) return;
 
 		if (id == null || id == '') id = this.currentAnimation;
 
-		if (this.currentAnimation == id && !restart)
+		if (this.currentAnimation == id && !restart && anim.isPlaying)
 		{
-			if (anim.isPlaying)
-			{
-				// Skip if animation is already playing.
-				return;
-			}
-			else
-			{
-				// Resume animation if it's paused.
-				anim.play('', false, false);
-			}
+			// Skip if animation is already playing.
+			return;
 		}
 
 		// Skip if the animation doesn't exist
@@ -139,34 +132,33 @@ class FlxAtlasSprite extends FlxAnimate
 			return;
 		}
 
-		anim.callback = function(_, frame:Int) {
-			var offset = loop ? 0 : -1;
+		/*
+			anim.callback = function(_, frame:Int) {
+				var offset = loop ? 0 : -1;
 
-			var frameLabel = anim.getFrameLabel(id);
-			if (frame == (frameLabel.duration + offset) + frameLabel.index)
-			{
-				if (loop)
+				var frameLabel = anim.getFrameLabel(id);
+				if (frame == (frameLabel.duration + offset) + frameLabel.index)
 				{
-					playAnimation(id, true, false, true);
+					if (loop)
+					{
+						playAnimation(id, true, false, true);
+					}
+					else
+					{
+						onAnimationFinish.dispatch(id);
+					}
 				}
-				else
-				{
-					onAnimationFinish.dispatch(id);
-				}
-			}
-		};
+			};
+		 */
+
+		anim.play(id, true, false);
+		anim.curInstance.symbol.loop = loop ? Loop : PlayOnce;
 
 		// Prevent other animations from playing if `ignoreOther` is true.
 		if (ignoreOther) canPlayOtherAnims = false;
 
 		// Move to the first frame of the animation.
-		goToFrameLabel(id);
 		this.currentAnimation = id;
-	}
-
-	override public function update(elapsed:Float)
-	{
-		super.update(elapsed);
 	}
 
 	/**
@@ -176,9 +168,13 @@ class FlxAtlasSprite extends FlxAnimate
 	{
 		if (this.currentAnimation == null) return;
 
-		this.anim.removeAllCallbacksFrom(getNextFrameLabel(this.currentAnimation));
+		/*
+			this.anim.removeAllCallbacksFrom(getNextFrameLabel(this.currentAnimation));
 
-		goToFrameIndex(0);
+			goToFrameIndex(0);
+		 */
+
+		anim.stop();
 	}
 
 	function addFrameCallback(label:String, callback:Void->Void):Void
@@ -187,14 +183,10 @@ class FlxAtlasSprite extends FlxAnimate
 		frameLabel.add(callback);
 	}
 
-	function goToFrameLabel(label:String):Void
-	{
-		this.anim.goToFrameLabel(label);
-	}
-
 	function getNextFrameLabel(label:String):String
 	{
-		return listAnimations()[(getLabelIndex(label) + 1) % listAnimations().length];
+		final list = listAnimations();
+		return list[(getLabelIndex(label) + 1) % list.length];
 	}
 
 	function getLabelIndex(label:String):Int
@@ -209,6 +201,7 @@ class FlxAtlasSprite extends FlxAnimate
 
 	public function cleanupAnimation(_:String):Void
 	{
+		trace('ENDED -> $_ <- ANIMATION');
 		canPlayOtherAnims = true;
 		// this.currentAnimation = null;
 		this.anim.pause();
