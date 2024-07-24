@@ -62,6 +62,9 @@ class PreferencesMenu extends Page
 		createPrefItemCheckbox('Downscroll', 'Enable to make notes move downwards', function(value:Bool):Void {
 			Preferences.downscroll = value;
 		}, Preferences.downscroll);
+
+		createPrefItemCheckbox('Press After Confirm', 'Plays PRESS animation after CONFIRM in strums', (value:Bool) -> Preferences.playPressAfterConfirm = value, Preferences.playPressAfterConfirm);
+
 		createPrefItemCheckbox('Flashing Lights', 'Disable to dampen flashing effects', function(value:Bool):Void {
 			Preferences.flashingLights = value;
 		}, Preferences.flashingLights);

@@ -8,12 +8,13 @@ import flixel.math.FlxPoint;
 import flixel.math.FlxMath;
 import flixel.util.helpers.FlxBounds;
 import flixel.util.FlxColor;
+import funkin.graphics.FunkinSprite;
 
 // Originally modified by RichTrash21
 class Bar extends FlxSpriteGroup{
 	public var leftBar:FlxSprite;
 	public var rightBar:FlxSprite;
-	public var bg:FlxSprite;
+	public var bg:FunkinSprite;
 
 	public var bounds:FlxBounds<Float> = new FlxBounds<Float>(0, 1);
 	public var percent(default, set):Float = 0.0;
@@ -35,9 +36,14 @@ class Bar extends FlxSpriteGroup{
 	public var barWidth(default, set):Int = 1;
 	public var barHeight(default, set):Int = 1;
 	public var barOffset:FlxPoint = FlxPoint.get(3, 3);
+
+	public var basicOffset:FlxPoint = FlxPoint.get(0, 0);
 	
 	public var valueFunction:() -> Float;
-	public var updateCallback:(value:Float, percent:Float) -> Void;
+	public var updateCallbackPre:(value:Float, percent:Float) -> Void;
+	public var updateCallbackPost:(value:Float, percent:Float) -> Void;
+
+	public var shouldImitateSize(default, set):Bool = true;
 
 	public function new(x:Float, y:Float, image:String = 'healthBar', valueFunction:Void->Float = null, boundMIN:Float = 0, boundMAX:Float = 1){
 		super(x, y);
@@ -45,10 +51,10 @@ class Bar extends FlxSpriteGroup{
 		this.valueFunction = valueFunction ?? () -> return 0.0;
 		setBounds(boundMIN, boundMAX);
 		
-		_value = FlxMath.bound(this.valueFunction(), bounds.min, bounds.max);
-		percent = FlxMath.remapToRange(_value, bounds.min, bounds.max, 0.0, 100.0);
+		value = FlxMath.bound(this.valueFunction(), bounds.min, bounds.max);
+		percent = FlxMath.remapToRange(value, bounds.min, bounds.max, 0.0, 100.0);
 		
-		bg = new FlxSprite(Paths.image(image));
+		bg = FunkinSprite.create(image);
 		barWidth = Std.int(bg.width - 6);
 		barHeight = Std.int(bg.height - 6);
 
@@ -69,10 +75,10 @@ class Bar extends FlxSpriteGroup{
 	}
 
 	// internal value tracker
-	var _value:Float;
+	public var value:Float;
 	override function update(elapsed:Float) {
-		_value = FlxMath.bound(valueFunction(), bounds.min, bounds.max);
-		final percentValue:Float = FlxMath.remapToRange(_value, bounds.min, bounds.max, 0, 100);
+		value = FlxMath.bound(valueFunction(), bounds.min, bounds.max);
+		final percentValue:Float = FlxMath.remapToRange(value, bounds.min, bounds.max, 0, 100);
 		percent = FlxMath.lerp(percent, percentValue, FlxMath.lerp(1, smoothMultiplay * elapsed / lerpFactor, smoothFactor));
 		super.update(elapsed);
 	}
@@ -82,9 +88,9 @@ class Bar extends FlxSpriteGroup{
 	/**
 	 * Useful for smooth bar
 	 */
-	public function snapPercent(){
-		_value = FlxMath.bound(valueFunction(), bounds.min, bounds.max);
-		percent = FlxMath.remapToRange(_value, bounds.min, bounds.max, 0, 100);
+	public dynamic function snapPercent(){
+		value = FlxMath.bound(valueFunction(), bounds.min, bounds.max);
+		percent = FlxMath.remapToRange(value, bounds.min, bounds.max, 0, 100);
 	}
 
 	override function destroy() {
@@ -100,7 +106,8 @@ class Bar extends FlxSpriteGroup{
 			rightBar = null;
 		}
 		valueFunction = null;
-		updateCallback = null;
+		updateCallbackPre = null;
+		updateCallbackPost = null;
 		bg = null;
 		super.destroy();
 	}
@@ -122,11 +129,11 @@ class Bar extends FlxSpriteGroup{
 		}
 		return flipped;
 	}
-	public function flipBar() {
+	public dynamic function flipBar() {
 		return flipped = !flipped;
 	}
 	
-	public function setColors(?left:FlxColor, ?right:FlxColor)
+	public dynamic function setColors(?left:FlxColor, ?right:FlxColor)
 	{	
 		if (flipped){
 			if (left != null)	rightBar.color = left;
@@ -138,11 +145,15 @@ class Bar extends FlxSpriteGroup{
 	}
 
 	var leftSize:Float = 0;
-	public function updateBar(){
+	public dynamic function updateBar()
+	{
 		if(leftBar == null || rightBar == null) return;
 
-		leftBar.setPosition(bg.x, bg.y);
-		rightBar.setPosition(bg.x, bg.y);
+		leftBar.setPosition(bg.x + basicOffset.x, bg.y + basicOffset.y);
+		rightBar.setPosition(bg.x + basicOffset.x, bg.y + basicOffset.y);
+
+		if (updateCallbackPre != null)
+			updateCallbackPre(value, percent);
 
 		leftSize = FlxMath.lerp(0, barWidth, (leftToRight ? percent / 100 : 1 - percent / 100));
 
@@ -160,8 +171,8 @@ class Bar extends FlxSpriteGroup{
 
 		setClipRectToFlxSprite(leftBar, leftBar.clipRect);
 		setClipRectToFlxSprite(rightBar, rightBar.clipRect);
-		if (updateCallback != null)
-			updateCallback(_value, percent);
+		if (updateCallbackPost != null)
+			updateCallbackPost(value, percent);
 	}
 
 	@:access(flixel.FlxSprite)
@@ -174,19 +185,41 @@ class Bar extends FlxSpriteGroup{
 		return rect;
 	}
 
-	public function regenerateClips()
+	public dynamic function regenerateClips()
 	{
-		if(leftBar != null)
+		if (shouldImitateSize)
 		{
-			leftBar.setGraphicSize(bg.width, bg.height);
-			leftBar.updateHitbox();
-		}
-		if(rightBar != null)
-		{
-			rightBar.setGraphicSize(bg.width, bg.height);
-			rightBar.updateHitbox();
+			if(leftBar != null)
+			{
+				leftBar.setGraphicSize(bg.width, bg.height);
+				leftBar.updateHitbox();
+			}
+			if(rightBar != null)
+			{
+				rightBar.setGraphicSize(bg.width, bg.height);
+				rightBar.updateHitbox();
+			}
 		}
 		updateBar();
+	}
+
+	private function set_shouldImitateSize(should:Bool)
+	{
+		shouldImitateSize = should;
+		if (shouldImitateSize)
+		{
+			if(leftBar != null)
+			{
+				leftBar.setGraphicSize(bg.width, bg.height);
+				leftBar.updateHitbox();
+			}
+			if(rightBar != null)
+			{
+				rightBar.setGraphicSize(bg.width, bg.height);
+				rightBar.updateHitbox();
+			}
+		}
+		return should;
 	}
 
 	private function set_percent(value:Float)

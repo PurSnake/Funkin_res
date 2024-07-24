@@ -162,7 +162,7 @@ class Strumline extends FlxSpriteGroup
 		this.active = true;
 	}
 
-	public function refresh():Void
+	public dynamic function refresh():Void
 	{
 		sort(SortUtil.byZIndex, FlxSort.ASCENDING);
 	}
@@ -182,7 +182,7 @@ class Strumline extends FlxSpriteGroup
 	/**
 	 * Returns `true` if no notes are in range of the strumline and the player can spam without penalty.
 	 */
-	public function mayGhostTap():Bool
+	public dynamic function mayGhostTap():Bool
 	{
 		// TODO: Refine this. Only querying "can be hit" is too tight but "is being rendered" is too loose.
 		// Also, if you just hit a note, there should be a (short) period where this is off so you can't spam.
@@ -208,14 +208,14 @@ class Strumline extends FlxSpriteGroup
 	 * Return hold notes that are within `Constants.HIT_WINDOW` ms of the strumline.
 	 * @return An array of `SustainTrail` objects.
 	 */
-	public function getHoldNotesHitOrMissed():Array<SustainTrail>
+	public dynamic function getHoldNotesHitOrMissed():Array<SustainTrail>
 	{
 		return holdNotes.members.filter(function(holdNote:SustainTrail) {
 			return holdNote != null && holdNote.alive && (holdNote.hitNote || holdNote.missedNote);
 		});
 	}
 
-	public function getNoteSprite(noteData:SongNoteData):NoteSprite
+	public dynamic function getNoteSprite(noteData:SongNoteData):NoteSprite
 	{
 		if (noteData == null) return null;
 
@@ -230,7 +230,7 @@ class Strumline extends FlxSpriteGroup
 		return null;
 	}
 
-	public function getHoldNoteSprite(noteData:SongNoteData):SustainTrail
+	public dynamic function getHoldNoteSprite(noteData:SongNoteData):SustainTrail
 	{
 		if (noteData == null || ((noteData.length ?? 0.0) <= 0.0)) return null;
 
@@ -248,7 +248,7 @@ class Strumline extends FlxSpriteGroup
 	/**
 	 * Call this when resetting the playstate.
 	 */
-	public function vwooshNotes():Void
+	public dynamic function vwooshNotes():Void
 	{
 		for (note in notes.members)
 		{
@@ -299,7 +299,7 @@ class Strumline extends FlxSpriteGroup
 	 * @param strumTime
 	 * @return Float
 	 */
-	public function calculateNoteYPos(strumTime:Float, vwoosh:Bool = true):Float
+	public dynamic function calculateNoteYPos(strumTime:Float, vwoosh:Bool = true):Float
 	{
 		// Make the note move faster visually as it moves offscreen.
 		// var vwoosh:Float = (strumTime < Conductor.songPosition) && vwoosh ? 2.0 : 1.0;
@@ -310,7 +310,7 @@ class Strumline extends FlxSpriteGroup
 			Constants.PIXELS_PER_MS * (conductorInUse.songPosition - strumTime - Conductor.instance.inputOffset) * scrollSpeed * vwoosh * (Preferences.downscroll ? 1 : -1);
 	}
 
-	function updateNotes():Void
+	dynamic function updateNotes():Void
 	{
 		if (noteData.length == 0) return;
 
@@ -390,7 +390,7 @@ class Strumline extends FlxSpriteGroup
 			{
 				// Hold note is completed, kill it.
 				if (holdNote.stumPlayConfirm)
-					isKeyHeld(holdNote.noteDirection) ? playPress(holdNote.noteDirection) : playStatic(holdNote.noteDirection);
+					(isKeyHeld(holdNote.noteDirection) && Preferences.playPressAfterConfirm) ? playPress(holdNote.noteDirection) : playStatic(holdNote.noteDirection);
 
 				if (holdNote.cover != null && isPlayer && holdNote.stumPlayConfirm)
 				{
@@ -463,7 +463,7 @@ class Strumline extends FlxSpriteGroup
 	/**
 	 * Called when the PlayState skips a large amount of time forward or backward.
 	 */
-	public function handleSkippedNotes():Void
+	public dynamic function handleSkippedNotes():Void
 	{
 		// By calling clean(), we remove all existing notes so they can be re-added.
 		clean();
@@ -471,7 +471,7 @@ class Strumline extends FlxSpriteGroup
 		nextNoteIndex = 0;
 	}
 
-	public function onBeatHit():Void
+	public dynamic function onBeatHit():Void
 	{
 		if (notes.members.length > 1) notes.members.insertionSort(compareNoteSprites.bind(FlxSort.ASCENDING));
 
@@ -498,7 +498,7 @@ class Strumline extends FlxSpriteGroup
 	 * Removes any special animations and the like.
 	 * Doesn't reset the notes from the chart, that's handled by the PlayState.
 	 */
-	public function clean():Void
+	public dynamic function clean():Void
 	{
 		for (note in notes.members)
 		{
@@ -532,7 +532,7 @@ class Strumline extends FlxSpriteGroup
 		resetScrollSpeed();
 	}
 
-	public function applyNoteData(data:Array<SongNoteData>):Void
+	public dynamic function applyNoteData(data:Array<SongNoteData>):Void
 	{
 		this.notes.clear();
 
@@ -547,7 +547,7 @@ class Strumline extends FlxSpriteGroup
 	 * @param note The note to hit.
 	 * @param removeNote True to remove the note immediately, false to make it transparent and let it move offscreen.
 	 */
-	public function hitNote(note:NoteSprite, removeNote:Bool = true):Void
+	public dynamic function hitNote(note:NoteSprite, removeNote:Bool = true):Void
 	{
 		if (note.stumPlayConfirm) playConfirm(note.direction, note.length > 0);
 
@@ -619,7 +619,7 @@ class Strumline extends FlxSpriteGroup
 		return getByDirection(direction).isConfirm();
 	}
 
-	public function playNoteSplash(direction:NoteDirection):Void
+	public dynamic function playNoteSplash(direction:NoteDirection):Void
 	{
 		// TODO: Add a setting to disable note splashes.
 		// if (Settings.noSplash) return;
@@ -639,7 +639,7 @@ class Strumline extends FlxSpriteGroup
 		}
 	}
 
-	public function playNoteHoldCover(holdNote:SustainTrail):Void
+	public dynamic function playNoteHoldCover(holdNote:SustainTrail):Void
 	{
 		// TODO: Add a setting to disable note splashes.
 		// if (Settings.noSplash || !holdNote.stumPlayConfirm) return;
@@ -669,7 +669,7 @@ class Strumline extends FlxSpriteGroup
 		}
 	}
 
-	public function buildNoteSprite(note:SongNoteData):NoteSprite
+	public dynamic function buildNoteSprite(note:SongNoteData):NoteSprite
 	{
 		var noteSprite:NoteSprite = constructNoteSprite();
 
@@ -691,7 +691,7 @@ class Strumline extends FlxSpriteGroup
 		return noteSprite;
 	}
 
-	public function buildHoldNoteSprite(note:SongNoteData):SustainTrail
+	public dynamic function buildHoldNoteSprite(note:SongNoteData):SustainTrail
 	{
 		var holdNoteSprite:SustainTrail = constructHoldNoteSprite();
 
@@ -724,7 +724,7 @@ class Strumline extends FlxSpriteGroup
 	/**
 	 * Custom recycling behavior.
 	 */
-	function constructNoteSplash():NoteSplash
+	dynamic function constructNoteSplash():NoteSplash
 	{
 		var result:NoteSplash = null;
 
@@ -758,7 +758,7 @@ class Strumline extends FlxSpriteGroup
 	/**
 	 * Custom recycling behavior.
 	 */
-	function constructNoteHoldCover():NoteHoldCover
+	dynamic function constructNoteHoldCover():NoteHoldCover
 	{
 		var result:NoteHoldCover = null;
 
@@ -792,7 +792,7 @@ class Strumline extends FlxSpriteGroup
 	/**
 	 * Custom recycling behavior.
 	 */
-	function constructNoteSprite():NoteSprite
+	dynamic function constructNoteSprite():NoteSprite
 	{
 		var result:NoteSprite = null;
 
@@ -818,7 +818,7 @@ class Strumline extends FlxSpriteGroup
 	/**
 	 * Custom recycling behavior.
 	 */
-	function constructHoldNoteSprite():SustainTrail
+	dynamic function constructHoldNoteSprite():SustainTrail
 	{
 		var result:SustainTrail = null;
 
@@ -841,7 +841,7 @@ class Strumline extends FlxSpriteGroup
 		return result;
 	}
 
-	function getXPos(direction:NoteDirection):Float
+	dynamic function getXPos(direction:NoteDirection):Float
 	{
 		return switch (direction)
 		{
@@ -861,14 +861,14 @@ class Strumline extends FlxSpriteGroup
 	 * @param arrow The arrow to animate.
 	 * @param index The index of the arrow in the strumline.
 	 */
-	function fadeInArrow(index:Int, arrow:StrumlineNote):Void
+	dynamic function fadeInArrow(index:Int, arrow:StrumlineNote):Void
 	{
 		arrow.y -= 10;
 		arrow.alpha = 0.0;
 		FlxTween.tween(arrow, {y: arrow.y + 10, alpha: 1}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * index)});
 	}
 
-	public function fadeInArrows():Void
+	public dynamic function fadeInArrows():Void
 	{
 		for (index => arrow in this.strumlineNotes.members.keyValueIterator())
 			fadeInArrow(index, arrow);

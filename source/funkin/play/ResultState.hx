@@ -167,11 +167,7 @@ class ResultState extends MusicBeatSubState
 
 				heartsPerfect.anim.onComplete = () -> {
 					if (heartsPerfect != null)
-					{
-						// bfPerfect.anim.curFrame = 137;
-						heartsPerfect.anim.curFrame = 43;
-						heartsPerfect.anim.play(); // unpauses this anim, since it's on PlayOnce!
-					}
+						heartsPerfect.anim.play("hearts full anim", true, false, 43); // unpauses this anim, since it's on PlayOnce!
 				};
 
 				bfPerfect = new FlxAtlasSprite(1342, 370, Paths.animateAtlas("resultScreen/results-bf/resultsPERFECT", "shared"));
@@ -181,11 +177,7 @@ class ResultState extends MusicBeatSubState
 
 				bfPerfect.anim.onComplete = () -> {
 					if (bfPerfect != null)
-					{
-						// bfPerfect.anim.curFrame = 137;
-						bfPerfect.anim.curFrame = 137;
-						bfPerfect.anim.play(); // unpauses this anim, since it's on PlayOnce!
-					}
+						bfPerfect.anim.play("boyfriend perfect rank", true, false, 137); // unpauses this anim, since it's on PlayOnce!
 				};
 
 			case EXCELLENT:
@@ -196,10 +188,7 @@ class ResultState extends MusicBeatSubState
 
 				bfExcellent.anim.onComplete = () -> {
 					if (bfExcellent != null)
-					{
-						bfExcellent.anim.curFrame = 28;
-						bfExcellent.anim.play(); // unpauses this anim, since it's on PlayOnce!
-					}
+						bfExcellent.anim.play("bf results excellent", true, false, 28); // unpauses this anim, since it's on PlayOnce!
 				};
 
 			case GREAT:
@@ -212,10 +201,7 @@ class ResultState extends MusicBeatSubState
 
 				gfGreat.anim.onComplete = () -> {
 					if (gfGreat != null)
-					{
-						gfGreat.anim.curFrame = 9;
-						gfGreat.anim.play(); // unpauses this anim, since it's on PlayOnce!
-					}
+						gfGreat.anim.play("gf jumping", true, false, 9); // unpauses this anim, since it's on PlayOnce!
 				};
 
 				bfGreat = new FlxAtlasSprite(929, 363, Paths.animateAtlas("resultScreen/results-bf/resultsGREAT/bf", "shared"));
@@ -227,10 +213,7 @@ class ResultState extends MusicBeatSubState
 
 				bfGreat.anim.onComplete = () -> {
 					if (bfGreat != null)
-					{
-						bfGreat.anim.curFrame = 15;
-						bfGreat.anim.play(); // unpauses this anim, since it's on PlayOnce!
-					}
+						bfGreat.anim.play("bf jumping ", true, false, 15); // unpauses this anim, since it's on PlayOnce!
 				};
 
 			case GOOD:
@@ -716,9 +699,7 @@ class ResultState extends MusicBeatSubState
 			add(clearPercentSmall);
 			clearPercentSmall.visible = true;
 			clearPercentSmall.flash(true);
-			new FlxTimer().start(0.4, _ -> {
-				clearPercentSmall.flash(false);
-			});
+			new FlxTimer().start(0.4, _ -> clearPercentSmall.flash(false));
 
 			clearPercentSmall.curNumber = clearPercentTarget;
 			clearPercentSmall.zIndex = 1000;
@@ -788,24 +769,25 @@ class ResultState extends MusicBeatSubState
 					trace('THE RANK IS Higher.....');
 
 					FlxTween.tween(rankBg, {alpha: 1}, 0.5,
+					{
+						ease: FlxEase.expoOut,
+						onComplete: function(_)
 						{
-							ease: FlxEase.expoOut,
-							onComplete: function(_) {
-								FlxG.switchState(FreeplayState.build(
+							FlxG.switchState(FreeplayState.build(
+							{
+								{
+									fromResults:
 									{
-										{
-											fromResults:
-												{
-													oldRank: Scoring.calculateRank(params?.prevScoreData),
-													newRank: rank,
-													songId: params.songId,
-													difficultyId: params.difficultyId,
-													playRankAnim: true
-												}
-										}
-									}));
-							}
-						});
+										oldRank: Scoring.calculateRank(params?.prevScoreData),
+										newRank: rank,
+										songId: params.songId,
+										difficultyId: params.difficultyId,
+										playRankAnim: true
+									}
+								}
+							}));
+						}
+					});
 				}
 				else
 				{

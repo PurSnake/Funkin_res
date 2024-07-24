@@ -85,6 +85,7 @@ class Save
 			options:
 			{
 				// Reasonable defaults.
+				playPressAfterConfirm: true,
 				cacheOnGPU: true,
 				naughtyness: true,
 				downscroll: false,
@@ -1054,6 +1055,12 @@ typedef SaveScoreTallyData =
  */
 typedef SaveDataOptions =
 {
+	/**
+	 * Whether should play `press` animation after `confirm`.
+	 * @default `true`
+	 */
+	var playPressAfterConfirm:Bool;
+
 	/**
 	 * Whether some particularly fowl language is displayed.
 	 * @default `true`

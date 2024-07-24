@@ -91,14 +91,14 @@ class ScreenshotPlugin extends FlxBasic
 	public static function initialize():Void
 	{
 		FlxG.plugins.addPlugin(new ScreenshotPlugin(
-			{
-				flashColor: Preferences.flashingLights ? FlxColor.WHITE : null, // Was originally a black flash.
+		{
+			flashColor: Preferences.flashingLights ? FlxColor.WHITE : null, // Was originally a black flash.
 
-				// TODO: Add a way to configure screenshots from the options menu.
-				hotkeys: [FlxKey.F3],
-				shouldHideMouse: false,
-				fancyPreview: true,
-			}));
+			// TODO: Add a way to configure screenshots from the options menu.
+			hotkeys: [FlxKey.F3],
+			shouldHideMouse: false,
+			fancyPreview: true,
+		}));
 	}
 
 	public function hasPressedScreenshot():Bool

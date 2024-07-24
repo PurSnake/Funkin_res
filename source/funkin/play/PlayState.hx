@@ -2,7 +2,8 @@ package funkin.play;
 
 import flixel.addons.display.FlxPieDial;
 import flixel.addons.transition.FlxTransitionableState;
-import flixel.addons.transition.Transition;
+//import flixel.addons.transition.Transition;
+import funkin.ui.transition.CustomTransition as Transition;
 import flixel.FlxCamera;
 import flixel.FlxObject;
 import flixel.FlxState;
@@ -14,6 +15,7 @@ import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.ui.FlxBar;
+import funkin.ui.Bar;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import funkin.api.newgrounds.NGio;
@@ -497,7 +499,7 @@ class PlayState extends MusicBeatSubState
 	 * The bar which displays the player's health.
 	 * Dynamically updated based on the value of `healthLerp` (which is based on `health`).
 	 */
-	public var healthBar:FlxBar;
+	public var healthBar:Bar;
 
 	/**
 	 * The background image used for the health bar.
@@ -1371,15 +1373,9 @@ class PlayState extends MusicBeatSubState
 	#end
 
 	/**
-	 * Removes any references to the current stage, then clears the stage cache,
-	 * then reloads all the stages.
-	 *
-	 * This is useful for when you want to edit a stage without reloading the whole game.
-	 * Reloading works on both the JSON and the HXC, if applicable.
-	 *
 	 * Call this by pressing F5 on a debug build.
 	 */
-	override function debug_refreshModules():Void
+	override function reloadAssets():Void
 	{
 		// Prevent further gameplay updates, which will try to reference dead objects.
 		criticalFailure = true;
@@ -1421,7 +1417,8 @@ class PlayState extends MusicBeatSubState
 				vocals.stop();
 		}
 
-		super.debug_refreshModules();
+
+		super.reloadAssets();
 
 		var event:ScriptEvent = new ScriptEvent(CREATE, false);
 		ScriptEventDispatcher.callEvent(currentSong, event);
@@ -1435,17 +1432,6 @@ class PlayState extends MusicBeatSubState
 		if (!super.stepHit()) return false;
 
 		if (isGamePaused) return false;
-
-		/*if (!startingSong
-			&& FlxG.sound.music != null
-			&& (Math.abs(FlxG.sound.music.time - (Conductor.instance.songPosition + Conductor.instance.instrumentalOffset)) > 100 * playbackRate
-				|| Math.abs(vocals.checkSyncError(Conductor.instance.songPosition + Conductor.instance.instrumentalOffset)) > 100 * playbackRate))
-		{
-			trace("VOCALS NEED RESYNC");
-			if (vocals != null) trace(vocals.checkSyncError(Conductor.instance.songPosition + Conductor.instance.instrumentalOffset));
-			trace(FlxG.sound.music.time - (Conductor.instance.songPosition + Conductor.instance.instrumentalOffset));
-			resyncVocals();
-		}*/
 
 		if (iconP1 != null) iconP1.onStepHit(Std.int(Conductor.instance.currentStep));
 		if (iconP2 != null) iconP2.onStepHit(Std.int(Conductor.instance.currentStep));
@@ -1466,6 +1452,16 @@ class PlayState extends MusicBeatSubState
 		{
 			// TODO: Sort more efficiently, or less often, to improve performance.
 			// activeNotes.sort(SortUtil.byStrumtime, FlxSort.DESCENDING);
+		}
+
+		if (!startingSong && FlxG.sound.music != null
+			&& (Math.abs(FlxG.sound.music.time - (Conductor.instance.songPosition + Conductor.instance.instrumentalOffset)) > 100
+				|| Math.abs(vocals.checkSyncError(Conductor.instance.songPosition + Conductor.instance.instrumentalOffset)) > 100))
+		{
+			trace("VOCALS NEED RESYNC");
+			if (vocals != null) trace(vocals.checkSyncError(Conductor.instance.songPosition + Conductor.instance.instrumentalOffset));
+			trace(FlxG.sound.music.time - (Conductor.instance.songPosition + Conductor.instance.instrumentalOffset));
+			resyncVocals();
 		}
 
 		// Only bop camera if zoom level is below 135%
@@ -1586,20 +1582,29 @@ class PlayState extends MusicBeatSubState
 	dynamic function initHealthBar():Void
 	{
 		var healthBarYPos:Float = Preferences.downscroll ? FlxG.height * 0.1 : FlxG.height * 0.9;
-		healthBarBG = FunkinSprite.create(0, healthBarYPos, 'healthBar');
+		/*healthBarBG = FunkinSprite.create(0, healthBarYPos, 'healthBar');
 		healthBarBG.screenCenter(X);
 		healthBarBG.scrollFactor.set(0, 0);
 		healthBarBG.zIndex = 803;
-		add(healthBarBG);
+		add(healthBarBG);*/
 
-		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
+		/*healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
 			'healthLerp', 0, 2);
 		healthBar.scrollFactor.set();
 		healthBar.createFilledBar(Constants.COLOR_HEALTH_BAR_RED, Constants.COLOR_HEALTH_BAR_GREEN);
 		healthBar.zIndex = 801;
 		healthBar.unbounded = true;
-		add(healthBar);
+		add(healthBar);*/
 
+		healthBar = new Bar(0, healthBarYPos, 'healthBar', () -> return healthLerp, 0, 2);
+		healthBarBG = healthBar.bg;
+		healthBar.smoothFactor = 1;
+		healthBar.scrollFactor.set();
+		healthBar.screenCenter(X);
+		healthBar.zIndex = 801;
+		healthBar.setColors(Constants.COLOR_HEALTH_BAR_RED, Constants.COLOR_HEALTH_BAR_GREEN);
+		add(healthBar);
+		
 		// The score text below the health bar.
 		scoreText = new FlxText(healthBarBG.x + healthBarBG.width - 190, healthBarBG.y + 30, 0, '', 20);
 		scoreText.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
@@ -1986,6 +1991,8 @@ class PlayState extends MusicBeatSubState
 			if (vocals != null) vocals.stop();
 			vocals = currentChart.buildVocals();
 			add(vocals);
+			vocals.pause();
+			vocals.time = 0;
 
 			if (vocals.members.length == 0)
 				trace('WARNING: No vocals found for this song.');
@@ -2056,14 +2063,16 @@ class PlayState extends MusicBeatSubState
 		// Skip this if the music is paused (GameOver, Pause menu, start-of-song offset, etc.)
 		if (!FlxG.sound.music.playing) return;
 
-		FlxG.sound.music.pause();
+		var timeToPlayAt:Float = Conductor.instance.songPosition - Conductor.instance.instrumentalOffset;
+
+	 	FlxG.sound.music.pause();
 		vocals.pause();
 
-		FlxG.sound.music.time = Conductor.instance.songPosition;
-		FlxG.sound.music.play(false, Conductor.instance.songPosition + Conductor.instance.instrumentalOffset);
+		FlxG.sound.music.time = timeToPlayAt;
+		FlxG.sound.music.play(false, timeToPlayAt);
 
-		vocals.time = Conductor.instance.songPosition;
-		vocals.play(false, Conductor.instance.songPosition);
+		vocals.time = timeToPlayAt;
+		vocals.play(false, timeToPlayAt);
 	}
 
 	/**
@@ -2086,7 +2095,7 @@ class PlayState extends MusicBeatSubState
 	{
 		final newDadColor = dadColor ?? ((iconP2 != null) ? iconP2.healthColor : Constants.COLOR_HEALTH_BAR_RED);
 		final newBfColor = bfColor ?? ((iconP1 != null) ? iconP1.healthColor : Constants.COLOR_HEALTH_BAR_GREEN);
-		healthBar.createFilledBar(newDadColor, newBfColor);
+		healthBar.setColors(newDadColor, newBfColor);
 	}
 
 	/**

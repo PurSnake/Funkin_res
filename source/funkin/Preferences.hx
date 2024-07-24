@@ -24,6 +24,23 @@ class Preferences
 
 
 
+	public static var playPressAfterConfirm(get, set):Bool;
+
+	static function get_playPressAfterConfirm():Bool
+	{
+		return Save?.instance?.options?.playPressAfterConfirm ?? true;
+	}
+
+	static function set_playPressAfterConfirm(value:Bool):Bool
+	{
+		var save:Save = Save.instance;
+		save.options.playPressAfterConfirm = value;
+		save.flush();
+		return value;
+	}
+
+
+
 	/**
 	 * Whether some particularly fowl language is displayed.
 	 * @default `true`

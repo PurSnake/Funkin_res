@@ -1180,6 +1180,7 @@ class FreeplayState extends MusicBeatSubState
 
 		if (controls.FREEPLAY_FAVORITE && !busy)
 		{
+
 			var targetSong = grpCapsules.members[curSelected]?.songData;
 			if (targetSong != null)
 			{
@@ -1266,7 +1267,16 @@ class FreeplayState extends MusicBeatSubState
 		}
 
 		handleInputs(elapsed);
+
+		if (!busy) {
+			Conductor.instance.update(Conductor.instance.songPosition + elapsed * 1000, false);
+
+			if (songPreviewTimer > 1) playCurSongPreview(grpCapsules.members[curSelected]);
+			if (songPreviewTimer >= 0) songPreviewTimer += elapsed;
+		}
 	}
+
+	var songPreviewTimer:Float = 0; 
 
 	function handleInputs(elapsed:Float):Void
 	{
@@ -1512,18 +1522,21 @@ class FreeplayState extends MusicBeatSubState
 		}
 	}
 
-	/*override function beatHit():Bool
+	override function beatHit():Bool
 	{
 		if (!super.beatHit()) return false;
 
+		//if ((dj != null && dj.visible && dj.currentState == Idle && Conductor.instance.currentBeat > 0) && (Conductor.instance.bpm >= 130 && Conductor.instance.currentBeat % 2 == 0))
+		//	dj.playFlashAnimation('Boyfriend DJ', true);
+
 		if (dj != null && dj.visible && dj.currentState == Idle && Conductor.instance.currentBeat > 0)
 		{
-			dj.playAnimation("Boyfriend DJ", true, true, false);
-			dj.applyAnimOffset();
+			if (Conductor.instance.bpm < 130 || (Conductor.instance.bpm >= 130 && Conductor.instance.currentBeat % 2 == 0))
+				dj.playFlashAnimation('Boyfriend DJ', true);
 		}
 
 		return true;
-	}*/
+	}
 
 	public override function destroy():Void
 	{
@@ -1734,6 +1747,7 @@ class FreeplayState extends MusicBeatSubState
 		backingTextYeah.anim.play("BF back card confirm raw", false, false, 0);
 		confirmGlow2.alpha = 0;
 		confirmGlow.alpha = 0;
+		songPreviewTimer = -1;
 
 		FlxTween.tween(confirmGlow2, {alpha: 0.5}, 0.33,
 		{
@@ -1846,13 +1860,17 @@ class FreeplayState extends MusicBeatSubState
 
 		if (grpCapsules.countLiving() > 0 && !prepForNewRank)
 		{
-			playCurSongPreview(daSongCapsule);
+			//playCurSongPreview(daSongCapsule);
+			//playCurSongPreview(grpCapsules.members[curSelected]);
+			songPreviewTimer = 0;
 			grpCapsules.members[curSelected].selected = true;
 		}
 	}
 
 	public function playCurSongPreview(daSongCapsule:SongMenuItem):Void
 	{
+		songPreviewTimer = -1;
+
 		var volume:Float = 1;
 		if (dj.playingCartoon) volume *= 0.4; // 40%
 
@@ -1887,8 +1905,9 @@ class FreeplayState extends MusicBeatSubState
 					end: 0.45 //0.30
 				},
 				onLoad: () -> {
-					FlxG.sound.music.fadeIn(2, 0, volume);
+					Conductor.instance.update(0, false);
 					Conductor.instance.mapTimeChanges(previewTimeChanges);
+					FlxG.sound.music.fadeIn(2, 0, volume);
 				}
 			});
 		}

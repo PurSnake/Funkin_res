@@ -60,11 +60,8 @@ class DJBoyfriend extends FlxAtlasSprite
 		FlxG.debugger.track(this);
 		FlxG.console.registerObject("dj", this);
 
-		anim.onComplete = () -> {
-			onFinishAnim();
-			onAnimationFinish.dispatch(anim.curSymbol.name);
+		anim.onComplete = () -> onFinishAnim();
 
-		}
 
 		FlxG.console.registerFunction("tv", function() {
 			currentState = TV;
@@ -97,6 +94,7 @@ class DJBoyfriend extends FlxAtlasSprite
 			case Intro:
 				// Play the intro animation then leave this state immediately.
 				if (getCurrentAnimation() != 'boyfriend dj intro') playFlashAnimation('boyfriend dj intro', true);
+				anim.curInstance.symbol.loop = PlayOnce;
 				timeSinceSpook = 0;
 			case Idle:
 				// We are in this state the majority of the time.
@@ -147,17 +145,18 @@ class DJBoyfriend extends FlxAtlasSprite
 	function onFinishAnim():Void
 	{
 		var name = anim.curSymbol.name;
+		onAnimationFinish.dispatch(name);
 		trace(name);
 		switch (name)
 		{
 			case "boyfriend dj intro":
-				// trace('Finished intro');
+				trace('Finished intro');
 				currentState = Idle;
 				onIntroDone.dispatch();
 			case "Boyfriend DJ":
-			// trace('Finished idle');
+				trace('Finished idle');
 			case "bf dj afk":
-				// trace('Finished spook');
+				trace('Finished spook');
 				currentState = Idle;
 			case "Boyfriend DJ confirm":
 
@@ -299,6 +298,7 @@ class DJBoyfriend extends FlxAtlasSprite
 	public function playFlashAnimation(id:String, ?Force:Bool = false, ?Reverse:Bool = false, ?Frame:Int = 0):Void
 	{
 		anim.play(id, Force, Reverse, Frame);
+		anim.curInstance.symbol.loop = PlayOnce;
 		applyAnimOffset();
 	}
 
