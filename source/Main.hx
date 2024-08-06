@@ -65,11 +65,13 @@ class Main extends flixel.FlxGame
 		initMainConfig();
 		initHaxeUI();
 
+		// Load mods to override assets.
+		funkin.modding.PolymodHandler.loadEnabledMods();
+
 		flixel.system.FlxAssets.FONT_DEFAULT = "VCR OSD Mono";
 
 		haxe.Log.trace = funkin.util.logging.AnsiTrace.trace;
 		funkin.util.logging.AnsiTrace.traceBF();
-		funkin.modding.PolymodHandler.loadAllMods();
 
 		statisticMonitor = new funkin.ui.debug.StatisticMonitor(10, 3, 0xFFFFFF);
 		

@@ -22,6 +22,8 @@ import flixel.system.FlxAssets.FlxSoundAsset;
 
 import funkin.Paths;
 
+import openfl.display.animation.AnimatedSprite;
+
 /**
  * The flixel sound tray, the little volume meter that pops down sometimes.
  * Accessed via `FlxG.game.soundTray` or `FlxG.sound.soundTray`.
@@ -43,6 +45,7 @@ class FlxSoundTray extends Sprite
 	private var _localTimer:Float;
 	private var _requestedY:Float;
 
+	var splashSprite:AnimatedSprite;
 	var _volumeSprite:Bitmap;
 
 	@:keep
@@ -54,13 +57,24 @@ class FlxSoundTray extends Sprite
 		scaleY = _defaultScale;
 		screenCenter();
 
-		final splashSprite:Bitmap = new Bitmap(Assets.getBitmapData(Paths.file("images/soundtray/volume-back.png")));
-		splashSprite.smoothing = true;
-		_width = splashSprite.width;
+		//final splashSprite:Bitmap = new Bitmap(Assets.getBitmapData(Paths.file("images/soundtray/volume-back.png")));
+		//splashSprite.smoothing = true;
 
-		final disBg:Bitmap = new Bitmap(new BitmapData(200, 68, false, FlxColor.GRAY));
-		_volumeSprite = new Bitmap(new BitmapData(1, 68, false, FlxColor.WHITE));
-		disBg.x = _volumeSprite.x = 78;
+		//splashSprite = AnimatedSprite.fromFramesCollection(Paths.getSparrowAtlas("soundtray/volume"));
+		var key = "soundtray/volume";
+		splashSprite = AnimatedSprite.fromFramesCollection(flixel.graphics.frames.FlxAtlasFrames.fromSparrow(Paths.image(key, null, false), Paths.file('images/$key.xml')));
+		splashSprite.y = -1;
+		splashSprite.animation.addByPrefix("splash", "volume back", 24, false);
+		splashSprite.animation.play("splash", true);
+		splashSprite.animation.curAnim.play(true);
+		splashSprite.animation.curAnim.finished = false;
+		splashSprite.animation.curAnim.looped = false;
+		_width = 382; //splashSprite.width;
+
+		final disBg:Bitmap = new Bitmap(new BitmapData(233, 51, false, FlxColor.GRAY));
+		_volumeSprite = new Bitmap(new BitmapData(1, 51, false, FlxColor.WHITE));
+		disBg.x = _volumeSprite.x = 74;
+		disBg.y = _volumeSprite.y = 7;
 		addChild(disBg);
 		addChild(_volumeSprite);
 		addChild(splashSprite);
@@ -73,6 +87,8 @@ class FlxSoundTray extends Sprite
 	public function update(MS:Float):Void
 	{
 		if (active) {
+			_volumeSprite.width = MathUtil.fpsLerp(_volumeSprite.width, FlxG.sound.muted ? 0 : (237 * FlxG.sound.volume), MathUtil.getFPSRatio(.65)); //.15
+
 			if (_localTimer >= timeToExist) _requestedY = -height;
 
 			y = MathUtil.fpsLerp(y, _requestedY, MathUtil.getFPSRatio(.25)); //.15
@@ -93,9 +109,7 @@ class FlxSoundTray extends Sprite
 			if (sound != null) {
 				final volumeSound = FlxG.sound.load(sound);
 				volumeSound.onComplete = __soundOnComplete.bind(volumeSound);
-				#if FLX_PITCH	
-				volumeSound.pitch = flixel.math.FlxMath.lerp(0.75, 1.25, FlxG.sound.volume);
-				#end		
+				#if FLX_PITCH volumeSound.pitch = flixel.math.FlxMath.lerp(0.75, 1.25, FlxG.sound.volume); #end		
 				volumeSound.play();
 				FlxG.sound.list.remove(volumeSound); //due to stateSwitch bug
 			}
@@ -104,10 +118,14 @@ class FlxSoundTray extends Sprite
 		if (shouldShow) {
 			visible = true;
 			active = true;
+			splashSprite.animation.curAnim.finished = false;
+			splashSprite.animation.curAnim.looped = false;
+			splashSprite.animation.curAnim.play(true);
 			_localTimer = _requestedY = 0;
 		}
 
-		_volumeSprite.width = 10 * globalVolume;
+		//_volumeSprite.width = 237 * (globalVolume/20);
+		//_volumeSprite.width = 237 * FlxG.sound.volume;		
 	}
 
 

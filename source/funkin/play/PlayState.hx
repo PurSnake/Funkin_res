@@ -1454,7 +1454,7 @@ class PlayState extends MusicBeatSubState
 			// activeNotes.sort(SortUtil.byStrumtime, FlxSort.DESCENDING);
 		}
 
-		if (!startingSong && FlxG.sound.music != null
+		/*if (!startingSong && FlxG.sound.music != null
 			&& (Math.abs(FlxG.sound.music.time - (Conductor.instance.songPosition + Conductor.instance.instrumentalOffset)) > 100
 				|| Math.abs(vocals.checkSyncError(Conductor.instance.songPosition + Conductor.instance.instrumentalOffset)) > 100))
 		{
@@ -1462,7 +1462,7 @@ class PlayState extends MusicBeatSubState
 			if (vocals != null) trace(vocals.checkSyncError(Conductor.instance.songPosition + Conductor.instance.instrumentalOffset));
 			trace(FlxG.sound.music.time - (Conductor.instance.songPosition + Conductor.instance.instrumentalOffset));
 			resyncVocals();
-		}
+		}*/
 
 		// Only bop camera if zoom level is below 135%
 		if (Preferences.zoomCamera

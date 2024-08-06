@@ -98,15 +98,13 @@ class StickerSubState extends MusicBeatSubState
 		add(grpStickers);
 
 		// makes the stickers on the most recent camera, which is more often than not... a UI camera!!
-		// grpStickers.cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
+		//grpStickers.cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
 		grpStickers.cameras = FlxG.cameras.list;
 
 		if (oldStickers != null)
 		{
 			for (sticker in oldStickers)
-			{
 				grpStickers.add(sticker);
-			}
 
 			degenStickers();
 		}
@@ -116,15 +114,8 @@ class StickerSubState extends MusicBeatSubState
 
 	public function degenStickers():Void
 	{
+		//grpStickers.cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
 		grpStickers.cameras = FlxG.cameras.list;
-
-		/*
-			if (dipshit != null)
-			{
-				FlxG.removeChild(dipshit);
-				dipshit = null;
-			}
-		 */
 
 		if (grpStickers.members == null || grpStickers.members.length == 0)
 		{
@@ -159,9 +150,7 @@ class StickerSubState extends MusicBeatSubState
 		var stickerInfo:StickerInfo = new StickerInfo('stickers-set-1');
 		var stickers:Map<String, Array<String>> = new Map<String, Array<String>>();
 		for (stickerSets in stickerInfo.getPack("all"))
-		{
 			stickers.set(stickerSets, stickerInfo.getStickers(stickerSets));
-		}
 
 		var xPos:Float = -100;
 		var yPos:Float = -100;
@@ -259,11 +248,6 @@ class StickerSubState extends MusicBeatSubState
 	override public function update(elapsed:Float):Void
 	{
 		super.update(elapsed);
-
-		// if (FlxG.keys.justPressed.ANY)
-		// {
-		//	 regenStickers();
-		// }
 	}
 
 	var switchingState:Bool = false;

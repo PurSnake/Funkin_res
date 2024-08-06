@@ -62,6 +62,7 @@ class AnimateAtlasCharacter extends BaseCharacter
 		animation = new FlxAnimationController(this);
 
 		offset = new FlxCallbackPoint(offsetCallback);
+		frameOffset = new FlxCallbackPoint(frameOffsetCallback);
 		origin = new FlxCallbackPoint(originCallback);
 		scale = new FlxCallbackPoint(scaleCallback);
 		scrollFactor = new FlxCallbackPoint(scrollFactorCallback);
@@ -109,8 +110,18 @@ class AnimateAtlasCharacter extends BaseCharacter
 		var loop:Bool = animData.looped;
 
 		this.mainSprite.playAnimation(prefix, restart, ignoreOther, loop);
+		applyAnimationOffsets(correctName);
 
 		animFinished = false;
+	}
+
+	override function applyAnimationOffsets(name:String):Void
+	{
+		var offsets = getAnimationData(name).offsets;
+		if (offsets != null && !(offsets[0] == 0 && offsets[1] == 0))
+			this.animOffsets = [offsets[0], offsets[1]];
+		else
+			this.animOffsets = [0, 0];
 	}
 
 	public override function loopCurrentAnim():Void
@@ -287,6 +298,7 @@ class AnimateAtlasCharacter extends BaseCharacter
 	{
 		// normally don't have to destroy FlxPoints, but these are FlxCallbackPoints!
 		offset = FlxDestroyUtil.destroy(offset);
+		frameOffset = FlxDestroyUtil.destroy(frameOffset);
 		origin = FlxDestroyUtil.destroy(origin);
 		scale = FlxDestroyUtil.destroy(scale);
 		scrollFactor = FlxDestroyUtil.destroy(scrollFactor);
@@ -427,6 +439,9 @@ class AnimateAtlasCharacter extends BaseCharacter
 	inline function offsetTransform(sprite:FlxSprite, offset:FlxPoint):Void
 		sprite.offset.copyFrom(offset);
 
+	inline function frameOffsetTransform(sprite:FlxSprite, frameOffset:FlxPoint):Void
+		sprite.frameOffset.copyFrom(frameOffset);
+
 	inline function originTransform(sprite:FlxSprite, origin:FlxPoint):Void
 		sprite.origin.copyFrom(origin);
 
@@ -443,6 +458,9 @@ class AnimateAtlasCharacter extends BaseCharacter
 
 	inline function offsetCallback(offset:FlxPoint):Void
 		transformChildren(offsetTransform, offset);
+
+	inline function frameOffsetCallback(frameOffset:FlxPoint):Void
+		transformChildren(frameOffsetTransform, frameOffset);
 
 	inline function originCallback(origin:FlxPoint):Void
 		transformChildren(originTransform, origin);

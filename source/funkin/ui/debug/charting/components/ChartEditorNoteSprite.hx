@@ -94,43 +94,43 @@ class ChartEditorNoteSprite extends FlxSprite
 	function fetchNoteStyle(noteStyleId:String):NoteStyle
 		return NoteStyleRegistry.instance.fetchEntry(noteStyleId) ?? NoteStyleRegistry.instance.fetchDefault();
 
-  @:access(funkin.play.notes.notestyle.NoteStyle)
-  @:nullSafety(Off)
-  static function addNoteStyleFrames(noteStyle:NoteStyle):Void
-  {
-    var prefix:String = noteStyle.id.toTitleCase();
+	@:access(funkin.play.notes.notestyle.NoteStyle)
+	@:nullSafety(Off)
+	static function addNoteStyleFrames(noteStyle:NoteStyle):Void
+	{
+		var prefix:String = noteStyle.id.toTitleCase();
 
-    var frameCollection:FlxAtlasFrames = Paths.getSparrowAtlas(noteStyle.getNoteAssetPath(), noteStyle.getNoteAssetLibrary());
-    for (frame in frameCollection.frames)
-    {
-      // cloning the frame because else
-      // we will fuck up the frame data used in game
-      var clonedFrame:FlxFrame = frame.copyTo();
-      clonedFrame.name = '$prefix${clonedFrame.name}';
-      noteFrameCollection.pushFrame(clonedFrame);
-    }
-  }
+		var frameCollection:FlxAtlasFrames = Paths.getSparrowAtlas(noteStyle.getNoteAssetPath(), noteStyle.getNoteAssetLibrary());
+		for (frame in frameCollection.frames)
+		{
+			// cloning the frame because else
+			// we will fuck up the frame data used in game
+			var clonedFrame:FlxFrame = frame.copyTo();
+			clonedFrame.name = '$prefix${clonedFrame.name}';
+			noteFrameCollection.pushFrame(clonedFrame);
+		}
+	}
 
 
-  @:access(funkin.play.notes.notestyle.NoteStyle)
-  @:nullSafety(Off)
-  function addNoteStyleAnimations(noteStyle:NoteStyle):Void
-  {
-    var prefix:String = noteStyle.id.toTitleCase();
-    var suffix:String = noteStyle.id.toTitleCase();
+	@:access(funkin.play.notes.notestyle.NoteStyle)
+	@:nullSafety(Off)
+	function addNoteStyleAnimations(noteStyle:NoteStyle):Void
+	{
+		var prefix:String = noteStyle.id.toTitleCase();
+		var suffix:String = noteStyle.id.toTitleCase();
 
-    var leftData:AnimationData = noteStyle.fetchNoteAnimationData(NoteDirection.LEFT);
-    this.animation.addByPrefix('tapLeft$suffix', '$prefix${leftData.prefix}', leftData.frameRate, leftData.looped, leftData.flipX, leftData.flipY);
+		var leftData:AnimationData = noteStyle.fetchNoteAnimationData(NoteDirection.LEFT);
+		this.animation.addByPrefix('tapLeft$suffix', '$prefix${leftData.prefix}', leftData.frameRate, leftData.looped, leftData.flipX, leftData.flipY);
 
-    var downData:AnimationData = noteStyle.fetchNoteAnimationData(NoteDirection.DOWN);
-    this.animation.addByPrefix('tapDown$suffix', '$prefix${downData.prefix}', downData.frameRate, downData.looped, downData.flipX, downData.flipY);
+		var downData:AnimationData = noteStyle.fetchNoteAnimationData(NoteDirection.DOWN);
+		this.animation.addByPrefix('tapDown$suffix', '$prefix${downData.prefix}', downData.frameRate, downData.looped, downData.flipX, downData.flipY);
 
-    var upData:AnimationData = noteStyle.fetchNoteAnimationData(NoteDirection.UP);
-    this.animation.addByPrefix('tapUp$suffix', '$prefix${upData.prefix}', upData.frameRate, upData.looped, upData.flipX, upData.flipY);
+		var upData:AnimationData = noteStyle.fetchNoteAnimationData(NoteDirection.UP);
+		this.animation.addByPrefix('tapUp$suffix', '$prefix${upData.prefix}', upData.frameRate, upData.looped, upData.flipX, upData.flipY);
 
-    var rightData:AnimationData = noteStyle.fetchNoteAnimationData(NoteDirection.RIGHT);
-    this.animation.addByPrefix('tapRight$suffix', '$prefix${rightData.prefix}', rightData.frameRate, rightData.looped, rightData.flipX, rightData.flipY);
-  }
+		var rightData:AnimationData = noteStyle.fetchNoteAnimationData(NoteDirection.RIGHT);
+		this.animation.addByPrefix('tapRight$suffix', '$prefix${rightData.prefix}', rightData.frameRate, rightData.looped, rightData.flipX, rightData.flipY);
+	}
 
 	@:nullSafety(Off)
 	static function buildEmptyFrameCollection():Void
@@ -184,19 +184,19 @@ class ChartEditorNoteSprite extends FlxSprite
 			this.y += origin.y;
 		}
 	}
-  function get_noteStyle():Null<String>
-  {
-    return this.noteStyle ?? this.parentState.currentSongNoteStyle;
+	function get_noteStyle():Null<String>
+	{
+		return this.noteStyle ?? this.parentState.currentSongNoteStyle;
 	}
 
-  function set_noteStyle(value:Null<String>):Null<String>
-  {
-    this.noteStyle = value;
-    this.playNoteAnimation();
-    return value;
-  }
+	function set_noteStyle(value:Null<String>):Null<String>
+	{
+		this.noteStyle = value;
+		this.playNoteAnimation();
+		return value;
+	}
 
-  @:nullSafety(Off)
+	@:nullSafety(Off)
 	public function playNoteAnimation():Void
 	{
 		if (this.noteData == null) return;

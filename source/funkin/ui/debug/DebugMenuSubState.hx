@@ -7,6 +7,7 @@ import funkin.ui.MusicBeatSubState;
 import funkin.audio.FunkinSound;
 import funkin.ui.TextMenuList;
 import funkin.ui.debug.charting.ChartEditorState;
+import funkin.ui.debug.modding.ModMenuState;
 import funkin.ui.MusicBeatSubState;
 import funkin.util.logging.CrashHandler;
 import flixel.addons.transition.FlxTransitionableState;
@@ -58,10 +59,9 @@ class DebugMenuSubState extends MusicBeatSubState
 		// createItem("Input Offset Testing", openInputOffsetTesting);
 		createItem("ANIMATION EDITOR", openAnimationEditor);
 		// createItem("STAGE EDITOR", openStageEditor);
-		// createItem("TEST STICKERS", testStickers);
-		#if sys
-		createItem("OPEN CRASH LOG FOLDER", openLogFolder);
-		#end
+		createItem("TEST STICKERS", testStickers);
+		#if desktop createItem("MOD MENU", openModMenu); #end
+		#if sys createItem("OPEN CRASH LOG FOLDER", openLogFolder); #end
 		FlxG.camera.focusOn(new FlxPoint(camFocusPoint.x, camFocusPoint.y + 500));
 	}
 
@@ -118,6 +118,14 @@ class DebugMenuSubState extends MusicBeatSubState
 	{
 		trace('Stage Editor');
 	}
+
+	#if desktop
+	function openModMenu()
+	{
+		FlxG.switchState(() -> new ModMenuState());
+		trace('Mod Menu');
+	}
+	#end
 
 	#if sys
 	function openLogFolder()

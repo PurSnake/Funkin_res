@@ -325,7 +325,7 @@ class GameOverSubState extends MusicBeatSubState
 					FlxG.camera.fade(FlxColor.BLACK, 1, true, null, true);
 					PlayState.instance.needsReset = true;
 
-					if (PlayState.instance.isMinimalMode || boyfriend == null || resetState) {}
+					if (PlayState.instance.isMinimalMode || boyfriend == null || resetState || this.isChartingMode) {}
 					else
 					{
 						// Readd Boyfriend to the stage.
