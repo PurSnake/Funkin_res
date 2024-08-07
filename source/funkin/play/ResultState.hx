@@ -165,20 +165,22 @@ class ResultState extends MusicBeatSubState
 				heartsPerfect.zIndex = 501;
 				add(heartsPerfect);
 
-				heartsPerfect.anim.onComplete = () -> {
+				heartsPerfect.anim.onComplete.removeAll();
+				heartsPerfect.anim.onComplete.add(() -> {
 					if (heartsPerfect != null)
 						heartsPerfect.anim.play("hearts full anim", true, false, 43); // unpauses this anim, since it's on PlayOnce!
-				};
+				});
 
 				bfPerfect = new FlxAtlasSprite(1342, 370, Paths.animateAtlas("resultScreen/results-bf/resultsPERFECT", "shared"));
 				bfPerfect.visible = false;
 				bfPerfect.zIndex = 500;
 				add(bfPerfect);
 
-				bfPerfect.anim.onComplete = () -> {
+				bfPerfect.anim.onComplete.removeAll();
+				bfPerfect.anim.onComplete.add(() -> {
 					if (bfPerfect != null)
 						bfPerfect.anim.play("boyfriend perfect rank", true, false, 137); // unpauses this anim, since it's on PlayOnce!
-				};
+				});
 
 			case EXCELLENT:
 				bfExcellent = new FlxAtlasSprite(1329, 429, Paths.animateAtlas("resultScreen/results-bf/resultsEXCELLENT", "shared"));
@@ -186,10 +188,11 @@ class ResultState extends MusicBeatSubState
 				bfExcellent.zIndex = 500;
 				add(bfExcellent);
 
-				bfExcellent.anim.onComplete = () -> {
+				bfExcellent.anim.onComplete.removeAll();
+				bfExcellent.anim.onComplete.addOnce(() -> {
 					if (bfExcellent != null)
 						bfExcellent.anim.play("bf results excellent", true, false, 28); // unpauses this anim, since it's on PlayOnce!
-				};
+				});
 
 			case GREAT:
 				gfGreat = new FlxAtlasSprite(802, 331, Paths.animateAtlas("resultScreen/results-bf/resultsGREAT/gf", "shared"));
@@ -199,10 +202,11 @@ class ResultState extends MusicBeatSubState
 
 				gfGreat.scale.set(0.93, 0.93);
 
-				gfGreat.anim.onComplete = () -> {
+				gfGreat.anim.onComplete.removeAll();
+				gfGreat.anim.onComplete.addOnce(() -> {
 					if (gfGreat != null)
 						gfGreat.anim.play("gf jumping", true, false, 9); // unpauses this anim, since it's on PlayOnce!
-				};
+				});
 
 				bfGreat = new FlxAtlasSprite(929, 363, Paths.animateAtlas("resultScreen/results-bf/resultsGREAT/bf", "shared"));
 				bfGreat.visible = false;
@@ -211,17 +215,18 @@ class ResultState extends MusicBeatSubState
 
 				bfGreat.scale.set(0.93, 0.93);
 
-				bfGreat.anim.onComplete = () -> {
+				bfGreat.anim.onComplete.removeAll();
+				bfGreat.anim.onComplete.addOnce(() -> {
 					if (bfGreat != null)
 						bfGreat.anim.play("bf jumping ", true, false, 15); // unpauses this anim, since it's on PlayOnce!
-				};
+				});
 
 			case GOOD:
 				gfGood = FunkinSprite.createSparrow(625, 325, 'resultScreen/results-bf/resultsGOOD/resultGirlfriendGOOD');
 				gfGood.animation.addByPrefix("clap", "Girlfriend Good Anim", 24, false);
 				gfGood.visible = false;
 				gfGood.zIndex = 500;
-				gfGood.animation.finishCallback = _ -> {
+				gfGood.animation.finishCallback = (_) -> {
 					if (gfGood != null)
 					{
 						gfGood.animation.play('clap', true, false, 9);
@@ -235,9 +240,7 @@ class ResultState extends MusicBeatSubState
 				bfGood.zIndex = 501;
 				bfGood.animation.finishCallback = function(_) {
 					if (bfGood != null)
-					{
 						bfGood.animation.play('fall', true, false, 14);
-					}
 				};
 				add(bfGood);
 
@@ -246,11 +249,11 @@ class ResultState extends MusicBeatSubState
 				bfShit.visible = false;
 				bfShit.zIndex = 500;
 				add(bfShit);
-				bfShit.onAnimationFinish.add((animName) -> {
+
+				bfShit.anim.onComplete.removeAll();
+				bfShit.anim.onComplete.addOnce(() -> {
 					if (bfShit != null)
-					{
 						bfShit.playAnimation('Loop Start');
-					}
 				});
 		}
 

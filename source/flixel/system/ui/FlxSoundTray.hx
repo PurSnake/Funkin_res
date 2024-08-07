@@ -21,8 +21,15 @@ import funkin.util.MathUtil;
 import flixel.system.FlxAssets.FlxSoundAsset;
 
 import funkin.Paths;
+	
 
 import openfl.display.animation.AnimatedSprite;
+
+/* W.I.P
+import flixel.FlxCamera;
+import flixel.FlxSprite;
+*/
+
 
 /**
  * The flixel sound tray, the little volume meter that pops down sometimes.
@@ -47,6 +54,11 @@ class FlxSoundTray extends Sprite
 
 	var splashSprite:AnimatedSprite;
 	var _volumeSprite:Bitmap;
+
+	/*
+	var renderCamera:FlxCamera;
+	var splashSprite:FlxSprite;
+	*/
 
 	@:keep
 	public function new()
@@ -79,6 +91,24 @@ class FlxSoundTray extends Sprite
 		addChild(_volumeSprite);
 		addChild(splashSprite);
 
+
+		/*
+		splashSprite = new FlxSprite();
+		splashSprite.frames = Paths.getSparrowAtlas("soundtray/volume");
+		splashSprite.animation.addByPrefix("splash", "volume back", 1, true); //false
+		splashSprite.animation.play("splash", true);
+		trace(splashSprite.frames == null);
+		trace(splashSprite.animation == null);
+
+		renderCamera = new FlxCamera(0, 0, Std.int(splashSprite.width), Std.int(splashSprite.height));
+		renderCamera.bgColor = FlxColor.TRANSPARENT;
+		splashSprite.camera = renderCamera;
+		_width = renderCamera.width;
+		addChild(renderCamera.flashSprite);
+
+		FlxG.signals.gameResized.add((w, h) -> renderCamera.onResize());
+		*/
+
 		_requestedY = y = -height;
 		//_requestedY = y = 0;
 		visible = false;
@@ -87,8 +117,10 @@ class FlxSoundTray extends Sprite
 	public function update(MS:Float):Void
 	{
 		if (active) {
-			_volumeSprite.width = MathUtil.fpsLerp(_volumeSprite.width, FlxG.sound.muted ? 0 : (237 * FlxG.sound.volume), MathUtil.getFPSRatio(.65)); //.15
+			//renderSelf();
 
+			_volumeSprite.width = MathUtil.fpsLerp(_volumeSprite.width, FlxG.sound.muted ? 0 : (237 * FlxG.sound.volume), MathUtil.getFPSRatio(.65)); //.15
+			
 			if (_localTimer >= timeToExist) _requestedY = -height;
 
 			y = MathUtil.fpsLerp(y, _requestedY, MathUtil.getFPSRatio(.25)); //.15
@@ -97,6 +129,36 @@ class FlxSoundTray extends Sprite
 		}
 	}
 
+	/*
+	@:access(flixel.FlxCamera)
+	public function renderSelf():Void
+	{
+		splashSprite.update(FlxG.elapsed);
+		renderCamera.update(FlxG.elapsed);
+
+		// CAM LOCK
+		renderCamera.clearDrawStack();
+		renderCamera.canvas.graphics.clear();
+		// Clearing camera's debug sprite
+		#if FLX_DEBUG
+		renderCamera.debugLayer.graphics.clear();
+		#end
+	
+		renderCamera.fill(renderCamera.bgColor.to24Bit(), renderCamera.useBgAlphaBlending, renderCamera.bgColor.alphaFloat);
+		// CAM LOCK
+
+		// DRAW
+		splashSprite.draw();
+		renderCamera.render();
+		// DRAW
+
+		// CAM UNLOCK
+		renderCamera.canvas.graphics.overrideBlendMode(null);
+		renderCamera.drawFX();
+		// CAM UNLOCK
+	}
+	*/
+	
 	public function show(up:Bool = false, ?forceSound:Bool = true):Void
 	{
 		var globalVolume:Int = Math.round(FlxG.sound.volume * 20);
@@ -118,9 +180,12 @@ class FlxSoundTray extends Sprite
 		if (shouldShow) {
 			visible = true;
 			active = true;
+
 			splashSprite.animation.curAnim.finished = false;
 			splashSprite.animation.curAnim.looped = false;
 			splashSprite.animation.curAnim.play(true);
+
+			//splashSprite.animation.play("splash", true);
 			_localTimer = _requestedY = 0;
 		}
 

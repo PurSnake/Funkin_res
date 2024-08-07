@@ -24,6 +24,31 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
 	public var danceEvery:Int = 1;
 
 	/**
+	 * This fixes the bopper desyncing from each other, imitating the `if(curBeat % 2 == 0) dad.dance();` from the 0.3.X of the game
+	 */
+	public var danceCalc(get, never):Int;
+
+	function get_danceCalc():Int
+	{
+		return danceEvery;
+
+		/*if (danceEvery <= 0 || shouldAlternate || this.animation.getByName('idle') == null) return danceEvery;
+		else if (this.animation.curAnim.name == 'idle' && !this.animation.curAnim.finished) return 1;
+
+		var daIdle = this.animation.getByName('idle');
+		var calc:Float = (daIdle.numFrames / daIdle.frameRate) / (Conductor.instance.beatLengthMs / 1000);
+		var danceEveryNumBeats:Int = Math.ceil(calc);
+		var numeratorTweak:Int = (Conductor.instance.timeSignatureNumerator % 2 == 0) ? 2 : 3;
+		if (danceEveryNumBeats > numeratorTweak)
+		{
+			while (danceEveryNumBeats % numeratorTweak != 0)
+				danceEveryNumBeats++;
+		}
+		return Std.int(Math.max(danceEvery, danceEveryNumBeats));*/
+	}
+
+
+	/**
 	 * Whether the bopper should dance left and right.
 	 * - If true, alternate playing `danceLeft` and `danceRight`.
 	 * - If false, play `idle` every time.
@@ -156,7 +181,7 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
 	 */
 	public function onBeatHit(event:SongTimeScriptEvent):Void
 	{
-		if (danceEvery > 0 && event.beat % danceEvery == 0)
+		if (danceEvery > 0 && event.beat % danceCalc == 0)
 			dance(shouldBop);
 	}
 

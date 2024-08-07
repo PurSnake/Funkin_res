@@ -39,7 +39,7 @@ class DJBoyfriend extends FlxAtlasSprite
 
 		animOffsets = new Map<String, Array<Dynamic>>();
 
-		anim.callback = function(name, number) {
+		anim.onFrame.add((name, number) -> {
 			switch (name)
 			{
 				case "Boyfriend DJ watchin tv OG":
@@ -53,15 +53,14 @@ class DJBoyfriend extends FlxAtlasSprite
 					}
 				default:
 			}
-		};
+		});
 
 		setupAnimations();
 
 		FlxG.debugger.track(this);
 		FlxG.console.registerObject("dj", this);
 
-		anim.onComplete = () -> onFinishAnim();
-
+		anim.onComplete.add(() -> onFinishAnim());
 
 		FlxG.console.registerFunction("tv", function() {
 			currentState = TV;
@@ -145,7 +144,7 @@ class DJBoyfriend extends FlxAtlasSprite
 	function onFinishAnim():Void
 	{
 		var name = anim.curSymbol.name;
-		onAnimationFinish.dispatch(name);
+		//onAnimationFinish.dispatch(name);
 		trace(name);
 		switch (name)
 		{
