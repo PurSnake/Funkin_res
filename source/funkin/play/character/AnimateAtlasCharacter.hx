@@ -217,8 +217,7 @@ class AnimateAtlasCharacter extends BaseCharacter
 				trace('[ATLASCHAR] Animation ${prefix} not found in Animate Atlas ${_data.assetPath}');
 				continue;
 			}
-			animation.addByPrefix(anim.name, anim.prefix, 24, anim.looped);
-			this.mainSprite.
+			mainSprite.anim.addByPrefix(anim.name, anim.prefix, 24, anim.looped);
 			animations.set(anim.name, anim);
 			trace('[ATLASCHAR] - Successfully loaded animation ${anim.name} to ${characterId}');
 		}
