@@ -237,14 +237,14 @@ class Paths
 		return xml('ui/$key', library);
 	}
 
-	public static function getSparrowAtlas(key:String, ?library:String):FlxAtlasFrames
+	public static function getSparrowAtlas(key:String, ?library:String, ?GPU:Bool):FlxAtlasFrames
 	{
-		return FlxAtlasFrames.fromSparrow(image(key, library), file('images/$key.xml', library));
+		return FlxAtlasFrames.fromSparrow(image(key, library, GPU), file('images/$key.xml', library));
 	}
 
-	public static function getPackerAtlas(key:String, ?library:String):FlxAtlasFrames
+	public static function getPackerAtlas(key:String, ?library:String, ?GPU:Bool):FlxAtlasFrames
 	{
-		return FlxAtlasFrames.fromSpriteSheetPacker(image(key, library), file('images/$key.txt', library));
+		return FlxAtlasFrames.fromSpriteSheetPacker(image(key, library, GPU), file('images/$key.txt', library));
 	}
 }
 

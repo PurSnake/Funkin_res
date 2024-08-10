@@ -47,7 +47,7 @@ class FlxAtlasSprite extends FlxAnimate
 		if (this.anim.curInstance == null)
 			throw 'FlxAtlasSprite not initialized properly. Are you sure the path (${path}) exists?';
 
-		anim.onComplete.add(() -> onAnimationFinish.dispatch(currentAnimation));
+		anim.onComplete = () -> onAnimationFinish.dispatch(currentAnimation);
 		onAnimationFinish.add(cleanupAnimation);
 
 		// This defaults the sprite to play the first animation in the atlas,
@@ -62,7 +62,7 @@ class FlxAtlasSprite extends FlxAnimate
 	public function listAnimations():Array<String>
 	{
 		if (this.anim == null) return [];
-		return this.anim.getFrameLabelNames();
+		return this.anim.getFrameLabels();
 		// return [""];
 	}
 
