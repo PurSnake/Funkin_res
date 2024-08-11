@@ -1792,6 +1792,7 @@ class FreeplayState extends MusicBeatSubState
 				#else
 				botPlayMode: false,
 				#end
+
 				// TODO: Make these an option! It's currently only accessible via chart editor.
 				// startTimestamp: 0.0,
 				// playbackRate: 0.5,

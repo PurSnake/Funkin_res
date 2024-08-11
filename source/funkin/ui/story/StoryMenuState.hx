@@ -518,9 +518,7 @@ class StoryMenuState extends MusicBeatState
 		currentLevelTitle.isFlashing = true;
 
 		for (prop in levelProps.members)
-		{
 			prop.playConfirm();
-		}
 
 		Paths.setCurrentLevel(currentLevel.id);
 
@@ -538,18 +536,24 @@ class StoryMenuState extends MusicBeatState
 
 		Highscore.talliesLevel = new funkin.Highscore.Tallies();
 
+
 		new FlxTimer().start(1, function(tmr:FlxTimer) {
 			FlxTransitionableState.skipNextTransIn = false;
 			FlxTransitionableState.skipNextTransOut = false;
 
 			var targetVariation:String = targetSong.getFirstValidVariation(PlayStatePlaylist.campaignDifficulty);
+			var targetDifficulty:SongDifficulty = targetSong.getDifficulty(PlayStatePlaylist.campaignDifficulty, targetVariation);
+			var targetInstId:String = targetDifficulty.characters.instrumental;
 
 			LoadingState.loadPlayState(
-				{
-					targetSong: targetSong,
-					targetDifficulty: PlayStatePlaylist.campaignDifficulty,
-					targetVariation: targetVariation
-				}, true);
+			{
+				targetSong: targetSong,
+				targetDifficulty: PlayStatePlaylist.campaignDifficulty,
+				targetVariation: targetVariation,
+				targetInstrumental: targetInstId,
+				practiceMode: false,
+				minimalMode: false
+			}, true);
 		});
 	}
 
