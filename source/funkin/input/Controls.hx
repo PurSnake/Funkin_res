@@ -728,7 +728,7 @@ class Controls extends FlxActionSet
 					case Control.PAUSE: return [P, ENTER, ESCAPE];
 					case Control.RESET: return [R];
 					case Control.WINDOW_FULLSCREEN: return [F11]; // We use F for other things LOL.
-					case Control.WINDOW_SCREENSHOT: return [F3];
+					case Control.WINDOW_SCREENSHOT: return [F2];
 					case Control.FREEPLAY_FAVORITE: return [F]; // Favorite a song on the menu
 					case Control.FREEPLAY_LEFT: return [Q]; // Switch tabs on the menu
 					case Control.FREEPLAY_RIGHT: return [E]; // Switch tabs on the menu
@@ -757,7 +757,7 @@ class Controls extends FlxActionSet
 					case Control.BACK: return [H, X];
 					case Control.PAUSE: return [ONE];
 					case Control.RESET: return [R];
-					case Control.WINDOW_SCREENSHOT: return [F3];
+					case Control.WINDOW_SCREENSHOT: return [F2];
 					case Control.WINDOW_FULLSCREEN: return [F11];
 					case Control.FREEPLAY_FAVORITE: return [F]; // Favorite a song on the menu
 					case Control.FREEPLAY_LEFT: return [Q]; // Switch tabs on the menu

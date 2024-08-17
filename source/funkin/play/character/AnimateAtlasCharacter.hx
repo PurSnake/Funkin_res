@@ -27,6 +27,8 @@ typedef AnimateAtlasAnimation =
 	name:String,
 	prefix:String,
 	offsets:Null<Array<Float>>,
+	frameRate:Null<Int>,
+	frameIndices:Null<Array<Int>>,
 	looped:Bool,
 }
 
@@ -158,13 +160,13 @@ class AnimateAtlasCharacter extends BaseCharacter
 		sprite.onAnimationFinish.removeAll();
 		sprite.onAnimationFinish.add(this.onAnimationFinished);
 
+
 		return sprite;
 	}
 
 	override function onAnimationFinished(prefix:String):Void
 	{
 		super.onAnimationFinished(prefix);
-
 		if (getAnimationData() != null && getAnimationData().looped)
 		{
 			playAnimation(prefix, true, false);
@@ -217,7 +219,13 @@ class AnimateAtlasCharacter extends BaseCharacter
 				trace('[ATLASCHAR] Animation ${prefix} not found in Animate Atlas ${_data.assetPath}');
 				continue;
 			}
-			mainSprite.anim.addBySymbol(anim.name, prefix, 24, anim.looped);
+			if (anim.frameIndices != null && anim.frameIndices.length > 0)
+				mainSprite.anim.addBySymbolIndices(anim.name, prefix, anim.frameIndices, anim.frameRate, anim.looped);
+			else
+				mainSprite.anim.addBySymbol(anim.name, prefix, anim.frameRate, anim.looped);
+
+			//mainSprite.anim.addBySymbol(anim.name, prefix, anim.frameRate, anim.looped);
+
 			animations.set(anim.name, anim);
 			trace('[ATLASCHAR] - Successfully loaded animation ${anim.name} to ${characterId}');
 		}
@@ -235,6 +243,25 @@ class AnimateAtlasCharacter extends BaseCharacter
 	{
 		if (name == null) name = getCurrentAnimation();
 		return animations.get(name);
+	}
+
+
+	override function findCountAnimations(prefix:String):Array<Int>
+	{
+		var animNames:Array<String> = animations.keys().array();
+		trace(animNames);
+		var result:Array<Int> = [];
+		for (anim in animNames)
+		{
+			if (anim.startsWith(prefix))
+			{
+				var comboNum:Null<Int> = Std.parseInt(anim.substring(prefix.length));
+				if (comboNum != null)
+					result.push(comboNum);
+			}
+		}
+		result.sort((a, b) -> a - b);
+		return result;
 	}
 
 	//

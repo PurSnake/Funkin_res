@@ -169,7 +169,7 @@ class ResultState extends MusicBeatSubState
 				add(heartsPerfect);
 
 				heartsPerfect.anim.onComplete.removeAll();
-				heartsPerfect.anim.onComplete.addOnce((a,b) -> heartsPerfect.anim.play("hearts full anim", true, false, 43));
+				heartsPerfect.anim.onComplete.add((a,b) -> heartsPerfect.anim.play("hearts full anim", true, false, 43));
 
 				bfPerfect = new FlxAtlasSprite(1342, 370, Paths.animateAtlas("resultScreen/results-bf/resultsPERFECT", "shared"));
 				bfPerfect.visible = false;
@@ -177,7 +177,7 @@ class ResultState extends MusicBeatSubState
 				add(bfPerfect);
 
 				bfPerfect.anim.onComplete.removeAll();
-				bfPerfect.anim.onComplete.addOnce((a,b) -> bfPerfect.anim.play("boyfriend perfect rank", true, false, 137));
+				bfPerfect.anim.onComplete.add((a,b) -> bfPerfect.anim.play("boyfriend perfect rank", true, false, 137));
 
 			case EXCELLENT:
 				bfExcellent = new FlxAtlasSprite(1329, 429, Paths.animateAtlas("resultScreen/results-bf/resultsEXCELLENT", "shared"));
@@ -186,7 +186,7 @@ class ResultState extends MusicBeatSubState
 				add(bfExcellent);
 
 				bfExcellent.anim.onComplete.removeAll();
-				bfExcellent.anim.onComplete.addOnce((a,b) -> bfExcellent.anim.play("bf results excellent", true, false, 28));
+				bfExcellent.anim.onComplete.add((a,b) -> bfExcellent.anim.play("bf results excellent", true, false, 28));
 
 			case GREAT:
 				gfGreat = new FlxAtlasSprite(802, 331, Paths.animateAtlas("resultScreen/results-bf/resultsGREAT/gf", "shared"));
@@ -197,7 +197,7 @@ class ResultState extends MusicBeatSubState
 				gfGreat.scale.set(0.93, 0.93);
 
 				gfGreat.anim.onComplete.removeAll();
-				gfGreat.anim.onComplete.addOnce((a, b) -> gfGreat.anim.play("gf jumping", true, false, 9));
+				gfGreat.anim.onComplete.add((a, b) -> gfGreat.anim.play("gf jumping", true, false, 9));
 
 				bfGreat = new FlxAtlasSprite(929, 363, Paths.animateAtlas("resultScreen/results-bf/resultsGREAT/bf", "shared"));
 				bfGreat.visible = false;
@@ -207,7 +207,7 @@ class ResultState extends MusicBeatSubState
 				bfGreat.scale.set(0.93, 0.93);
 
 				bfGreat.anim.onComplete.removeAll();
-				bfGreat.anim.onComplete.addOnce((a, b) -> bfGreat.anim.play("bf jumping ", true, false, 15));
+				bfGreat.anim.onComplete.add((a, b) -> bfGreat.anim.play("bf jumping ", true, false, 15));
 
 			case GOOD:
 				gfGood = FunkinSprite.createSparrow(625, 325, 'resultScreen/results-bf/resultsGOOD/resultGirlfriendGOOD');

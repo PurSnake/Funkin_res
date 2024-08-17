@@ -23,7 +23,7 @@ class Utils
 		textField.removeEventListener(KeyboardEvent.KEY_DOWN, textField.this_onKeyDown);
 		textField.removeEventListener(MouseEvent.MOUSE_DOWN, textField.this_onMouseDown);
 		textField.removeEventListener(MouseEvent.MOUSE_WHEEL, textField.this_onMouseWheel);
-		textField.removeEventListener(MouseEvent.DOUBLE_CLICK, textField.this_onDoubleClick);
+		// old OpenFL stuff textField.removeEventListener(MouseEvent.DOUBLE_CLICK, textField.this_onDoubleClick);
 	}
 
 	/*

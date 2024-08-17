@@ -68,7 +68,8 @@ class Main extends flixel.FlxGame
 		// Load mods to override assets.
 		funkin.modding.PolymodHandler.loadEnabledMods();
 
-		flixel.system.FlxAssets.FONT_DEFAULT = "VCR OSD Mono";
+		flixel.system.FlxAssets.FONT_DEFAULT = "Minecraft Rus Regular";
+
 
 		haxe.Log.trace = funkin.util.logging.AnsiTrace.trace;
 		funkin.util.logging.AnsiTrace.traceBF();

@@ -171,6 +171,7 @@ class FreeplayState extends MusicBeatSubState
 	var curPlaying:Bool = false;
 
 	var dj:DJBoyfriend;
+	var boomBox:FunkinSprite;
 
 	var ostName:FlxText;
 	var albumRoll:AlbumRoll;
@@ -181,7 +182,9 @@ class FreeplayState extends MusicBeatSubState
 	var stickerSubState:StickerSubState;
 
 	public static var rememberedDifficulty:Null<String> = Constants.DEFAULT_DIFFICULTY;
-	public static var rememberedSongId:Null<String> = 'tutorial';
+	public static var rememberedSongId:Null<String> = Constants.DEFAULT_SONG;
+
+	public static var previewFullSong:Bool = false;
 
 	var funnyCam:FunkinCamera;
 	var rankCamera:FunkinCamera;
@@ -318,12 +321,12 @@ class FreeplayState extends MusicBeatSubState
 		add(alsoOrangeLOL);
 
 		exitMovers.set([pinkBack, orangeBackShit, alsoOrangeLOL],
-			{
-				x: -pinkBack.width,
-				y: pinkBack.y,
-				speed: 0.4,
-				wait: 0
-			});
+		{
+			x: -pinkBack.width,
+			y: pinkBack.y,
+			speed: 0.4,
+			wait: 0
+		});
 
 		FlxSpriteUtil.alphaMaskFlxSprite(orangeBackShit, pinkBack, orangeBackShit);
 		orangeBackShit.visible = false;
@@ -358,10 +361,10 @@ class FreeplayState extends MusicBeatSubState
 		grpTxtScrolls.add(moreWays);
 
 		exitMovers.set([moreWays],
-			{
-				x: FlxG.width * 2,
-				speed: 0.4,
-			});
+		{
+			x: FlxG.width * 2,
+			speed: 0.4,
+		});
 
 		funnyScroll = new BGScrollingText(0, 220, 'BOYFRIEND', FlxG.width / 2, false, 60);
 		funnyScroll.funnyColor = 0xFFFF9963;
@@ -369,21 +372,21 @@ class FreeplayState extends MusicBeatSubState
 		grpTxtScrolls.add(funnyScroll);
 
 		exitMovers.set([funnyScroll],
-			{
-				x: -funnyScroll.width * 2,
-				y: funnyScroll.y,
-				speed: 0.4,
-				wait: 0
-			});
+		{
+			x: -funnyScroll.width * 2,
+			y: funnyScroll.y,
+			speed: 0.4,
+			wait: 0
+		});
 
 		txtNuts = new BGScrollingText(0, 285, 'PROTECT YO NUTS', FlxG.width / 2, true, 43);
 		txtNuts.speed = 3.5;
 		grpTxtScrolls.add(txtNuts);
 		exitMovers.set([txtNuts],
-			{
-				x: FlxG.width * 2,
-				speed: 0.4,
-			});
+		{
+			x: FlxG.width * 2,
+			speed: 0.4,
+		});
 
 		funnyScroll2 = new BGScrollingText(0, 335, 'BOYFRIEND', FlxG.width / 2, false, 60);
 		funnyScroll2.funnyColor = 0xFFFF9963;
@@ -391,10 +394,10 @@ class FreeplayState extends MusicBeatSubState
 		grpTxtScrolls.add(funnyScroll2);
 
 		exitMovers.set([funnyScroll2],
-			{
-				x: -funnyScroll2.width * 2,
-				speed: 0.5,
-			});
+		{
+			x: -funnyScroll2.width * 2,
+			speed: 0.5,
+		});
 
 		moreWays2 = new BGScrollingText(0, 397, 'HOT BLOODED IN MORE WAYS THAN ONE', FlxG.width, true, 43);
 		moreWays2.funnyColor = 0xFFFFF383;
@@ -402,10 +405,10 @@ class FreeplayState extends MusicBeatSubState
 		grpTxtScrolls.add(moreWays2);
 
 		exitMovers.set([moreWays2],
-			{
-				x: FlxG.width * 2,
-				speed: 0.4
-			});
+		{
+			x: FlxG.width * 2,
+			speed: 0.4
+		});
 
 		funnyScroll3 = new BGScrollingText(0, orangeBackShit.y + 10, 'BOYFRIEND', FlxG.width / 2, 60);
 		funnyScroll3.funnyColor = 0xFFFEA400;
@@ -574,11 +577,28 @@ class FreeplayState extends MusicBeatSubState
 		add(letterSort);
 		letterSort.visible = false;
 
+		boomBox = new FunkinSprite();
+		boomBox.frames = Paths.getSparrowAtlas("freeplay/freeplayBoom");
+		boomBox.animation.addByPrefix("boom", "FREEPLAY BOOM", 24, false);
+		boomBox.zIndex = 550;
+		boomBox.angle = 10; boomBox.scale.set(.9, .9); boomBox.updateHitbox();
+		add(boomBox);
+
+		boomBox.x = FlxG.width - boomBox.width+15;
+		boomBox.y = FlxG.height - boomBox.height+15;
+
+		FlxTween.tween(boomBox, {x: (boomBox.x += 150) - 150}, 0.6, {ease: FlxEase.quartOut});
+		exitMovers.set([boomBox],
+		{
+			x: boomBox.x + 250,
+			speed: 0.4
+		});
+
 		exitMovers.set([letterSort],
-			{
-				y: -100,
-				speed: 0.3
-			});
+		{
+			y: -100,
+			speed: 0.3
+		});
 
 		letterSort.changeSelectionCallback = (str) -> {
 			switch (str)
@@ -1271,7 +1291,7 @@ class FreeplayState extends MusicBeatSubState
 		if (!busy) {
 			Conductor.instance.update(Conductor.instance.songPosition + elapsed * 1000, false);
 
-			if (songPreviewTimer > 1) playCurSongPreview(grpCapsules.members[curSelected]);
+			if (songPreviewTimer > 1.15) playCurSongPreview(grpCapsules.members[curSelected]);
 			if (songPreviewTimer >= 0) songPreviewTimer += elapsed;
 		}
 	}
@@ -1433,6 +1453,12 @@ class FreeplayState extends MusicBeatSubState
 			generateSongList(currentFilter, true);
 		}
 
+		if (FlxG.keys.justPressed.CONTROL)
+		{
+			previewFullSong = !previewFullSong;
+			trace(previewFullSong);
+		}
+
 		if (controls.BACK)
 		{
 			busy = true;
@@ -1526,8 +1552,8 @@ class FreeplayState extends MusicBeatSubState
 	{
 		if (!super.beatHit()) return false;
 
-		//if ((dj != null && dj.visible && dj.currentState == Idle && Conductor.instance.currentBeat > 0) && (Conductor.instance.bpm >= 130 && Conductor.instance.currentBeat % 2 == 0))
-		//	dj.playFlashAnimation('Boyfriend DJ', true);
+		if (boomBox != null)
+			boomBox.animation.play("boom", true);
 
 		if (dj != null && dj.visible && dj.currentState == Idle && Conductor.instance.currentBeat > 0)
 		{
@@ -1902,8 +1928,8 @@ class FreeplayState extends MusicBeatSubState
 				partialParams:
 				{
 					loadPartial: true,
-					start: 0.05, //0.05,
-					end: 0.45 //0.30
+					start: (previewFullSong ? 0 : 0.05), //0.05,
+					end: (previewFullSong ? 1 : 0.45) //0.30
 				},
 				onLoad: () -> {
 					Conductor.instance.update(0, false);

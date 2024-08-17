@@ -300,9 +300,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 	];
 
 	/**
-	 * Hitsounds are played with a strange offset and this should not happen.
+	 * DEPRECATED.
 	 */
-	public static final HITSOUND_OFFSET:Float = -30; // -60 VANILLA
+	public static final HITSOUND_OFFSET:Float = -30; // FunkinCrew LIME = -30; ||  -60 VANILLA
 
 	/**
 	 * INSTANCE DATA
