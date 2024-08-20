@@ -106,6 +106,8 @@ xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/
 	<define name="FORCE_DEBUG_VERSION" if="GITHUB_BUILD" />
 	<define name="NO_REDIRECT_ASSETS_FOLDER" if="GITHUB_BUILD" />
 	<define name="TOUCH_HERE_TO_PLAY" if="web" />
+	<define name="HXVLC_NO_PLAYLIST" />
+	<haxedef name="HXVLC_NO_PLAYLIST" />
 
 	<!-- _______________________________ Libraries ______________________________ -->
 	<haxelib name="lime" /> <!-- Game engine backend -->
@@ -127,6 +129,8 @@ xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/
 	<section if="cpp">
 		<haxelib name="hxvlc" if="desktop || mobile" unless="hl" /> <!-- Video playback -->
 	</section>
+	<define name="HXVLC_NO_PLAYLIST" />
+	<haxedef name="HXVLC_NO_PLAYLIST" />
 
 	<haxelib name="discord_rpc" if="desktop" unless="hl || debug || GITHUB_BUILD" /> <!-- Discord RPC -->
 	<haxelib name="funkin.vis"/>

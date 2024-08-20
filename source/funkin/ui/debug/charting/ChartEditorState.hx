@@ -302,7 +302,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 	/**
 	 * DEPRECATED.
 	 */
-	public static final HITSOUND_OFFSET:Float = -30; // FunkinCrew LIME = -30; ||  -60 VANILLA
+	public static final HITSOUND_OFFSET:Float = 0; // FunkinCrew LIME = -30; ||  -60 VANILLA
 
 	/**
 	 * INSTANCE DATA

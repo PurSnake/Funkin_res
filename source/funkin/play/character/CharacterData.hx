@@ -480,7 +480,8 @@ class CharacterDataParser
 				isPixel: null,
 				isBopable: null,
 				offsets: null,
-				color: null
+				color: null,
+				iconDivisor: null
 			};
 		}
 
@@ -772,6 +773,12 @@ typedef HealthIconData =
 	 * @default Switched via playerId (BF/DAD) from Constants.hx
 	 */
 	var color:Null<String>;
+
+	/**
+	 * The height/width of one icon frame (if it's legacy).
+	 * @default 150/32
+	 */
+	var iconDivisor:Null<Int>;
 }
 
 /**

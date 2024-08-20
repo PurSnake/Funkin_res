@@ -391,6 +391,8 @@ class PolymodHandler
 	 */
 	public static function forceReloadAssets():Void
 	{
+		flxanimate.frames.FlxAnimateFrames.clearCache();
+
 		// Forcibly clear scripts so that scripts can be edited.
 		ModuleHandler.clearModuleCache();
 		Polymod.clearScripts();

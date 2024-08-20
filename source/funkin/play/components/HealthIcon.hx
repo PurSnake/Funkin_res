@@ -48,6 +48,12 @@ class HealthIcon extends FunkinSprite
 	public var autoUpdate:Bool = true;
 
 	/**
+	 * Defaults to 150 or 32, if icon pixel.
+	 * Used to determine Height/Width of one icon frame (if it's legacy/non-animated).
+	 */
+	public var iconDivisor:Int = 150;
+
+	/**
 	 * @default 0, 0
 	 */
 	public var customOffset:FlxPoint = FlxPoint.get(0, 0);
@@ -187,6 +193,7 @@ class HealthIcon extends FunkinSprite
 		{
 			this.characterId = Constants.DEFAULT_HEALTH_ICON;
 			this.isPixel = false;
+			this.iconDivisor = isPixel ? PIXEL_ICON_SIZE : HEALTH_ICON_SIZE;
 
 			loadCharacter(characterId);
 
@@ -202,6 +209,7 @@ class HealthIcon extends FunkinSprite
 		{
 			this.characterId = data.id;
 			this.isPixel = data.isPixel ?? false;
+			this.iconDivisor = data.iconDivisor ?? (isPixel ? PIXEL_ICON_SIZE : HEALTH_ICON_SIZE);	
 
 			loadCharacter(characterId);
 
@@ -209,7 +217,7 @@ class HealthIcon extends FunkinSprite
 
 			data.offsets != null ? this.customOffset.set(-data.offsets[0], -data.offsets[1]) : this.customOffset.set(0.0, 0.0);
 			this.flipX = data.flipX ?? false; // Face the OTHER way by default, since that is more common.
-			this.isBopable = data.isBopable ?? true;			
+			this.isBopable = data.isBopable ?? true;		
 			this.healthColor = data.color != null ? FlxColor.fromString(data.color) : (playerId == 0 ? Constants.COLOR_HEALTH_BAR_GREEN : Constants.COLOR_HEALTH_BAR_RED);
 		}
 	}
@@ -420,7 +428,7 @@ class HealthIcon extends FunkinSprite
 		}
 		else
 		{
-			loadGraphic(Paths.image('icons/icon-$charId'), true, isPixel ? PIXEL_ICON_SIZE : HEALTH_ICON_SIZE, isPixel ? PIXEL_ICON_SIZE : HEALTH_ICON_SIZE);
+			loadGraphic(Paths.image('icons/icon-$charId'), true, iconDivisor, iconDivisor);
 
 			loadAnimationOld();
 		}

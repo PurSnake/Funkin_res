@@ -88,13 +88,12 @@ class InitState extends FlxState
 		// Set the game to a lower frame rate while it is in the background.
 		FlxG.game.focusLostFramerate = 30;
 
-		hxvlc.util.Handle.initAsync();
+		hxvlc.util.Handle.initAsync([], (s) -> trace("HxVlc " + (s ? "LOADED" : "CANNOT BE LOADED")));
 
 		@:privateAccess
 		FlxG.game.getTimer = () -> openfl.Lib.getTimer();
 
 		setupFlixelDebug();
-
 		//
 		// FLIXEL TRANSITIONS
 		//
@@ -186,7 +185,6 @@ class InitState extends FlxState
 		// TODO: CharacterDataParser doesn't use json2object, so it's way slower than the other parsers and more prone to syntax errors.
 		// Move it to use a BaseRegistry.
 		CharacterDataParser.loadCharacterCache();
-
 		NoteKindManager.loadScripts();
 
 		ModuleHandler.buildModuleCallbacks();
@@ -226,6 +224,7 @@ class InitState extends FlxState
 
 		FlxG.signals.postStateSwitch.add(function() {
 			clearCache();
+			//flxanimate.frames.FlxAnimateFrames.clearCache();
 			gc(true);
 		});
 

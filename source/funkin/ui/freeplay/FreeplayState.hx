@@ -582,6 +582,7 @@ class FreeplayState extends MusicBeatSubState
 		boomBox.animation.addByPrefix("boom", "FREEPLAY BOOM", 24, false);
 		boomBox.zIndex = 550;
 		boomBox.angle = 10; boomBox.scale.set(.9, .9); boomBox.updateHitbox();
+		boomBox.zoomFactor = 0.5;
 		add(boomBox);
 
 		boomBox.x = FlxG.width - boomBox.width+15;
@@ -590,7 +591,7 @@ class FreeplayState extends MusicBeatSubState
 		FlxTween.tween(boomBox, {x: (boomBox.x += 150) - 150}, 0.6, {ease: FlxEase.quartOut});
 		exitMovers.set([boomBox],
 		{
-			x: boomBox.x + 250,
+			x: boomBox.x + 450,
 			speed: 0.4
 		});
 
@@ -1454,10 +1455,10 @@ class FreeplayState extends MusicBeatSubState
 		}
 
 		if (FlxG.keys.justPressed.CONTROL)
-		{
 			previewFullSong = !previewFullSong;
-			trace(previewFullSong);
-		}
+
+		if (FlxG.keys.justPressed.TAB)
+			bopCamera = !bopCamera;
 
 		if (controls.BACK)
 		{
@@ -1548,6 +1549,8 @@ class FreeplayState extends MusicBeatSubState
 		}
 	}
 
+	public static var bopCamera:Bool = true;
+	public var bopCameraTween:FlxTween = null;
 	override function beatHit():Bool
 	{
 		if (!super.beatHit()) return false;
@@ -1561,6 +1564,15 @@ class FreeplayState extends MusicBeatSubState
 				dj.playFlashAnimation('Boyfriend DJ', true);
 		}
 
+		if (bopCamera && !prepForNewRank && !busy && Conductor.instance.currentBeat > 0)
+		{
+			if (bopCameraTween != null)
+				bopCameraTween.cancel();
+
+			funnyCam.zoom += (Conductor.instance.currentBeat % 2 == 0 ? 0.004 : 0.002);
+			bopCameraTween = FlxTween.tween(funnyCam, {zoom: 1}, (Conductor.instance.beatLengthMs / 1000) / 1.25, {ease: FlxEase.cubeOut});
+
+		}
 		return true;
 	}
 
