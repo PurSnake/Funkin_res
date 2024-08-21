@@ -1339,7 +1339,7 @@ class FlxCamera extends FlxBasic
 			}
 		}
 	}
-
+   //TODO rewrite
 	function updateMatrix()
 	{
 		if (!updateMatrixRotation) return;
