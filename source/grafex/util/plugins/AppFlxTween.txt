@@ -1,0 +1,26 @@
+package grafex.util.plugins;
+
+class AppFlxTween extends flixel.tweens.FlxTween implements IFlxDestroyable
+{
+
+}
+
+
+@:access(flixel.tweens)
+@:access(flixel.tweens.FlxTween)
+@:access(grafex.util.plugins.AppFlxTween)
+class AppFlxTweenManager extends flixel.tweens.FlxTween.FlxTweenManager
+{
+	public function new():Void
+	{
+		super();
+		visible = false; // No draw-calls needed
+		if (FlxG.signals.preStateSwitch.has(clear))
+			FlxG.signals.preStateSwitch.remove(clear);
+	}
+
+	public override function clear():Void
+	{
+		// to be sure
+	}
+}

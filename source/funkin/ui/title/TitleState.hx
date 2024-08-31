@@ -61,7 +61,7 @@ class TitleState extends MusicBeatState
 		swagShader = new ColorSwap();
 
 		curWacky = FlxG.random.getObject(getIntroTextShit());
-		Paths.music('freakyMenu/freakyMenu');
+		Paths.music('${Constants.defaultThemeTrack}/${Constants.defaultThemeTrack}');
 		Paths.music('girlfriendsRingtone/girlfriendsRingtone');
 
 		// DEBUG BULLSHIT
@@ -223,12 +223,12 @@ class TitleState extends MusicBeatState
 	{
 		var shouldFadeIn:Bool = (FlxG.sound.music == null);
 		// Load music. Includes logic to handle BPM changes.
-		FunkinSound.playMusic('freakyMenu',
-			{
-				startingVolume: 0.0,
-				overrideExisting: true,
-				restartTrack: true
-			});
+		FunkinSound.playMusic(Constants.defaultThemeTrack,
+		{
+			startingVolume: 0.0,
+			overrideExisting: true,
+			restartTrack: true
+		});
 		// Fade from 0.0 to 0.7 over 4 seconds
 		if (shouldFadeIn) FlxG.sound.music.fadeIn(4.0, 0.0, 1.0);
 	}

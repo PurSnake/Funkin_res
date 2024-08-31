@@ -709,7 +709,7 @@ class Strumline extends FlxSpriteGroup
 			holdNoteSprite.missedNote = false;
 			holdNoteSprite.hitNote = false;
 			holdNoteSprite.visible = true;
-			holdNoteSprite.alpha = 0.8; //1.0
+			holdNoteSprite.alpha = this.alpha * 0.8; //holdNoteSprite.alpha = 0.8; || 1.0
 
 			holdNoteSprite.x = this.x;
 			holdNoteSprite.x += getXPos(DIRECTIONS[note.getDirection() % KEY_COUNT]);

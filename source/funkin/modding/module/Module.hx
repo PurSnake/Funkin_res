@@ -93,6 +93,8 @@ class Module implements IPlayStateScriptedClass implements IStateChangingScripte
 
 	public function onNoteGhostMiss(event:GhostMissNoteScriptEvent) {}
 
+	public function onBpmChange(event:SongTimeScriptEvent) {}
+
 	public function onStepHit(event:SongTimeScriptEvent) {}
 
 	public function onBeatHit(event:SongTimeScriptEvent) {}

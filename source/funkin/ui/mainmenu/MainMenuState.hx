@@ -162,11 +162,11 @@ class MainMenuState extends MusicBeatState
 
 	function playMenuMusic():Void
 	{
-		FunkinSound.playMusic('freakyMenu',
-			{
-				overrideExisting: true,
-				restartTrack: false
-			});
+		FunkinSound.playMusic(Constants.defaultThemeTrack,
+		{
+			overrideExisting: true,
+			restartTrack: false
+		});
 	}
 
 	function resetCamStuff():Void

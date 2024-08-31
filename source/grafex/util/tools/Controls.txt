@@ -1,0 +1,59 @@
+package tools;
+
+import flixel.*;
+import flixel.input.FlxInput.FlxInputState;
+import flixel.input.keyboard.FlxKey;
+
+class Controls {
+    public static var keyBinds:Map<String, String> = new Map();
+
+    public static function getKeyPress(key_id:String):Bool {
+        return FlxG.keys.checkStatus(getFlxKeyById(key_id), FlxInputState.JUST_PRESSED);
+    }
+
+    public static function getKeyHold(key_id:String):Bool {
+        return FlxG.keys.checkStatus(getFlxKeyById(key_id), FlxInputState.PRESSED);
+    }
+
+    public static function getKeyRelease(key_id:String):Bool {
+        return FlxG.keys.checkStatus(getFlxKeyById(key_id), FlxInputState.JUST_RELEASED);
+    }
+
+    public static function getFlxKeyById(id:String):FlxKey {
+        var key = getKeyById(id);
+        if (key == null) return FlxKey.NONE;
+        return FlxKey.fromString(key);
+    }
+
+    public static function getKeyById(id:String):String {
+        return keyBinds.get(id);
+    }
+
+    public static function setBind(id:String, key:String):Void {
+        keyBinds.set(id, key);
+    }
+
+    public static function setDefault() {
+        setBind('ui_left_up', 'Q');
+        setBind('ui_right_up', 'E');
+
+        setBind('ui_left', 'A');
+        setBind('ui_down', 'S');
+        setBind('ui_up', 'W');
+        setBind('ui_right', 'D');
+
+        setBind('note_left', 'D');
+        setBind('note_down', 'F');
+        setBind('note_up', 'J');
+        setBind('note_right', 'K');
+
+        setBind('accept', 'ENTER');
+        
+        setBind('a1', 'S');
+        setBind('a2', 'D');
+        setBind('a3', 'F');
+        setBind('a5', 'J');
+        setBind('a6', 'K');
+        setBind('a7', 'L');
+    }
+}

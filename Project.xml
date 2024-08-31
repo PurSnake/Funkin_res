@@ -108,6 +108,7 @@ xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/
 	<define name="TOUCH_HERE_TO_PLAY" if="web" />
 	<define name="HXVLC_NO_PLAYLIST" />
 	<haxedef name="HXVLC_NO_PLAYLIST" />
+	<haxedef name="HXCPP_STACK_TRACE" />
 
 	<!-- _______________________________ Libraries ______________________________ -->
 	<haxelib name="lime" /> <!-- Game engine backend -->
@@ -125,6 +126,8 @@ xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/
 	<haxelib name="polymod" /> <!-- Modding framework -->
 	<!-- haxelib name="firetongue" / --> <!-- Localization -->
 	<haxelib name="flxanimate" /> <!-- Texture atlas rendering -->
+
+	<haxelib name="actuate" /> <!-- OpenFL Sprites Tweens/Timers -->
 
 	<section if="cpp">
 		<haxelib name="hxvlc" if="desktop || mobile" unless="hl" /> <!-- Video playback -->

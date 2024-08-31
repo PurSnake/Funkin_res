@@ -55,6 +55,8 @@ class Constants
 	}
 	#end
 
+	public static var defaultThemeTrack:String = "freakyMenu";
+
 	/**
 	 * URL DATA
 	 */

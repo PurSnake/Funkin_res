@@ -1,4 +1,4 @@
-package funkin.grafex.utils;
+package grafex.util;
 
 #if sys
 import haxe.io.Input;

@@ -230,22 +230,19 @@ class StoryMenuState extends MusicBeatState
 	function rememberSelection():Void
 	{
 		if (rememberedLevelId != null)
-		{
 			currentLevelId = rememberedLevelId;
-		}
+
 		if (rememberedDifficulty != null)
-		{
 			currentDifficultyId = rememberedDifficulty;
-		}
 	}
 
 	function playMenuMusic():Void
 	{
-		FunkinSound.playMusic('freakyMenu',
-			{
-				overrideExisting: true,
-				restartTrack: false
-			});
+		FunkinSound.playMusic(Constants.defaultThemeTrack,
+		{
+			overrideExisting: true,
+			restartTrack: false
+		});
 	}
 
 	function updateData():Void

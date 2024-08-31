@@ -1,0 +1,6 @@
+package grafex.util.plugins;
+
+class AppGrafManager
+{
+
+}

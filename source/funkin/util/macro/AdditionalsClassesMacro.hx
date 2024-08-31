@@ -26,5 +26,25 @@ class AdditionalsClassesMacro {
 		])
 		Compiler.include(inc, ["flixel.system.macros", "flixel.addons.nape", "openfl.filters.BlurFilter", "haxe.ui.macros", "flixel.addons.editors.spine"]);
 	}
+
+	/*
+	public static function replaceClasses() {
+		for(inc in [
+			"flixel",
+			"funkin",
+
+			"haxe.ui.backend.flixel.components", "haxe.ui.containers.dialogs", 
+			"haxe.ui.containers.menus", "haxe.ui.containers.properties", "haxe.ui.core", 
+			"haxe.ui.components", "haxe.ui.containers",
+
+			"openfl", "sys", //ugh
+
+			"hxvlc.flixel", "hxvlc.openfl", //Videos
+
+			"DateTools", "EReg", "Lambda", "StringBuf", "haxe.crypto", "haxe.display", "haxe.exceptions", "haxe.extern" 
+		])
+		Compiler.include(inc, ["flixel.system.macros", "flixel.addons.nape", "openfl.filters.BlurFilter", "haxe.ui.macros", "flixel.addons.editors.spine"]);
+	}
+	*/
 }
 #end

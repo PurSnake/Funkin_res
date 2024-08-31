@@ -60,6 +60,7 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 
 		Conductor.beatHit.add(this.beatHit);
 		Conductor.stepHit.add(this.stepHit);
+		Conductor.bpmChange.add(this.bpmChange);
 	}
 
 	public function stateTransitionIn():Void
@@ -93,6 +94,7 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 		super.destroy();
 		Conductor.beatHit.remove(this.beatHit);
 		Conductor.stepHit.remove(this.stepHit);
+		Conductor.bpmChange.remove(this.bpmChange);
 	}
 
 	override function update(elapsed:Float):Void
@@ -124,6 +126,15 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 	public function refresh()
 	{
 		sort(SortUtil.byZIndex, FlxSort.ASCENDING);
+	}
+
+	public function bpmChange():Bool
+	{
+		var event = new SongTimeScriptEvent(SONG_BPM_CHANGE, conductorInUse.currentBeat, conductorInUse.currentStep);
+
+		dispatchEvent(event);
+
+		return true;
 	}
 
 	/**

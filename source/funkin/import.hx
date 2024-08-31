@@ -8,6 +8,9 @@ import funkin.Preferences;
 import flixel.FlxG; // This one in particular causes a compile error if you're using macros.
 import flixel.system.debug.watch.Tracker;
 
+import funkin.ui.FlxFixedText as FlxFixText;
+import funkin.graphics.FlxSkewedText as FlxSkewText;
+
 // These are great.
 using Lambda;
 using StringTools;

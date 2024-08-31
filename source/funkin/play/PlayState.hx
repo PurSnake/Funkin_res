@@ -3078,7 +3078,8 @@ class PlayState extends MusicBeatSubState
 		// If the opponent is GF, zoom in on the opponent.
 		// Else, if there is no GF, zoom in on BF.
 		// Else, zoom in on GF.
-		var targetDad:Bool = currentStage.getDad() != null && currentStage.getDad().characterId == 'gf';
+		
+		/*var targetDad:Bool = currentStage.getDad() != null && currentStage.getDad().characterId == 'gf';
 		var targetBF:Bool = currentStage.getGirlfriend() == null && !targetDad;
 
 		if (targetBF)
@@ -3087,19 +3088,23 @@ class PlayState extends MusicBeatSubState
 			FlxG.camera.follow(currentStage.getDad(), null, 0.05);
 		else
 			FlxG.camera.follow(currentStage.getGirlfriend(), null, 0.05);
+		*/
 
 		// TODO: Make target offset configurable.
 		// In the meantime, we have to replace the zoom animation with a fade out.
-		FlxG.camera.targetOffset.y -= 150;
-		FlxG.camera.targetOffset.x += 20;
+		//	FlxG.camera.targetOffset.y -= 150;
+		//	FlxG.camera.targetOffset.x += 20;
 
 		// Replace zoom animation with a fade out for now.
 		FlxG.camera.fade(FlxColor.BLACK, 0.6);
 
-		FlxTween.tween(camHUD, {alpha: 0}, 0.6, {onComplete: (_) -> moveToResultsScreen(isNewHighscore, prevScoreData)});
+		//	FlxTween.tween(camHUD, {alpha: 0}, 0.6, {onComplete: (_) -> moveToResultsScreen(isNewHighscore, prevScoreData)});
+
+		new FlxTimer().start(0.6, (_) ->  moveToResultsScreen(isNewHighscore, prevScoreData));
+		//FlxTween.tween(FlxG.camera, {zoom: FlxG.camera.zoom * 1.1}, 1.1, {ease: FlxEase.expoIn});	 
 
 		// Zoom in on Girlfriend (or BF if no GF)
-		new FlxTimer().start(0.8, function(_) {
+		/*new FlxTimer().start(0.8, function(_) {
 			if (targetBF)
 				currentStage.getBoyfriend().animation.play('hey');
 			else if (targetDad)
@@ -3110,7 +3115,7 @@ class PlayState extends MusicBeatSubState
 			// Zoom over to the Results screen.
 			// TODO: Re-enable this.
 			FlxTween.tween(FlxG.camera, {zoom: 1200}, 1.1, {ease: FlxEase.expoIn});	 
-		});
+		});*/
 	}
 
 	/**
@@ -3120,7 +3125,7 @@ class PlayState extends MusicBeatSubState
 	{
 		persistentUpdate = false;
 		vocals.stop();
-		camHUD.alpha = 1;
+		//camHUD.alpha = 1;
 
 		var talliesToUse:Tallies = PlayStatePlaylist.isStoryMode ? Highscore.talliesLevel : Highscore.tallies;
 

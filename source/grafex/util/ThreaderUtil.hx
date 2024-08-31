@@ -1,4 +1,4 @@
-package funkin.grafex.utils;
+package grafex.util;
 
 import sys.thread.Lock;
 import sys.thread.Thread;

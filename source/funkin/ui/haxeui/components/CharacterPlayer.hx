@@ -16,12 +16,12 @@ import haxe.ui.layouts.DefaultLayout;
 
 typedef AnimationInfo =
 {
-  var name:String;
-  var prefix:String;
-  var frameRate:Null<Int>; // default 30
-  var looped:Null<Bool>; // default true
-  var flipX:Null<Bool>; // default false
-  var flipY:Null<Bool>; // default false
+	var name:String;
+	var prefix:String;
+	var frameRate:Null<Int>; // default 30
+	var looped:Null<Bool>; // default true
+	var flipX:Null<Bool>; // default false
+	var flipY:Null<Bool>; // default false
 }
 
 /**
@@ -31,257 +31,268 @@ typedef AnimationInfo =
 @:composite(Layout)
 class CharacterPlayer extends Box
 {
-  var character:Null<BaseCharacter>;
+	var character:Null<BaseCharacter>;
 
-  public function new(defaultToBf:Bool = true)
-  {
-    super();
-    // _overrideSkipTransformChildren = false;
+	public function new(defaultToBf:Bool = true)
+	{
+		super();
+		// _overrideSkipTransformChildren = false;
 
-    if (defaultToBf)
-    {
-      loadCharacter('bf');
-    }
-  }
+		if (defaultToBf)
+		{
+			loadCharacter('bf');
+		}
+	}
 
-  public var charId(get, set):String;
+	public var charId(get, set):String;
 
-  function get_charId():String
-  {
-    return character?.characterId ?? '';
-  }
+	function get_charId():String
+	{
+		return character?.characterId ?? '';
+	}
 
-  function set_charId(value:String):String
-  {
-    loadCharacter(value);
-    return value;
-  }
+	function set_charId(value:String):String
+	{
+		loadCharacter(value);
+		return value;
+	}
 
-  public var charName(get, never):String;
+	public var charName(get, never):String;
 
-  function get_charName():String
-  {
-    return character?.characterName ?? "Unknown";
-  }
+	function get_charName():String
+	{
+		return character?.characterName ?? "Unknown";
+	}
 
-  // possible haxeui bug: if listener is added after event is dispatched, event is "lost"... is it smart to "collect and redispatch"? Not sure
-  var _redispatchLoaded:Bool = false;
-  // possible haxeui bug: if listener is added after event is dispatched, event is "lost"... is it smart to "collect and redispatch"? Not sure
-  var _redispatchStart:Bool = false;
-  var _characterLoaded:Bool = false;
+	// possible haxeui bug: if listener is added after event is dispatched, event is "lost"... is it smart to "collect and redispatch"? Not sure
+	var _redispatchLoaded:Bool = false;
+	// possible haxeui bug: if listener is added after event is dispatched, event is "lost"... is it smart to "collect and redispatch"? Not sure
+	var _redispatchStart:Bool = false;
+	var _characterLoaded:Bool = false;
 
-  /**
-   * Loads a character by ID.
-   * @param id The ID of the character to load.
-   */
-  public function loadCharacter(id:String):Void
-  {
-    if (id == null) return;
+	/**
+	 * Loads a character by ID.
+	 * @param id The ID of the character to load.
+	 */
+	public function loadCharacter(id:String):Void
+	{
+		if (id == null) return;
 
-    if (character != null)
-    {
-      remove(character);
-      character.destroy();
-      character = null;
-    }
+		if (character != null)
+		{
+			remove(character);
+			character.destroy();
+			character = null;
+		}
 
-    // Prevent script issues by fetching with debug=true.
-    var newCharacter:BaseCharacter = CharacterDataParser.fetchCharacter(id, true);
-    if (newCharacter == null)
-    {
-      character = null;
-      return; // Fail if character doesn't exist.
-    }
+		// Prevent script issues by fetching with debug=true.
+		var newCharacter:BaseCharacter = CharacterDataParser.fetchCharacter(id, true);
+		if (newCharacter == null)
+		{
+			character = null;
+			return; // Fail if character doesn't exist.
+		}
 
-    // Assign character.
-    character = newCharacter;
+		// Assign character.
+		character = newCharacter;
 
-    // Set character properties.
-    if (characterType != null) character.characterType = characterType;
-    if (flip) character.flipX = !character.flipX;
-    if (targetScale != 1.0) character.setScale(targetScale);
+		// Set character properties.
+		if (characterType != null) character.characterType = characterType;
+		if (flip) character.flipX = !character.flipX;
+		if (targetScale != 1.0) character.setScale(targetScale);
 
-    character.animation.callback = function(name:String = '', frameNumber:Int = -1, frameIndex:Int = -1) {
-      @:privateAccess
-      character.onAnimationFrame(name, frameNumber, frameIndex);
-      dispatch(new AnimationEvent(AnimationEvent.FRAME));
-    };
-    character.animation.finishCallback = function(name:String = '') {
-      @:privateAccess
-      character.onAnimationFinished(name);
-      dispatch(new AnimationEvent(AnimationEvent.END));
-    };
-    add(character);
+		character.animation.callback = function(name:String = '', frameNumber:Int = -1, frameIndex:Int = -1) {
+			@:privateAccess
+			character.onAnimationFrame(name, frameNumber, frameIndex);
+			dispatch(new AnimationEvent(AnimationEvent.FRAME));
+		};
+		character.animation.finishCallback = function(name:String = '') {
+			@:privateAccess
+			character.onAnimationFinished(name);
+			dispatch(new AnimationEvent(AnimationEvent.END));
+		};
+		add(character);
 
-    invalidateComponentLayout();
+		invalidateComponentLayout();
 
-    if (hasEvent(AnimationEvent.LOADED))
-    {
-      dispatch(new AnimationEvent(AnimationEvent.LOADED));
-    }
-    else
-    {
-      _redispatchLoaded = true;
-    }
-  }
+		if (hasEvent(AnimationEvent.LOADED))
+		{
+			dispatch(new AnimationEvent(AnimationEvent.LOADED));
+		}
+		else
+		{
+			_redispatchLoaded = true;
+		}
+	}
 
-  /**
-   * The character type (such as BF, Dad, GF, etc).
-   */
-  public var characterType(default, set):CharacterType;
+	/**
+	 * The character type (such as BF, Dad, GF, etc).
+	 */
+	public var characterType(default, set):CharacterType;
 
-  function set_characterType(value:CharacterType):CharacterType
-  {
-    if (character != null) character.characterType = value;
-    return characterType = value;
-  }
+	function set_characterType(value:CharacterType):CharacterType
+	{
+		if (character != null) character.characterType = value;
+		return characterType = value;
+	}
 
-  public var flip(default, set):Bool;
+	public var flip(default, set):Bool;
 
-  function set_flip(value:Bool):Bool
-  {
-    if (value == flip) return value;
+	function set_flip(value:Bool):Bool
+	{
+		if (value == flip) return value;
 
-    if (character != null)
-    {
-      character.flipX = !character.flipX;
-    }
+		if (character != null)
+		{
+			character.flipX = !character.flipX;
+		}
 
-    return flip = value;
-  }
+		return flip = value;
+	}
 
-  public var targetScale(default, set):Float = 1.0;
+	public var targetScale(default, set):Float = 1.0;
 
-  function set_targetScale(value:Float):Float
-  {
-    if (value == targetScale) return value;
+	function set_targetScale(value:Float):Float
+	{
+		if (value == targetScale) return value;
 
-    if (character != null)
-    {
-      character.setScale(value);
-    }
+		if (character != null)
+		{
+			character.setScale(value);
+		}
 
-    return targetScale = value;
-  }
+		return targetScale = value;
+	}
 
-  function onFrame(name:String, frameNumber:Int, frameIndex:Int):Void
-  {
-    dispatch(new AnimationEvent(AnimationEvent.FRAME));
-  }
+	function onFrame(name:String, frameNumber:Int, frameIndex:Int):Void
+	{
+		dispatch(new AnimationEvent(AnimationEvent.FRAME));
+	}
 
-  function onFinish(name:String):Void
-  {
-    dispatch(new AnimationEvent(AnimationEvent.END));
-  }
+	function onFinish(name:String):Void
+	{
+		dispatch(new AnimationEvent(AnimationEvent.END));
+	}
 
-  override function repositionChildren():Void
-  {
-    super.repositionChildren();
-    character.x = this.screenX;
-    character.y = this.screenY;
+	override function repositionChildren():Void
+	{
+		super.repositionChildren();
+		character.x = this.screenX;
+		character.y = this.screenY;
 
-    // Apply animation offsets, so the character is positioned correctly based on the animation.
-    @:privateAccess var animOffsets:Array<Float> = character.animOffsets;
+		// Apply animation offsets, so the character is positioned correctly based on the animation.
+		@:privateAccess var animOffsets:Array<Float> = character.animOffsets;
 
-    character.x -= animOffsets[0] * targetScale * (flip ? -1 : 1);
-    character.y -= animOffsets[1] * targetScale;
-  }
+		character.x -= animOffsets[0] * targetScale * (flip ? -1 : 1);
+		character.y -= animOffsets[1] * targetScale;
+	}
 
-  /**
-   * Called when an update event is hit in the song.
-   * Used to play character animations.
-   * @param event The event.
-   */
-  public function onUpdate(event:UpdateScriptEvent):Void
-  {
-    if (character != null) character.onUpdate(event);
-  }
+	/**
+	 * Called when an update event is hit in the song.
+	 * Used to play character animations.
+	 * @param event The event.
+	 */
+	public function onUpdate(event:UpdateScriptEvent):Void
+	{
+		if (character != null) character.onUpdate(event);
+	}
 
-  /**
-   * Called when an beat is hit in the song
-   * Used to play character animations.
-   * @param event The event.
-   */
-  public function onBeatHit(event:SongTimeScriptEvent):Void
-  {
-    if (character != null) character.onBeatHit(event);
-  }
 
-  /**
-   * Called when a step is hit in the song
-   * Used to play character animations.
-   * @param event The event.
-   */
-  public function onStepHit(event:SongTimeScriptEvent):Void
-  {
-    if (character != null) character.onStepHit(event);
-  }
+	/**
+	 * Called when the BPM changes in the song
+	 * Used to play character animations.
+	 * @param event The event.
+	 */
+	public function onBpmChange(event:SongTimeScriptEvent):Void
+	{
+		if (character != null) character.onBpmChange(event);
+	}
 
-  public function onNoteIncoming(event:NoteScriptEvent)
-  {
-    if (character != null) character.onNoteIncoming(event);
-  }
+	/**
+	 * Called when an beat is hit in the song
+	 * Used to play character animations.
+	 * @param event The event.
+	 */
+	public function onBeatHit(event:SongTimeScriptEvent):Void
+	{
+		if (character != null) character.onBeatHit(event);
+	}
 
-  /**
-   * Called when a note is hit in the song
-   * Used to play character animations.
-   * @param event The event.
-   */
-  public function onNoteHit(event:HitNoteScriptEvent):Void
-  {
-    if (character != null) character.onNoteHit(event);
-  }
+	/**
+	 * Called when a step is hit in the song
+	 * Used to play character animations.
+	 * @param event The event.
+	 */
+	public function onStepHit(event:SongTimeScriptEvent):Void
+	{
+		if (character != null) character.onStepHit(event);
+	}
 
-  /**
-   * Called when a note is missed in the song
-   * Used to play character animations.
-   * @param event The event.
-   */
-  public function onNoteMiss(event:NoteScriptEvent):Void
-  {
-    if (character != null) character.onNoteMiss(event);
-  }
+	public function onNoteIncoming(event:NoteScriptEvent)
+	{
+		if (character != null) character.onNoteIncoming(event);
+	}
 
-  /**
-   * Called when a key is pressed but no note is hit in the song
-   * Used to play character animations.
-   * @param event The event.
-   */
-  public function onNoteGhostMiss(event:GhostMissNoteScriptEvent):Void
-  {
-    if (character != null) character.onNoteGhostMiss(event);
-  }
+	/**
+	 * Called when a note is hit in the song
+	 * Used to play character animations.
+	 * @param event The event.
+	 */
+	public function onNoteHit(event:HitNoteScriptEvent):Void
+	{
+		if (character != null) character.onNoteHit(event);
+	}
+
+	/**
+	 * Called when a note is missed in the song
+	 * Used to play character animations.
+	 * @param event The event.
+	 */
+	public function onNoteMiss(event:NoteScriptEvent):Void
+	{
+		if (character != null) character.onNoteMiss(event);
+	}
+
+	/**
+	 * Called when a key is pressed but no note is hit in the song
+	 * Used to play character animations.
+	 * @param event The event.
+	 */
+	public function onNoteGhostMiss(event:GhostMissNoteScriptEvent):Void
+	{
+		if (character != null) character.onNoteGhostMiss(event);
+	}
 }
 
 @:access(funkin.ui.haxeui.components.CharacterPlayer)
 private class Layout extends DefaultLayout
 {
-  public override function resizeChildren():Void
-  {
-    super.resizeChildren();
+	public override function resizeChildren():Void
+	{
+		super.resizeChildren();
 
-    var player:CharacterPlayer = cast(_component, CharacterPlayer);
-    var character:BaseCharacter = player.character;
-    if (character == null)
-    {
-      return super.resizeChildren();
-    }
+		var player:CharacterPlayer = cast(_component, CharacterPlayer);
+		var character:BaseCharacter = player.character;
+		if (character == null)
+		{
+			return super.resizeChildren();
+		}
 
-    character.cornerPosition.set(0, 0);
-    // character.setGraphicSize(Std.int(innerWidth), Std.int(innerHeight));
-  }
+		character.cornerPosition.set(0, 0);
+		// character.setGraphicSize(Std.int(innerWidth), Std.int(innerHeight));
+	}
 
-  public override function calcAutoSize(exclusions:Array<Component> = null):Size
-  {
-    var player:CharacterPlayer = cast(_component, CharacterPlayer);
-    var character:BaseCharacter = player.character;
-    if (character == null)
-    {
-      return super.calcAutoSize(exclusions);
-    }
-    var size:Size = new Size();
-    size.width = character.width + paddingLeft + paddingRight;
-    size.height = character.height + paddingTop + paddingBottom;
-    return size;
-  }
+	public override function calcAutoSize(exclusions:Array<Component> = null):Size
+	{
+		var player:CharacterPlayer = cast(_component, CharacterPlayer);
+		var character:BaseCharacter = player.character;
+		if (character == null)
+		{
+			return super.calcAutoSize(exclusions);
+		}
+		var size:Size = new Size();
+		size.width = character.width + paddingLeft + paddingRight;
+		size.height = character.height + paddingTop + paddingBottom;
+		return size;
+	}
 }

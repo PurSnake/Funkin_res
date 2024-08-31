@@ -261,7 +261,7 @@ class FreeplayState extends MusicBeatSubState
 
 		if (prepForNewRank == false)
 		{
-			FunkinSound.playMusic('freakyMenu',
+			FunkinSound.playMusic(Constants.defaultThemeTrack,
 			{
 				overrideExisting: true,
 				restartTrack: false
@@ -1461,92 +1461,96 @@ class FreeplayState extends MusicBeatSubState
 			bopCamera = !bopCamera;
 
 		if (controls.BACK)
-		{
-			busy = true;
-			FlxTween.globalManager.clear();
-			FlxTimer.globalManager.clear();
-			dj.onIntroDone.removeAll();
-
-			FunkinSound.playOnce(Paths.sound('cancelMenu'));
-
-			var longestTimer:Float = 0;
-
-			// FlxTween.color(bgDad, 0.33, 0xFFFFFFFF, 0xFF555555, {ease: FlxEase.quadOut});
-			FlxTween.color(pinkBack, 0.25, 0xFFFFD863, 0xFFFFD0D5, {ease: FlxEase.quadOut});
-
-			cardGlow.visible = true;
-			cardGlow.alpha = 1;
-			cardGlow.scale.set(1, 1);
-			FlxTween.tween(cardGlow, {alpha: 0, "scale.x": 1.2, "scale.y": 1.2}, 0.25, {ease: FlxEase.sineOut});
-
-			orangeBackShit.visible = false;
-			alsoOrangeLOL.visible = false;
-
-			moreWays.visible = false;
-			funnyScroll.visible = false;
-			txtNuts.visible = false;
-			funnyScroll2.visible = false;
-			moreWays2.visible = false;
-			funnyScroll3.visible = false;
-
-			for (grpSpr in exitMovers.keys())
-			{
-				var moveData:MoveData = exitMovers.get(grpSpr);
-
-				for (spr in grpSpr)
-				{
-					if (spr == null) continue;
-
-					var funnyMoveShit:MoveData = moveData;
-
-					if (moveData.x == null) funnyMoveShit.x = spr.x;
-					if (moveData.y == null) funnyMoveShit.y = spr.y;
-					if (moveData.speed == null) funnyMoveShit.speed = 0.2;
-					if (moveData.wait == null) funnyMoveShit.wait = 0;
-
-					FlxTween.tween(spr, {x: funnyMoveShit.x, y: funnyMoveShit.y}, funnyMoveShit.speed, {ease: FlxEase.expoIn});
-
-					longestTimer = Math.max(longestTimer, funnyMoveShit.speed + funnyMoveShit.wait);
-				}
-			}
-
-			for (caps in grpCapsules.members)
-			{
-				caps.doJumpIn = false;
-				caps.doLerp = false;
-				caps.doJumpOut = true;
-			}
-
-			if (Type.getClass(_parentState) == MainMenuState)
-			{
-				_parentState.persistentUpdate = false;
-				_parentState.persistentDraw = true;
-			}
-
-			new FlxTimer().start(longestTimer, (_) -> {
-				//FlxTransitionableState.skipNextTransIn = true;
-				//FlxTransitionableState.skipNextTransOut = true;
-				if (Type.getClass(_parentState) == MainMenuState)
-				{
-					FunkinSound.playMusic('freakyMenu',
-					{
-						overrideExisting: true,
-						restartTrack: false
-					});
-					FlxG.sound.music.fadeIn(4.0, 0.0, 1.0);
-					close();
-				}
-				else
-				{
-					FlxG.switchState(() -> new MainMenuState());
-				}
-			});
-		}
+			exitFreeplay();
 
 		if (accepted)
-		{
 			grpCapsules.members[curSelected].onConfirm();
+	}
+
+	public dynamic function exitFreeplay():Void
+	{
+		busy = true;
+		FlxTween.globalManager.clear();
+		FlxTimer.globalManager.clear();
+		dj.onIntroDone.removeAll();
+
+		FunkinSound.playOnce(Paths.sound('cancelMenu'));
+
+		var longestTimer:Float = 0;
+
+		// FlxTween.color(bgDad, 0.33, 0xFFFFFFFF, 0xFF555555, {ease: FlxEase.quadOut});
+		FlxTween.color(pinkBack, 0.25, 0xFFFFD863, 0xFFFFD0D5, {ease: FlxEase.quadOut});
+
+		cardGlow.visible = true;
+		cardGlow.alpha = 1;
+		cardGlow.scale.set(1, 1);
+		FlxTween.tween(cardGlow, {alpha: 0, "scale.x": 1.2, "scale.y": 1.2}, 0.25, {ease: FlxEase.sineOut});
+
+		orangeBackShit.visible = false;
+		alsoOrangeLOL.visible = false;
+
+		moreWays.visible = false;
+		funnyScroll.visible = false;
+		txtNuts.visible = false;
+		funnyScroll2.visible = false;
+		moreWays2.visible = false;
+		funnyScroll3.visible = false;
+
+		for (grpSpr in exitMovers.keys())
+		{
+			var moveData:MoveData = exitMovers.get(grpSpr);
+			for (spr in grpSpr)
+			{
+				if (spr == null) continue;
+				var funnyMoveShit:MoveData = moveData;
+
+				if (moveData.x == null) funnyMoveShit.x = spr.x;
+				if (moveData.y == null) funnyMoveShit.y = spr.y;
+				if (moveData.speed == null) funnyMoveShit.speed = 0.2;
+				if (moveData.wait == null) funnyMoveShit.wait = 0;
+
+				FlxTween.tween(spr, {x: funnyMoveShit.x, y: funnyMoveShit.y}, funnyMoveShit.speed, {ease: FlxEase.expoIn});
+
+				longestTimer = Math.max(longestTimer, funnyMoveShit.speed + funnyMoveShit.wait);
+			}
 		}
+
+		for (caps in grpCapsules.members)
+		{
+			caps.doJumpIn = false;
+			caps.doLerp = false;
+			caps.doJumpOut = true;
+		}
+
+		checkForMainMenu(longestTimer);
+	}
+
+	public dynamic function checkForMainMenu(longestTimer:Float):Void
+	{
+		if (Type.getClass(_parentState) == MainMenuState)
+		{
+			_parentState.persistentUpdate = false;
+			_parentState.persistentDraw = true;
+		}
+
+		new FlxTimer().start(longestTimer, (_) -> {
+			//FlxTransitionableState.skipNextTransIn = true;
+			//FlxTransitionableState.skipNextTransOut = true;
+			if (Type.getClass(_parentState) == MainMenuState)
+			{
+				FunkinSound.playMusic(Constants.defaultThemeTrack,
+				{
+					overrideExisting: true,
+					restartTrack: false
+				});
+				FlxG.sound.music.fadeIn(4.0, 0.0, 1.0);
+				close();
+			}
+			else
+			{
+				FlxG.switchState(() -> new MainMenuState());
+			}
+		});
 	}
 
 	public static var bopCamera:Bool = true;
@@ -1953,15 +1957,24 @@ class FreeplayState extends MusicBeatSubState
 	}
 
 	/**
-	 * Build an instance of `FreeplayState` that is above the `MainMenuState`.
-	 * @return The MainMenuState with the FreeplayState as a substate.
+	 * Build an instance of `FreeplayState` that is above the `ParentState`.
+	 * @return The Parent(MainMenu)State with the FreeplayState as a substate.
 	 */
+
 	public static function build(?params:FreeplayStateParams, ?stickers:StickerSubState):MusicBeatState
 	{
 		FlxTransitionableState.skipNextTransIn = (stickers?.members != null || params?.fromResults.playRankAnim);
 		FlxTransitionableState.skipNextTransOut = false;
+
+		var result = getNextParentState(params, stickers);
+		return result;
+	}
+
+	public static dynamic function getNextParentState(?params:FreeplayStateParams, ?stickers:StickerSubState):MusicBeatState
+	{
 		var result:MainMenuState;
-		if (params?.fromResults.playRankAnim) result = new MainMenuState(true);
+		if (params?.fromResults.playRankAnim) 
+			result = new MainMenuState(true);
 		else
 			result = new MainMenuState(false);
 
@@ -2135,7 +2148,13 @@ class FreeplaySongData
 	function updateValues(variations:Array<String>):Void
 	{
 		this.songDifficulties = song.listDifficulties(null, variations, false, false);
-		if (!this.songDifficulties.contains(currentDifficulty)) currentDifficulty = Constants.DEFAULT_DIFFICULTY;
+		if (!this.songDifficulties.contains(currentDifficulty))
+		{
+			currentDifficulty = Constants.DEFAULT_DIFFICULTY;
+			// This method gets called again by the setter-method
+			// or the difficulty didn't change, so there's no need to continue.
+			return;
+		}
 
 		var songDifficulty:SongDifficulty = song.getDifficulty(currentDifficulty, variations);
 		if (songDifficulty == null) return;

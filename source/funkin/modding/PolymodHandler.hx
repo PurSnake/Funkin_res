@@ -225,6 +225,16 @@ class PolymodHandler
 			});
 	}
 
+	public static var additionasVariables:Map<String,Dynamic> = [
+		"FlxPoint"		=> Type.resolveClass("flixel.math.FlxPoint_HSC"),
+		"FlxAxes"		=> Type.resolveClass("flixel.util.FlxAxes_HSC"),
+		"FlxColor"		=> Type.resolveClass("flixel.util.FlxColor_HSC"),
+		"BlendMode"     	=> Type.resolveClass("openfl.display.BlendMode_HSC"),
+		"Json"			=> haxe.Json,
+		"Map" 			=> Type.resolveClass("haxe.ds.Map_HSC"),
+		"StringMap"     	=> haxe.ds.StringMap,
+		"defaultThemeTrack"     => Constants.defaultThemeTrack
+	];
 	static function buildImports():Void
 	{
 		// Add default imports for common classes.
@@ -252,7 +262,7 @@ class PolymodHandler
 		Polymod.addDefaultImport(flixel.group.FlxGroup);
 		Polymod.addDefaultImport(flixel.group.FlxGroup.FlxTypedGroup);
 		Polymod.addDefaultImport(flixel.group.FlxSpriteGroup);
-		Polymod.addDefaultImport(flixel.text.FlxText);
+		//Polymod.addDefaultImport(flixel.text.FlxText);
 		Polymod.addDefaultImport(flixel.util.FlxTimer);
 		Polymod.addDefaultImport(hxvlc.flixel.FlxVideo);
 		Polymod.addDefaultImport(hxvlc.flixel.FlxVideoSprite);
@@ -260,13 +270,25 @@ class PolymodHandler
 
 		Polymod.addDefaultImport(flixel.FlxBasic);
 
+		Polymod.addDefaultImport(AppTween);
+		//Polymod.addDefaultImport(Constants.defaultThemeTrack);
+
 		// Add import aliases for certain classes.
 		// NOTE: Scripted classes are automatically aliased to their parent class.
 		Polymod.addImportAlias('flixel.math.FlxPoint', flixel.math.FlxPoint.FlxBasePoint);
 
+		Polymod.addImportAlias('funkin.modding.base.ScriptedFunkinSprite', funkin.graphics.ScriptedFunkinSprite);
+		Polymod.addImportAlias('funkin.modding.base.ScriptedMusicBeatState', funkin.ui.ScriptedMusicBeatState);
+		Polymod.addImportAlias('funkin.modding.base.ScriptedMusicBeatSubState', funkin.ui.ScriptedMusicBeatSubState);
+
+		Polymod.addImportAlias('flixel.text.FlxText', funkin.graphics.FlxSkewedText);
+
+
 		//Polymod.addDefaultImport(flixel.util.FlxColor); FUCK
 		Polymod.addDefaultImport(Type.resolveClass('flixel.util.FlxColor_HSC'), "flixel.util.FlxColor");
 		Polymod.addDefaultImport(Type.resolveClass('flixel.util.FlxColor_HSC'), "FlxColor");
+
+		Polymod.addImportAlias('funkin.util.FileUtil', funkin.util.FileUtil.FileUtilSandboxed);
 
 		// Add blacklisting for prohibited classes and packages.
 
@@ -284,6 +306,8 @@ class PolymodHandler
 		// Type.createInstance(Type.resolveClass()) can access blacklisted packages
 		//Polymod.blacklistImport('Type');
 		Polymod.addDefaultImport(Type);
+
+		Polymod.addDefaultImport(lime.system.CFFI);
 
 		// `cpp.Lib`
 		// Lib.load() can load malicious DLLs
@@ -306,6 +330,10 @@ class PolymodHandler
 			var className:String = Type.getClassName(cls);
 			Polymod.blacklistImport(className);
 		}*/
+
+		// GRAFEX
+
+		Polymod.addDefaultImport(grafex.util.tools.Downloader);
 	}
 
 	static function buildParseRules():polymod.format.ParseRules

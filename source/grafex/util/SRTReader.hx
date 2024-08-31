@@ -1,4 +1,4 @@
-package funkin.grafex.utils;
+package grafex.util;
 
 // Special Thanks to Redar13 and RichTrash21 for writing this class
 
