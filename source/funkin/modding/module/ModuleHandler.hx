@@ -125,7 +125,7 @@ class ModuleHandler
 			for (key => value in moduleCache)
 			{
 				ScriptEventDispatcher.callEvent(value, event);
-				moduleCache.remove(key);
+				//moduleCache.remove(key); let me save some stats from each other modules
 			}
 
 			moduleCache.clear();

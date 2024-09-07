@@ -626,9 +626,7 @@ class PlayState extends MusicBeatSubState
 	{
 		super();
 
-		FlxTransitionableState.skipNextTransIn = (lastParams != null);
 		if (lastParams == null) deathCounter = 0;
-		//FlxTransitionableState.skipNextTransOut = false;
 
 		//lastParams
 
@@ -659,6 +657,9 @@ class PlayState extends MusicBeatSubState
 		playbackRate = params.playbackRate ?? 1.0;
 		overrideMusic = params.overrideMusic ?? false;
 		previousCameraFollowPoint = params.cameraFollowPoint;
+
+		FlxTransitionableState.skipNextTransIn = (params.cameraFollowPoint != null);
+		//FlxTransitionableState.skipNextTransOut = false;
 
 		// Don't do anything else here! Wait until create() when we attach to the camera.
 	}
@@ -1528,6 +1529,7 @@ class PlayState extends MusicBeatSubState
 		performCleanup();
 
 		super.destroy();
+		//lastParams = null;
 	}
 
 	/**
@@ -2989,6 +2991,7 @@ class PlayState extends MusicBeatSubState
 						targetVariation: currentVariation,
 						cameraFollowPoint: cameraFollowPoint.getPosition(),
 					});
+					
 				}
 			}
 		}
