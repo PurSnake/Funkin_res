@@ -44,6 +44,14 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 	{
 		super();
 		this.bgColor = bgColor;
+		
+		initCallbacks();
+	}
+
+	function initCallbacks()
+	{
+  		subStateOpened.add(onOpenSubStateComplete);
+ 		subStateClosed.add(onCloseSubStateComplete);
 	}
 
 	var controls(get, never):Controls;

@@ -7,6 +7,14 @@ import flxanimate.frames.FlxAnimateFrames;
 import openfl.display.BitmapData;
 import openfl.utils.Assets;
 
+import flixel.math.FlxRect;
+import flixel.math.FlxPoint;
+import flixel.graphics.frames.FlxFrame;
+import flixel.math.FlxMatrix;
+import openfl.geom.ColorTransform;
+import openfl.display.BlendMode;
+//FlxAnimate Draw
+
 /**
  * A sprite which provides convenience functions for rendering a texture atlas with animations.
  */
@@ -204,5 +212,125 @@ class FlxAtlasSprite extends FlxAnimate
 		canPlayOtherAnims = true;
 		// this.currentAnimation = null;
 		this.anim.pause();
+	}
+
+	public override function draw():Void
+	{
+		if(alpha == 0) return;
+		updateSkewMatrix();
+
+		if (useAtlas)
+		{
+			for (i => camera in cameras)
+			{
+				final _point:FlxPoint = getScreenPosition(_camerasCashePoints[i], camera).subtractPoint(offset + frameOffset);
+				_point.addPoint(origin);
+				_camerasCashePoints[i] = _point;
+			}
+
+			updateTrig();
+			if (anim.curInstance != null)
+			{
+				_flashRect.setEmpty();
+
+				anim.curInstance.updateRender(_lastElapsed, anim.curFrame, anim.symbolDictionary, anim.swfRender);
+				_matrix.identity();
+				if (flipX != anim.curInstance.flipX)
+				{
+					_matrix.a *= -1;
+					// _matrix.tx += width;
+				}
+				if (flipY != anim.curInstance.flipY)
+				{
+					_matrix.d *= -1;
+					// _matrix.ty += height;
+				}
+				if (frames != null)
+					parseElement(anim.curInstance, _matrix, colorTransform, blend, cameras);
+				width = Math.abs(_flashRect.width);
+				height = Math.abs(_flashRect.height);
+				frameWidth = Math.round(width / scale.x);
+				frameHeight = Math.round(height / scale.y);
+
+				relativeX = _flashRect.x - x;
+				relativeY = _flashRect.y - y;
+			}
+		}
+		else
+		{
+			relativeX = relativeY = 0;
+			basicDraw();
+		}
+
+		if (showPivot && (showPosPoint || showMidPoint))
+		{
+			var mat = FlxPooledMatrix.get();
+			if (showMidPoint)
+			{
+				mat.translate(-_pivot.frame.width * 0.5, -_pivot.frame.height * 0.5);
+				mat.scale(pivotScale / camera.zoom, pivotScale / camera.zoom);
+				mat.translate(origin.x, origin.y);
+				// mat.translate(-offset.x, -offset.y);
+				drawPivotLimb(_pivot, mat, cameras);
+				mat.identity();
+			}
+			if (showPosPoint)
+			{
+				mat.translate(-_indicator.frame.width * 0.5, -_indicator.frame.height * 0.5);
+				mat.scale(pivotScale / camera.zoom, pivotScale / camera.zoom);
+				// mat.translate(-offset.x, -offset.y);
+				drawPivotLimb(_indicator, mat, cameras);
+			}
+			mat.put();
+		}
+	}
+
+	public override function getScreenBounds(?newRect:FlxRect, ?camera:flixel.FlxCamera):FlxRect
+	{
+		if (newRect == null)
+			newRect = FlxRect.get();
+
+		if (camera == null)
+			camera = FlxG.camera;
+		newRect.setPosition(x + relativeX, y + relativeY);
+		if (pixelPerfectPosition)
+			newRect.floor();
+		_scaledOrigin.set(origin.x * scale.x, origin.y * scale.y);
+		newRect.x += -Std.int(camera.scroll.x * scrollFactor.x) - (offset.x + frameOffset.x) + origin.x - _scaledOrigin.x;
+		newRect.y += -Std.int(camera.scroll.y * scrollFactor.y) - (offset.y + frameOffset.y) + origin.y - _scaledOrigin.y;
+		if (isPixelPerfectRender(camera))
+			newRect.floor();
+		newRect.setSize(frameWidth * Math.abs(scale.x), frameHeight * Math.abs(scale.y));
+		return newRect.getRotatedBounds(angle, _scaledOrigin, newRect);
+	}
+
+
+	@:noCompletion
+	override function drawComplex(camera:flixel.FlxCamera):Void
+	{
+		_frame.prepareMatrix(_matrix, FlxFrameAngle.ANGLE_0, checkFlipX(), checkFlipY());
+		_matrix.translate(-origin.x, -origin.y);
+		_matrix.scale(scale.x, scale.y);
+
+		if (bakedRotationAngle <= 0)
+		{
+			updateTrig();
+
+			if (angle != 0)
+				_matrix.rotateWithTrig(_cosAngle, _sinAngle);
+		}
+
+		getScreenPosition(_point, camera).subtractPoint(offset + frameOffset);
+		_point.add(origin.x, origin.y);
+		_matrix.concat(matrixExposed ? transformMatrix : FlxAnimate._skewMatrix);
+		_matrix.translate(_point.x, _point.y);
+
+		if (isPixelPerfectRender(camera))
+		{
+			_matrix.tx = Math.floor(_matrix.tx);
+			_matrix.ty = Math.floor(_matrix.ty);
+		}
+
+		camera.drawPixels(_frame, framePixels, _matrix, colorTransform, blend, antialiasing, shader);
 	}
 }
