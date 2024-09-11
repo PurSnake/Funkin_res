@@ -192,7 +192,7 @@ class Constants
 	 * List of all difficulties used by the base game.
 	 * Includes Erect and Nightmare.
 	 */
-	public static final DEFAULT_DIFFICULTY_LIST_FULL:Array<String> = ['easy', 'normal', 'hard', 'erect', 'nightmare'];
+	public static final DEFAULT_DIFFICULTY_LIST_FULL:Array<String> = ['easy', 'normal', 'hard', 'erect', 'nightmare', 'amt'];
 
 	/**
 	 * Default player character for charts.
@@ -222,7 +222,7 @@ class Constants
 	/**
 	 * Standardized variations for charts
 	 */
-	public static final DEFAULT_VARIATION_LIST:Array<String> = ['default', 'erect', 'pico'];
+	public static final DEFAULT_VARIATION_LIST:Array<String> = ['default', 'erect', 'pico', 'amt'];
 
 	/**
 	 * The default intensity multiplier for camera bops.

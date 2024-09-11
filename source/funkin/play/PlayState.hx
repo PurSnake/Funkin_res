@@ -755,6 +755,9 @@ class PlayState extends MusicBeatSubState
 		//comboPopUps.cameras = [camHUD];
 
 		// Read the song's note data and pass it to the strumlines.
+		if (PlayStatePlaylist.isStoryMode)
+			currentVariation = currentSong.getFirstValidVariation(PlayStatePlaylist.campaignDifficulty);
+
 		generateSong();
 
 		// Reset the camera's zoom and force it to focus on the camera follow point.
@@ -1873,6 +1876,8 @@ class PlayState extends MusicBeatSubState
 		Highscore.tallies.combo = 0;
 		Highscore.tallies = new Tallies();
 
+		currentInstrumental = currentSong.getDifficulty(currentDifficulty, currentVariation).characters.instrumental;
+	
 		var event:SongLoadScriptEvent = new SongLoadScriptEvent(currentChart.song.id, currentChart.difficulty, currentChart.notes.copy(), currentChart.getEvents());
 
 		dispatchEvent(event);
@@ -2664,14 +2669,11 @@ class PlayState extends MusicBeatSubState
 		// 9: Toggle the old icon.
 		if (FlxG.keys.justPressed.NINE) iconP1.toggleOldIcon();
 
-		//#if (debug || FORCE_DEBUG_VERSION)
-		// PAGEUP: Skip forward two sections.
-		// SHIFT+PAGEUP: Skip forward twenty sections.
-		if (FlxG.keys.justPressed.PAGEUP) changeSection(FlxG.keys.pressed.SHIFT ? 8 : 2);
-		// PAGEDOWN: Skip backward two section. Doesn't replace notes.
-		// SHIFT+PAGEDOWN: Skip backward twenty sections.
-		if (FlxG.keys.justPressed.PAGEDOWN) changeSection(FlxG.keys.pressed.SHIFT ? -8 : -2);
-		//#end
+		if (!startingSong)
+		{
+			if (FlxG.keys.justPressed.PAGEUP) changeSection(FlxG.keys.pressed.SHIFT ? 8 : 2);
+			if (FlxG.keys.justPressed.PAGEDOWN) changeSection(FlxG.keys.pressed.SHIFT ? -8 : -2);
+		}
 
 		if (FlxG.keys.justPressed.B) trace(inputSpitter.join('\n'));
 	}
