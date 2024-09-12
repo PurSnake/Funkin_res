@@ -147,7 +147,7 @@ class FlxCamera extends FlxBasic
 	public var scrollAngle(default, set):Float;
 
 	/**
-	 * Fixes camera's flashSprite fully shaking, if Main.hx extends FlxGame 
+	 * Fixes camera's flashSprite fully shaking, if Main.hx extends FlxGame
 	 */
 	public var shakeFix:Bool = true;
 
@@ -1872,12 +1872,13 @@ class FlxCamera extends FlxBasic
 			if (FxAlpha == 0)
 				return;
 
-			var targetGraphics:Graphics = (graphics == null) ? canvas.graphics : graphics;
-
+			final bounds = __get__bounds();
+			final targetGraphics = graphics == null ? canvas.graphics : graphics;
+			targetGraphics.overrideBlendMode(null); // https://github.com/richTrash21/fade-bug-test // thx
 			targetGraphics.beginFill(Color, FxAlpha);
 			// i'm drawing rect with these parameters to avoid light lines at the top and left of the camera,
 			// which could appear while cameras fading
-			targetGraphics.drawRect(viewMarginLeft - 1, viewMarginTop - 1, viewWidth + 2, viewHeight + 2);
+			targetGraphics.drawRect(bounds.x - 1, bounds.y - 1, bounds.width + 2, bounds.height + 2);
 			targetGraphics.endFill();
 		}
 	}

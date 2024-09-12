@@ -1854,7 +1854,7 @@ class PlayState extends MusicBeatSubState
 		}
 
 		// String that contains the mode defined here so it isn't necessary to call changePresence for each mode
-		detailsText = PlayStatePlaylist.isStoryMode ? 'Story Mode: Week ${PlayStatePlaylist.campaignId}' : 'Freeplay';
+		detailsText = PlayStatePlaylist.isStoryMode ? 'Story Mode: Level ${PlayStatePlaylist.campaignId}' : 'Freeplay';
 		detailsPausedText = 'Paused - $detailsText';
 
 		// Updating Discord Rich Presence.
