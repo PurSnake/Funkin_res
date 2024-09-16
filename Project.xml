@@ -17,7 +17,7 @@ xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/
 	<set name="SWF_VERSION" value="11.8" />
 	<!-- ____________________________ Window Settings ___________________________ -->
 	<!--These window settings apply to all targets-->
-	<window width="1280" height="720" fps="60" background="#000000" hardware="true" vsync="false" />
+	<window width="1280" height="720" fps="60" background="#000000" hardware="true" vsync="false" antialiasing = "2"/>
 	<!--HTML5-specific-->
 	<window if="html5" resizable="true" />
 	<!--Desktop-specific-->
@@ -93,6 +93,7 @@ xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/
 	-->
 	<assets path="art/readme.txt" rename="do NOT readme.txt" library="art"/>
 	<assets path="CHANGELOG.md" rename="changelog.txt" library="art"/>
+	<assets path="alsoft.ini" />
 	<!-- NOTE FOR FUTURE SELF SINCE FONTS ARE ALWAYS FUCKY
 		TO FIX ONE OF THEM, I CONVERTED IT TO OTF. DUNNO IF YOU NEED TO
 		THEN UHHH I USED THE NAME OF THE FONT WITH SETFORMAT() ON THE TEXT!!!

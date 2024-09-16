@@ -1,21 +1,28 @@
 package flixel.graphics.tile;
 
-import openfl.display.GraphicsShader;
-import openfl.display.Graphics;
+import openfl.geom.Matrix;
+import openfl.geom.Rectangle;
 import flixel.FlxCamera;
 import flixel.graphics.frames.FlxFrame;
 import flixel.graphics.tile.FlxDrawBaseItem.FlxDrawItemType;
+import flixel.graphics.tile.FlxGraphicsShader;
 import flixel.system.FlxAssets.FlxShader;
 import flixel.math.FlxMatrix;
 import openfl.geom.ColorTransform;
-import openfl.geom.Rectangle;
+import openfl.display.ShaderParameter;
 import openfl.Vector;
 
+@:access(openfl.geom.Matrix)
+@:access(openfl.geom.Rectangle)
+@:access(openfl.display.Graphics)
+@:access(openfl.display.BitmapData)
 class FlxDrawQuadsItem extends FlxDrawBaseItem<FlxDrawQuadsItem>
 {
-	static inline var VERTICES_PER_QUAD = 4;
+	static inline var VERTICES_PER_QUAD = #if (openfl >= "8.5.0") 4 #else 6 #end;
 
 	public var shader:FlxShader;
+
+	var drawByShader:Bool;
 
 	var rects:Vector<Float>;
 	var transforms:Vector<Float>;
@@ -30,24 +37,27 @@ class FlxDrawQuadsItem extends FlxDrawBaseItem<FlxDrawQuadsItem>
 		rects = new Vector<Float>();
 		transforms = new Vector<Float>();
 		alphas = [];
+		colorOffsets = [];
+		colorMultipliers = [];
 	}
 
 	override public function reset():Void
 	{
 		super.reset();
+		drawByShader = false;
 		rects.length = 0;
 		transforms.length = 0;
-		alphas.resize(0);
-		if (colored)
-		{
-			colorMultipliers.resize(0);
-			colorOffsets.resize(0);
-		}
+		alphas.splice(0, alphas.length);
+		if (colorMultipliers != null)
+			colorMultipliers.splice(0, colorMultipliers.length);
+		if (colorOffsets != null)
+			colorOffsets.splice(0, colorOffsets.length);
 	}
 
 	override public function dispose():Void
 	{
 		super.dispose();
+		drawByShader = false;
 		rects = null;
 		transforms = null;
 		alphas = null;
@@ -55,20 +65,13 @@ class FlxDrawQuadsItem extends FlxDrawBaseItem<FlxDrawQuadsItem>
 		colorOffsets = null;
 	}
 
-	override inline function set_colored(value:Bool) {
-		if (value) if (colorMultipliers == null) {
-			colorMultipliers = [];
-			colorOffsets = [];
-		}
-		return colored = value;
-	}
-
 	override public function addQuad(frame:FlxFrame, matrix:FlxMatrix, ?transform:ColorTransform):Void
 	{
-		rects.push(frame.frame.x);
-		rects.push(frame.frame.y);
-		rects.push(frame.frame.width);
-		rects.push(frame.frame.height);
+		var rect = frame.frame;
+		rects.push(rect.x);
+		rects.push(rect.y);
+		rects.push(rect.width);
+		rects.push(rect.height);
 
 		transforms.push(matrix.a);
 		transforms.push(matrix.b);
@@ -77,7 +80,10 @@ class FlxDrawQuadsItem extends FlxDrawBaseItem<FlxDrawQuadsItem>
 		transforms.push(matrix.tx);
 		transforms.push(matrix.ty);
 
-		final alphaMultiplier = transform != null ? transform.alphaMultiplier : 1.0;
+		var alphaMultiplier = transform?.alphaMultiplier ?? 1.0;
+		if (!drawByShader)
+			drawByShader = colored || alphaMultiplier != 1.0 || graphics.bitmap.__texture != null || Type.getClass(shader) != FlxGraphicsShader;
+
 		for (i in 0...VERTICES_PER_QUAD)
 			alphas.push(alphaMultiplier);
 
@@ -103,70 +109,99 @@ class FlxDrawQuadsItem extends FlxDrawBaseItem<FlxDrawQuadsItem>
 	{
 		if (#if cpp untyped __cpp__('this->rects->_hx___array->length == 0') #else rects.length == 0 #end)
 			return;
+		final canvasGraphics = camera.canvas.graphics;
+
+		inline canvasGraphics.overrideBlendMode(blend);
 
 		if (shader == null)
 		{
 			shader = graphics.shader;
-			if (shader == null)
-				return;
 		}
 
-		shader.bitmap.input = graphics.bitmap;
-		shader.alpha.value = alphas;
-
-		shader.bitmap.filter = (camera.antialiasing || antialiasing) ? LINEAR : NEAREST;
-
-		if (colored)
+		if (drawByShader)
 		{
-			shader.colorMultiplier.value = colorMultipliers;
-			shader.colorOffset.value = colorOffsets;
+			final isColored = colored;
+			shader.bitmap.input = graphics.bitmap;
+			shader.bitmap.filter = (camera.antialiasing || antialiasing) ? LINEAR : NEAREST;
+			shader.alpha.value = alphas;
+			if (isColored)
+			{
+				shader.colorMultiplier.value = colorMultipliers;
+				shader.colorOffset.value = colorOffsets;
+			}
+
+			// setParameterValue(shader.hasTransform, true);
+			setParameterValue(shader.hasColorTransform, isColored);
+
+			inline canvasGraphics.beginShaderFill(shader);
+		}
+		else
+		{
+			if (graphics.bitmap.readable)
+			{
+				canvasGraphics.__commands.beginBitmapFill(graphics.bitmap, null, false, camera.antialiasing || antialiasing); // test
+
+				// inline canvasGraphics.beginBitmapFill(graphics.bitmap, null, false, camera.antialiasing || antialiasing);
+			}
+			else
+			{
+				// begin bitmap fill doesn't work with a hardware-only bitmap
+				// to avoid exceptions, delegate to beginFill()
+				canvasGraphics.__commands.beginFill(0, 1.0);
+			}
+			canvasGraphics.__visible = true;
 		}
 
-		setParameterValue(shader.hasColorTransform, colored);
-		drawFlxQuad(camera.canvas.graphics, shader, rects, transforms);
-		
-		#if FLX_DEBUG
-		FlxDrawBaseItem.drawCalls++;
-		#end
+		var tileRect = Rectangle.__pool.get();
+		var tileTransform = Matrix.__pool.get();
+
+		var minX = Math.POSITIVE_INFINITY;
+		var minY = Math.POSITIVE_INFINITY;
+		var maxX = Math.NEGATIVE_INFINITY;
+		var maxY = Math.NEGATIVE_INFINITY;
+
+		var ri, ti;
+
+		for (i in 0...Math.floor(rects.length / 4))
+		{
+			ri = i * 4;
+			if (ri < 0) continue;
+			tileRect.setTo(0, 0, rects[ri + 2], rects[ri + 3]);
+
+			if (tileRect.width <= 0 || tileRect.height <= 0)
+			{
+				continue;
+			}
+
+			ti = i * 6;
+			tileTransform.setTo(transforms[ti], transforms[ti + 1], transforms[ti + 2], transforms[ti + 3], transforms[ti + 4], transforms[ti + 5]);
+
+			tileRect.__transform(tileRect, tileTransform);
+
+			if (minX > tileRect.x) minX = tileRect.x;
+			if (minY > tileRect.y) minY = tileRect.y;
+			if (maxX < tileRect.right) maxX = tileRect.right;
+			if (maxY < tileRect.bottom) maxY = tileRect.bottom;
+		}
+
+		canvasGraphics.__inflateBounds(minX, minY);
+		canvasGraphics.__inflateBounds(maxX, maxY);
+
+		canvasGraphics.__commands.drawQuads(rects, null, transforms);
+
+		canvasGraphics.__dirty = true;
+		canvasGraphics.__visible = true;
+
+		Rectangle.__pool.release(tileRect);
+		Matrix.__pool.release(tileTransform);
+
+		// canvasGraphics.drawQuads(rects, null, transforms);
+
+
+		canvasGraphics.endFill();
+
+		super.render(camera);
 	}
 
-	// Copy pasted from openfl Graphics, made SPECIFICALLY to work with funkin draw quads
-
-	private static final bounds:Rectangle = new Rectangle(0, 0, 1280, 720);
-
-	function drawFlxQuad(graphics:Graphics, shader:GraphicsShader, rects:Vector<Float>, transforms:Vector<Float>):Void @:privateAccess
-	{
-		// Override blend mode
-		if (blend == null) blend = NORMAL;
-		graphics.__commands.overrideBlendMode(blend);
-
-		// Begin shader fill
-		final shaderBuffer = graphics.__shaderBufferPool.get();
-		graphics.__usedShaderBuffers.add(shaderBuffer);
-		shaderBuffer.update(shader);
-		graphics.__commands.beginShaderFill(shaderBuffer);
-
-		// Draw the quad
-		if (graphics.__bounds == null)
-		{
-			graphics.__bounds = bounds;
-			graphics.__transformDirty = true;
-		}
-
-		graphics.__commands.drawQuads(rects, null, transforms);
-
-		graphics.__dirty = true;
-		graphics.__visible = true;
-	}
 	#end
-
-	override inline function get_numVertices():Int
-	{
-		return VERTICES_PER_QUAD;
-	}
-
-	override inline function get_numTriangles():Int
-	{
-		return 2;
-	}
 }
